@@ -14,6 +14,7 @@ from src.simulations import GameScenario, simulate_totals
 from src.live_board import fetch_scoreboard, CalendarSourceError
 from src.live_odds import odds_for_day
 from src.covers_reference import picks_links
+from src.covers_public import fetch_public_picks, CoversSourceError
 from src.odds_api import OddsAPIError
 from src.web_data import find_games, load_fixture
 from src.web_query import interpret_request
@@ -74,6 +75,10 @@ analysis_tab, simulator_tab, context_tab, status_tab = st.tabs(
 def cached_scoreboard(sport, target):
     return fetch_scoreboard(sport, target)
 
+@st.cache_data(ttl=600, show_spinner=False)
+def cached_covers(league, target):
+    return fetch_public_picks(league, target)
+
 @st.cache_data(ttl=300, show_spinner=False)
 def cached_odds(key, sports, target):
     return odds_for_day(key, sports, target)
@@ -110,9 +115,9 @@ with analysis_tab:
             if cover_links:
                 st.subheader("Covers · referencia principal de picks")
                 st.caption(
-                    "Picks, análisis y comparativas disponibles en las páginas oficiales. "
-                    "Abre cada liga para ver los datos publicados y sus condiciones vigentes. "
-                    "Estos datos aún no se importan automáticamente a Sports Edge AI."
+                    "Consulta puntual de proyecciones y mercados visibles de Covers. "
+                    "Cada registro conserva liga, fecha, hora y URL de origen. "
+                    "Los porcentajes son de Covers, no probabilidades de nuestra IA."
                 )
                 link_cols = st.columns(len(cover_links))
                 for column, (league_name, link) in zip(link_cols, cover_links):
@@ -121,6 +126,29 @@ with analysis_tab:
                         link,
                         use_container_width=True,
                     )
+                st.subheader("Lectura automática de Covers · proyecciones y líneas públicas")
+                st.caption("Datos consultados al pedirlos; no se guardan ni se republican. Los precios pueden cambiar, y una proyección publicada no garantiza aciertos.")
+                covers_rows = []
+                for league_name, _ in cover_links:
+                    try:
+                        data = cached_covers(league_name, request.target_date)
+                    except (CoversSourceError, ValueError) as exc:
+                        st.warning(f"{league_name}: lectura de Covers no disponible ({exc}). Utiliza el enlace original.")
+                        continue
+                    st.caption(
+                        f"{league_name}: encabezado de Covers {data['page_date']} · "
+                        f"consulta {data['checked_at_utc']} (UTC)"
+                    )
+                    covers_rows.extend(data["events"])
+                if covers_rows:
+                    st.dataframe(covers_rows, use_container_width=True, hide_index=True)
+                    st.info(
+                        "Las proyecciones, probabilidades y líneas mostradas proceden de Covers. "
+                        "No equivalen a nuestros picks ni son garantía de rentabilidad. "
+                        "Las celdas vacías indican datos no extraíbles o no publicados."
+                    )
+                else:
+                    st.info("No se pudieron extraer pronósticos de Covers para esa fecha. No se usarán datos viejos como si fueran actuales.")
             if not selected_sports:
                 st.warning("La conexión de calendario para tenis ATP/WTA aún está pendiente.")
             all_games = []
@@ -159,7 +187,7 @@ with analysis_tab:
                     else:
                         st.info("La fuente de cuotas no devolvió mercados prepartido para esa fecha y esas ligas.")
             st.subheader("Pronósticos de terceros y método")
-            st.markdown("**Covers es la referencia principal para consultar picks de terceros.** Los enlaces correspondientes están arriba, junto al resultado de la consulta. Sports Edge AI todavía no importa automáticamente el contenido de Covers ni presenta esos pronósticos como propios; para eso se requiere confirmar una autorización de reutilización automatizada.")
+            st.markdown("**Covers es la referencia principal de pronósticos externos.** La app realiza una lectura puntual de páginas públicas cuando responden, sin copiar artículos ni presentar las proyecciones como propias. La automatización puede fallar si cambia la página o bloquea la lectura.")
             if "ATP" in request.sports or "WTA" in request.sports:
                 st.info("Tenis ATP/WTA: fuente de calendarios, momios y análisis aún sin validar.")
             if request.wants_picks or request.wants_parlay:
@@ -252,7 +280,7 @@ with status_tab:
         "- **Calendario:** consulta bajo demanda a ESPN de NBA, NFL y NHL; la fuente puede fallar.\n"
         "- **ATP/WTA:** proveedor de calendario por conectar.\n"
         "- **Momios:** The Odds API (moneyline, spread y totales), requiere ODDS_API_KEY.\n"
-        "- **Covers:** pronósticos de expertos NBA/NFL/NHL por referencia, no copiados automáticamente.\n"
+        "- **Covers:** lector HTML de proyecciones/mercados públicos NBA/NFL/NHL, con enlaces a la fuente; puede fallar por cambios o bloqueos.\n"
         "- **TEAM MÉXICO:** sin acceso autorizado a cuotas en tiempo real.\n"
         "- **Modelos predictivos:** entrenamiento y calibración pendientes.\n"
         "- **OneDrive personal:** sincronización todavía sin autenticar.\n"
