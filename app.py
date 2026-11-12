@@ -11,6 +11,9 @@ from zoneinfo import ZoneInfo
 import streamlit as st
 
 from src.simulations import GameScenario, simulate_totals
+from src.live_board import fetch_scoreboard, CalendarSourceError
+from src.live_odds import odds_for_day
+from src.odds_api import OddsAPIError
 from src.web_data import find_games, load_fixture
 from src.web_query import interpret_request
 
@@ -55,9 +58,9 @@ st.markdown(
 )
 
 st.markdown(
-    '<span class="status green">✓ Interfaz de prueba</span>'
-    '<span class="status amber">◷ Calendario estático</span>'
-    '<span class="status red">● Picks bloqueados: falta validación</span>',
+    '<span class="status green">✓ Consulta de calendarios por fecha</span>'
+    '<span class="status amber">◷ Momios requieren fuente autorizada</span>'
+    '<span class="status red">● Picks propios no validados</span>',
     unsafe_allow_html=True,
 )
 
@@ -66,71 +69,85 @@ analysis_tab, simulator_tab, context_tab, status_tab = st.tabs(
      "🗞 Momentum y noticias", "⚙️ Estado del sistema"]
 )
 
+@st.cache_data(ttl=600, show_spinner=False)
+def cached_scoreboard(sport, target):
+    return fetch_scoreboard(sport, target)
+
+@st.cache_data(ttl=300, show_spinner=False)
+def cached_odds(key, sports, target):
+    return odds_for_day(key, sports, target)
+
+def safe_odds_key():
+    try:
+        return st.secrets.get("ODDS_API_KEY", "")
+    except (FileNotFoundError, OSError):
+        return ""
+
 with analysis_tab:
-    st.subheader("¿Qué quieres analizar?")
-    st.caption("Escribe una fecha y los deportes. No necesitas elegir los partidos manualmente.")
+    st.subheader("Partidos, momios y fuentes")
+    st.caption("Escribe tu pregunta y consulta datos del día, sin calendarios fijos. Zona horaria: Ciudad de México.")
     with st.form("sports_query"):
         prompt = st.text_input(
             "Tu consulta",
-            value="Dame picks de NBA hoy",
-            placeholder="¿Qué puedo apostar el 20 de noviembre en NFL, NBA y NHL?",
+            value="Dame picks de NBA, NFL y NHL hoy",
+            placeholder="¿Qué partidos y momios hay hoy en NBA, NFL y NHL?",
         )
-        submitted = st.form_submit_button("Analizar partidos", use_container_width=True)
-    try:
-        request = interpret_request(prompt)
-        fixture = load_fixture()
-        schedule = find_games(fixture, request.target_date, request.sports)
-    except (OSError, ValueError, KeyError) as exc:
-        st.error(f"No se pudo cargar el calendario: {exc}")
-    else:
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Fecha solicitada (CDMX)", request.target_date.strftime("%d/%m/%Y"))
-        with col2:
-            st.metric("Partidos en la copia", len(schedule.games))
-        with col3:
-            st.metric("Picks validados", "0")
-        st.caption("Deportes solicitados: " + ", ".join(request.sports))
-        if request.wants_picks:
-            st.info("Estos son los partidos que tengo registrados; todavía no son picks. Para recomendar apuestas necesito cuotas vigentes y un modelo predictivo validado.")
-        if not schedule.date_covered:
-            st.warning(
-                "La fecha solicitada está FUERA de la cobertura del calendario guardado. "
-                "No significa que no haya partidos; hace falta conectar una fuente actualizada."
-            )
-        if schedule.missing_sports:
-            st.info(
-                "Aún no hay calendario conectado para: "
-                + ", ".join(schedule.missing_sports)
-                + ". No se inventarán enfrentamientos."
-            )
-        if schedule.games:
-            st.subheader("Partidos encontrados")
-            for match in schedule.games:
-                with st.container(border=True):
-                    left, right = st.columns([4, 1])
-                    with left:
-                        st.markdown(
-                            f"**{match['sport']} · {match['away']} vs. {match['home']}**"
-                        )
-                        st.caption(
-                            f"{match['local_time']} · hora Ciudad de México · "
-                            f"{match['market_status']} · {match['prediction_status']}"
-                        )
-                    with right:
-                        st.link_button("Fuente oficial", match["source_url"], use_container_width=True)
-        elif schedule.date_covered and schedule.supported_sports:
-            st.info("No se registraron encuentros de esos deportes y esa fecha en esta copia del calendario.")
-        if request.wants_picks or request.wants_parlay:
-            st.error(
-                "No hay selecciones ni parlays verificables por ahora. "
-                "Sin cuotas vigentes de TEAM MÉXICO ni modelos independientes calibrados, "
-                "el tamaño recomendado de apuesta real es 0."
-            )
-        st.caption(
-            f"Última revisión de esta copia: {schedule.checked_date}. "
-            "La aplicación aún no consulta automáticamente el calendario, cuotas, lesiones o resultados."
-        )
+        submitted = st.form_submit_button("Consultar partidos de hoy", use_container_width=True)
+    if submitted:
+        try:
+            request = interpret_request(prompt)
+        except (ValueError, TypeError) as exc:
+            st.error("Fecha solicitada no válida: " + str(exc))
+        else:
+            cols = st.columns(3)
+            cols[0].metric("Fecha (CDMX)", request.target_date.strftime("%d/%m/%Y"))
+            selected_sports = tuple(s for s in request.sports if s in ("NBA", "NFL", "NHL"))
+            cols[1].metric("Ligas conectadas", len(selected_sports))
+            cols[2].metric("Picks independientes validados", "0")
+            st.caption("Solicitado: " + ", ".join(request.sports))
+            if not selected_sports:
+                st.warning("La conexión de calendario para tenis ATP/WTA aún está pendiente.")
+            all_games = []
+            for league in selected_sports:
+                try:
+                    board = cached_scoreboard(league, request.target_date)
+                except CalendarSourceError:
+                    st.warning("No se pudo actualizar el calendario de " + league + ". No mostraré una copia vieja como si fuera de hoy.")
+                    continue
+                games = board["games"]
+                all_games.extend(games)
+                st.caption(league + ": consultado en " + board["source"] + " · " + board["checked_at_utc"] + " (UTC)")
+                if not games:
+                    st.info("No se encontraron partidos de " + league + " en la fecha solicitada.")
+            if all_games:
+                st.subheader("Partidos encontrados · hora Ciudad de México")
+                for match in sorted(all_games, key=lambda x: (x["local_time"], x["sport"])):
+                    with st.container(border=True):
+                        c1, c2 = st.columns([4, 1])
+                        c1.markdown(f"**{match['sport']} · {match['away']} vs. {match['home']}**")
+                        c1.caption(match["local_time"] + " CDMX · " + match["status"] + " · fuente: " + match["source_name"])
+                        c2.link_button("Ver fuente", match["source_url"], use_container_width=True)
+            st.subheader("Momios de casas de apuestas")
+            api_key = safe_odds_key()
+            if not api_key:
+                st.info("Fuente de momios aún no activada. Al añadir ODDS_API_KEY en los secretos privados de Streamlit aparecerán moneyline, spread y totales de las casas disponibles. No se inventan cuotas ni se piden contraseñas.")
+            elif selected_sports:
+                try:
+                    rows = cached_odds(api_key, selected_sports, request.target_date)
+                except (OddsAPIError, ValueError) as exc:
+                    st.warning("No se pudieron obtener momios: " + str(exc))
+                else:
+                    if rows:
+                        st.dataframe(rows, use_container_width=True, hide_index=True)
+                        st.caption("Momios prepartido en formato americano. Fuente: The Odds API; cada fila incluye casa y hora de actualización. No incluye necesariamente TEAM MÉXICO.")
+                    else:
+                        st.info("La fuente de cuotas no devolvió mercados prepartido para esa fecha y esas ligas.")
+            st.subheader("Pronósticos de terceros y método")
+            st.markdown("Covers publica análisis de expertos de **NBA, NFL y NHL**, pero por ahora no está integrado como feed autorizado. Puedes consultarlos directamente en su sitio: [Covers](https://www.covers.com/). Se distinguirán de cualquier pronóstico propio.")
+            if "ATP" in request.sports or "WTA" in request.sports:
+                st.info("Tenis ATP/WTA: fuente de calendarios, momios y análisis aún sin validar.")
+            if request.wants_picks or request.wants_parlay:
+                st.warning("Las predicciones de Covers no son picks generados por nuestra IA. No hay recomendaciones de apuestas propias hasta entrenar y validar probabilidades con resultados históricos. Tamaño de apuesta recomendado actualmente: 0.")
 
 with simulator_tab:
     st.subheader("Laboratorio Monte Carlo")
@@ -216,8 +233,10 @@ with status_tab:
     st.subheader("Conexiones y seguridad")
     st.markdown(
         "- **GitHub:** código y pruebas versionados.\n"
-        "- **Calendario:** copia local de NBA el 12 y de NBA, NFL y NHL del 13 al 15 de noviembre de 2026.\n"
+        "- **Calendario:** consulta bajo demanda a ESPN de NBA, NFL y NHL; la fuente puede fallar.\n"
         "- **ATP/WTA:** proveedor de calendario por conectar.\n"
+        "- **Momios:** The Odds API (moneyline, spread y totales), requiere ODDS_API_KEY.\n"
+        "- **Covers:** pronósticos de expertos NBA/NFL/NHL por referencia, no copiados automáticamente.\n"
         "- **TEAM MÉXICO:** sin acceso autorizado a cuotas en tiempo real.\n"
         "- **Modelos predictivos:** entrenamiento y calibración pendientes.\n"
         "- **OneDrive personal:** sincronización todavía sin autenticar.\n"
