@@ -56,3 +56,48 @@ class PublicCoversTests(TestCase):
     def test_reject_unknown_sport(self):
         with self.assertRaises(ValueError):
             parse_public_picks(PUBLIC_HTML, "ATP", date(2026, 11, 12))
+
+    def test_nhl_percentages_are_not_american_odds(self):
+        html = """
+        <h1>NHL Picks</h1>
+        <div>Free NHL Expert and Computer Picks For Every Game Nov. 12, 2026</div>
+        <div>Montreal @ Boston</div>
+        <div>Today • 7:00 PM ET</div>
+        <p>Computer Picks</p><p>Predicted Score</p>
+        <div>MON MON</div><div>2.92 @ ⯆ 3.25</div><div>BOS BOS</div>
+        <div>Canadiens vs Bruins · Prediction & Game Odds</div>
+        <div>Team Predicted Score ML Total Puck Line</div>
+        <div>MON MON 2.92 46% o6.0 53% +1.5 68%</div>
+        <div>BOS BOS 3.25 54% u6.5 55% -1.5 33%</div>
+        """
+        parsed = parse_public_picks(html, "NHL", date(2026, 11, 12))
+        self.assertEqual(len(parsed["events"]), 1)
+        game = parsed["events"][0]
+        self.assertEqual(game["proyeccion_visitante"], 2.92)
+        self.assertEqual(game["proyeccion_local"], 3.25)
+        self.assertIn("o6.0 53%", game["totales_publicados"])
+        self.assertIn("u6.5 55%", game["totales_publicados"])
+        self.assertIn("+1.5 68%", game["spreads_publicados"])
+        self.assertEqual(game["tipo_mercados"], "proyecciones_porcentuales")
+
+    def test_nfl_probabilities_with_local_start(self):
+        html = """
+        <h1>Best NFL Picks Today</h1>
+        <p>Find the best NFL bets today - Nov. 12, 2026. Free expert and computer picks.</p>
+        <div>Washington @ N.Y. Giants</div>
+        <div>Today • 8:15 PM ET</div>
+        <div>Computer Picks</div><div>Predicted Score</div>
+        <div>WAS WAS</div><div>20.47 @ 18.43</div><div>NYG NYG</div>
+        <div>Commanders vs Giants · Prediction & Game Odds</div>
+        <div>Team Predicted Score Spread Total ML</div>
+        <div>WAS WAS 20.47 +2.5 54% o40.5 53% 45%</div>
+        <div>NYG NYG 18.43 -2.5 51% u41.5 53% 55%</div>
+        """
+        parsed = parse_public_picks(html, "NFL", date(2026, 11, 12))
+        self.assertEqual(len(parsed["events"]), 1)
+        game = parsed["events"][0]
+        self.assertEqual(game["hora_cdmx"], "19:15")
+        self.assertIn("o40.5 53%", game["totales_publicados"])
+        self.assertIn("+2.5 54%", game["spreads_publicados"])
+        self.assertIn("45%", game["probabilidades_publicadas"])
+        self.assertEqual(game["tipo_mercados"], "proyecciones_porcentuales")
