@@ -1,0 +1,55 @@
+name: Sports Edge AI - verificar y exportar
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'calendar (sin clave), demo o live (requiere ODDS_API_KEY)'
+        type: choice
+        options: [calendar, demo, live]
+        default: calendar
+      start:
+        description: 'Fecha de inicio ET; calendario estático 2026-11-13 a 2026-11-15'
+        type: string
+        default: '2026-11-13'
+      end:
+        description: 'Fecha final ET'
+        type: string
+        default: '2026-11-14'
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Pruebas (sin claves)
+        run: python -m unittest discover -s tests -v
+      - name: Exportar a CSV (sin sincronizar OneDrive)
+        env:
+          MODE: ${{ inputs.mode || 'calendar' }}
+          START: ${{ inputs.start || '2026-11-13' }}
+          END: ${{ inputs.end || '2026-11-14' }}
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$MODE" = 'calendar' ]; then
+            python -m src.weekend --start "$START" --end "$END"
+          elif [ "$MODE" = 'demo' ] || [ "$MODE" = 'live' ]; then
+            python -m src.pipeline --mode "$MODE"
+          else
+            echo 'Modo inválido' >&2; exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sports-edge-ai-csv
+          path: output/
+          retention-days: 7
