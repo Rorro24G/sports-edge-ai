@@ -143,7 +143,7 @@ with analysis_tab:
                     else:
                         st.info("La fuente de cuotas no devolvió mercados prepartido para esa fecha y esas ligas.")
             st.subheader("Pronósticos de terceros y método")
-            st.markdown("Covers publica análisis de expertos de **NBA, NFL y NHL**, pero por ahora no está integrado como feed autorizado. Puedes consultarlos directamente en su sitio: [Covers](https://www.covers.com/). Se distinguirán de cualquier pronóstico propio.")
+            st.markdown("**Picks publicados por expertos de Covers** (enlaces al origen, no predicciones de nuestro modelo): [NBA](https://www.covers.com/picks/nba) · [NFL](https://www.covers.com/picks/nfl) · [NHL](https://www.covers.com/picks/nhl). No se importan ni se presentan como recomendaciones propias sin autorización de datos y verificación.")
             if "ATP" in request.sports or "WTA" in request.sports:
                 st.info("Tenis ATP/WTA: fuente de calendarios, momios y análisis aún sin validar.")
             if request.wants_picks or request.wants_parlay:
