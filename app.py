@@ -72,7 +72,7 @@ with analysis_tab:
     with st.form("sports_query"):
         prompt = st.text_input(
             "Tu consulta",
-            value="Dame picks de NBA y NHL para el 13 de noviembre de 2026, y un posible parlay",
+            value="Dame picks de NBA hoy",
             placeholder="¿Qué puedo apostar el 20 de noviembre en NFL, NBA y NHL?",
         )
         submitted = st.form_submit_button("Analizar partidos", use_container_width=True)
@@ -91,6 +91,8 @@ with analysis_tab:
         with col3:
             st.metric("Picks validados", "0")
         st.caption("Deportes solicitados: " + ", ".join(request.sports))
+        if request.wants_picks:
+            st.info("Estos son los partidos que tengo registrados; todavía no son picks. Para recomendar apuestas necesito cuotas vigentes y un modelo predictivo validado.")
         if not schedule.date_covered:
             st.warning(
                 "La fecha solicitada está FUERA de la cobertura del calendario guardado. "
@@ -126,7 +128,7 @@ with analysis_tab:
                 "el tamaño recomendado de apuesta real es 0."
             )
         st.caption(
-            f"Última revisión de esta copia: {schedule.checked_date}. "
+            fÚltima revisión de esta copia: {schedule.checked_date}. "
             "La aplicación aún no consulta automáticamente el calendario, cuotas, lesiones o resultados."
         )
 
@@ -214,7 +216,7 @@ with status_tab:
     st.subheader("Conexiones y seguridad")
     st.markdown(
         "- **GitHub:** código y pruebas versionados.\n"
-        "- **Calendario:** copia local de NBA, NFL y NHL del 13 al 15 de noviembre de 2026.\n"
+        "- **Calendario:** copia local de NBA el 12 y de NBA, NFL y NHL del 13 al 15 de noviembre de 2026.\n"
         "- **ATP/WTA:** proveedor de calendario por conectar.\n"
         "- **TEAM MÉXICO:** sin acceso autorizado a cuotas en tiempo real.\n"
         "- **Modelos predictivos:** entrenamiento y calibración pendientes.\n"
