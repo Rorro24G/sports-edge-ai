@@ -25,6 +25,15 @@ _SCORE = re.compile(r"(\d+(?:\.\d+)?)\s*@\s*[^\d]{0,5}(\d+(?:\.\d+)?)")
 _TOTAL = re.compile(r"\b[ou]\d+(?:\.\d+)?\s*(?:[+-]\d{3,4}|(?:100|\d{1,2})%)(?!\w)", re.I)
 _SPREAD = re.compile(r"(?<![\w.])[+-]\d+(?:\.\d+)?\s+(?:[+-]\d{3,4}|(?:100|\d{1,2})%)(?!\w)")
 _PROB = re.compile(r"\b(?:100|\d{1,2})%")
+_ML_ROW = re.compile(
+    r"\b([A-Z]{2,4})\s+\1\s+(\d+(?:\.\d+)?)\s+"
+    r"[+-]\d+(?:\.\d+)?\s+[+-]\d{3,4}\s+"
+    r"[ou]\d+(?:\.\d+)?\s+[+-]\d{3,4}\s+([+-]\d{3,4})(?!\d)",
+    re.I,
+)
+_ABBR_ROW = re.compile(r"([A-Z]{2,4})\s+\1", re.I)
+_PRICE_ONLY = re.compile(r"[+-]\d{3,4}")
+_SCORE_ONLY = re.compile(r"\d+(?:\.\d+)?")
 _BLOCK = {"div", "p", "section", "article", "li", "tr", "table",
           "h1", "h2", "h3", "h4", "h5", "h6"}
 
@@ -137,6 +146,46 @@ def parse_public_picks(html: str, league: str, target: date) -> dict:
         totals = tuple(dict.fromkeys(_TOTAL.findall(odds_area)))[:4]
         spreads = tuple(dict.fromkeys(_SPREAD.findall(odds_area)))[:4]
         probabilities = tuple(dict.fromkeys(_PROB.findall(odds_area)))[:6]
+        # No extraer moneyline mediante un número suelto, pues un -110
+        # también puede ser precio de spread o total. Cada fila debe contener
+        # el orden completo: equipo, puntos, spread, total y al final ML.
+        ml_rows = []
+        section_at = next((i for i, value in enumerate(block)
+                           if "Prediction & Game Odds" in value), -1)
+        table = block[section_at + 1:] if section_at >= 0 else []
+        for i, source_line in enumerate(table):
+            matched_line = _ML_ROW.search(source_line)
+            if matched_line:
+                ml_rows.append((float(matched_line.group(2)),
+                                matched_line.group(3)))
+                continue
+            # La tabla HTML real separa las celdas mediante DIV anidados:
+            # "TOR TOR", "107.75", "+7.5 -107", "BetRivers",
+            # "o223.5 -110", "Hard Rock Bet", "+240", "bet365".
+            if not _ABBR_ROW.fullmatch(source_line):
+                continue
+            if i + 1 >= len(table):
+                continue
+            score_cell = _SCORE_ONLY.fullmatch(table[i + 1])
+            if not score_cell:
+                continue
+            next_row = next(
+                (k for k in range(i + 2, len(table))
+                 if _ABBR_ROW.fullmatch(table[k])),
+                min(i + 18, len(table)),
+            )
+            candidate_prices = [
+                entry for entry in table[i + 2:next_row]
+                if _PRICE_ONLY.fullmatch(entry)
+            ]
+            if len(candidate_prices) == 1:
+                ml_rows.append((float(score_cell.group(0)),
+                                candidate_prices[0]))
+        away_ml = home_ml = None
+        if (score is not None and len(ml_rows) == 2
+                and abs(ml_rows[0][0] - predicted_away) < 0.1
+                and abs(ml_rows[1][0] - predicted_home) < 0.1):
+            away_ml, home_ml = ml_rows[0][1], ml_rows[1][1]
         events.append({
             "liga": league,
             "partido": match.group(1).strip() + " @ " + match.group(2).strip(),
@@ -144,6 +193,8 @@ def parse_public_picks(html: str, league: str, target: date) -> dict:
             "hora_cdmx": start.astimezone(MX).strftime("%H:%M"),
             "proyeccion_visitante": predicted_away,
             "proyeccion_local": predicted_home,
+            "momio_visitante": away_ml,
+            "momio_local": home_ml,
             "totales_publicados": ", ".join(totals) if totals else None,
             "spreads_publicados": ", ".join(spreads) if spreads else None,
             "probabilidades_publicadas": ", ".join(probabilities) if probabilities else None,
