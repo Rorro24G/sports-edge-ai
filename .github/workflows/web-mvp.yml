@@ -1,7 +1,7 @@
 name: Sports Edge AI - web MVP checks
 on:
   push:
-    branches: [feature/web-mvp-2026-11-12, webdemo, feature/live-sources-nov12, feature/automatic-day-market-odds, feature/covers-public-private-read, feature/covers-market-types-nov12]
+    branches: [feature/web-mvp-2026-11-12, webdemo, feature/live-sources-nov12, feature/automatic-day-market-odds, feature/covers-public-private-read, feature/covers-market-types-nov12, feature/separate-picks-sim-calendar-parlays]
   pull_request:
     branches: [main, webdemo]
 
