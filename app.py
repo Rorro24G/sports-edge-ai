@@ -128,7 +128,7 @@ with analysis_tab:
                 "el tamaño recomendado de apuesta real es 0."
             )
         st.caption(
-            fÚltima revisión de esta copia: {schedule.checked_date}. "
+            f"Última revisión de esta copia: {schedule.checked_date}. "
             "La aplicación aún no consulta automáticamente el calendario, cuotas, lesiones o resultados."
         )
 
