@@ -70,7 +70,7 @@ def _as_text(value) -> str:
     if isinstance(value, str):
         return value.strip()
     if isinstance(value, dict):
-        for key in ("displayName", "name", "description", "shortDisplayName"):
+        for key in ("displayName", "fullName", "name", "description", "shortDisplayName"):
             if isinstance(value.get(key), str) and value[key].strip():
                 return value[key].strip()
     return ""
