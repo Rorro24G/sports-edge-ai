@@ -49,6 +49,28 @@ class PublicCoversTests(TestCase):
         self.assertIsNone(result["events"][0]["momio_visitante"])
         self.assertIsNone(result["events"][0]["momio_local"])
 
+    def test_separate_html_cells_for_moneyline(self):
+        html = """
+        <h1>NBA Picks</h1>
+        <p>Free NBA Expert and Computer Picks For Every Game Nov. 12, 2026</p>
+        <div>Toronto @ Philadelphia</div>
+        <div>Today • 7:00 PM ET</div>
+        <p>Predicted Score</p><div>107.63 @ ⯆ 116.12</div>
+        <p>Raptors vs 76ers · Prediction & Game Odds</p>
+        <div>Team</div><div>Predicted Score</div>
+        <div>Spread</div><div>Total</div><div>ML</div>
+        <div>TOR TOR</div><div>107.63</div><div>+8.5 -110</div>
+        <div>BetRivers</div><div>o223.5 -111</div>
+        <div>Bet365</div><div>+265</div><div>Bet365</div>
+        <div>PHI PHI</div><div>116.12</div><div>-8.5 -105</div>
+        <div>Betway</div><div>u224.5 -110</div>
+        <div>Bet365</div><div>-330</div><div>Bet365</div>
+        """
+        result = parse_public_picks(html, "NBA", date(2026, 11, 12))
+        self.assertEqual(len(result["events"]), 1)
+        self.assertEqual(result["events"][0]["momio_visitante"], "+265")
+        self.assertEqual(result["events"][0]["momio_local"], "-330")
+
     def test_no_old_data_for_arbitrary_future_day(self):
         result = parse_public_picks(PUBLIC_HTML, "NBA", date(2026, 11, 18))
         self.assertEqual(result["events"], [])
