@@ -1,7 +1,7 @@
 name: Sports Edge AI - web MVP checks
 on:
   push:
-    branches: [feature/web-mvp-2026-11-12, webdemo]
+    branches: [feature/web-mvp-2026-11-12, webdemo, feature/live-sources-nov12]
   pull_request:
     branches: [main]
 
