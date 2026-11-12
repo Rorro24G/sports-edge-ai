@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.env
+.venv/
+output/
+.pytest_cache/
+*.log
+*.sqlite3
+credentials*.json
+*service-account*.json
