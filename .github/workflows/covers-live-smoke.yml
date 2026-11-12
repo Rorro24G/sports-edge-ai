@@ -1,0 +1,57 @@
+name: Sports Edge AI - live Covers smoke test
+on:
+  push:
+    branches: [feature/covers-live-smoke-nov12]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-public-covers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Comprobar HTML publico real de Covers y lectura del modelo
+        run: |
+          python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          import sys
+
+          from src.covers_public import fetch_public_picks, CoversSourceError
+
+          target = datetime.now(ZoneInfo("America/Mexico_City")).date()
+          print("FECHA_CDMX:", target, flush=True)
+          observed = 0
+          reached = 0
+          for league in ("NBA", "NFL", "NHL"):
+              try:
+                  result = fetch_public_picks(league, target)
+                  reached += 1
+                  count = len(result["events"])
+                  observed += count
+                  print(
+                      f"{league}: fecha_publicada={result['page_date']} "
+                      f"juegos_extraidos={count} fuente={result['source_url']}",
+                      flush=True
+                  )
+                  if count:
+                      first = result["events"][0]
+                      print(
+                          f"{league}: ejemplo={first['partido']} "
+                          f"tipo_mercados={first['tipo_mercados']} "
+                          f"tiene_score={first['proyeccion_visitante'] is not None}",
+                          flush=True
+                      )
+              except (CoversSourceError, ValueError) as error:
+                  print(f"{league}: SIN_ACCESO_VALIDO: {error}", flush=True)
+          print(f"RESULTADO: paginas_leidas={reached}/3 juegos_extraidos={observed}", flush=True)
+          # Una respuesta vacia no debe ocultarse como exito.
+          if observed == 0:
+              sys.exit("ERROR: no se extrajo ningun pronostico publicado para hoy")
+          PY
