@@ -22,8 +22,8 @@ _DATE = re.compile(r"\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\.?\s+(\
 _KICKOFF = re.compile(r"\b(Today|[A-Za-z]{3}\.?\s+\d{1,2})\s*[•·]\s*(\d{1,2}:\d{2})\s*(AM|PM)\s*ET\b", re.I)
 _MATCHUP = re.compile(r"^([A-Za-z][A-Za-z .'-]{1,50}?)\s*@\s*([A-Za-z][A-Za-z .'-]{1,50})$")
 _SCORE = re.compile(r"(\d+(?:\.\d+)?)\s*@\s*[^\d]{0,5}(\d+(?:\.\d+)?)")
-_TOTAL = re.compile(r"\b[ou]\d+(?:\.\d+)?\s*[+-]\d{3,4}\b", re.I)
-_SPREAD = re.compile(r"(?<![\w.])[+-]\d+(?:\.\d+)?\s+[+-]\d{3,4}\b")
+_TOTAL = re.compile(r"\b[ou]\d+(?:\.\d+)?\s*(?:[+-]\d{3,4}|(?:100|\d{1,2})%)(?!\w)", re.I)
+_SPREAD = re.compile(r"(?<![\w.])[+-]\d+(?:\.\d+)?\s+(?:[+-]\d{3,4}|(?:100|\d{1,2})%)(?!\w)")
 _PROB = re.compile(r"\b(?:100|\d{1,2})%")
 _BLOCK = {"div", "p", "section", "article", "li", "tr", "table",
           "h1", "h2", "h3", "h4", "h5", "h6"}
@@ -129,6 +129,11 @@ def parse_public_picks(html: str, league: str, target: date) -> dict:
         # Solo valores del bloque del encuentro, no de artículos posteriores.
         odds_area = details.split("Prediction & Game Odds", 1)[-1][:900] \
             if "Prediction & Game Odds" in details else ""
+        # NBA publica momios (-110), mientras NFL y NHL muestran a veces
+        # porcentajes de Covers (54%). Mantener formatos diferenciados.
+        for cut in (" Top Projection ", " Trends ", " See all EV Projections "):
+            if cut in odds_area:
+                odds_area = odds_area.split(cut, 1)[0]
         totals = tuple(dict.fromkeys(_TOTAL.findall(odds_area)))[:4]
         spreads = tuple(dict.fromkeys(_SPREAD.findall(odds_area)))[:4]
         probabilities = tuple(dict.fromkeys(_PROB.findall(odds_area)))[:6]
@@ -142,6 +147,9 @@ def parse_public_picks(html: str, league: str, target: date) -> dict:
             "totales_publicados": ", ".join(totals) if totals else None,
             "spreads_publicados": ", ".join(spreads) if spreads else None,
             "probabilidades_publicadas": ", ".join(probabilities) if probabilities else None,
+            "tipo_mercados": ("proyecciones_porcentuales" if probabilities
+                              else "cuotas_americanas" if totals or spreads
+                              else "sin_mercados_extraibles"),
             "fuente": COVERS_PAGES[league],
         })
     return {"league": league, "events": events, "page_date": published.isoformat(),
