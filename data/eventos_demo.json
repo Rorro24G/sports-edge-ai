@@ -1,0 +1,282 @@
+[
+  {
+    "id": "FICTICIO_NBA",
+    "sport_key": "basketball_nba",
+    "_sport_name": "NBA",
+    "commence_time": "2026-01-02T12:00:00Z",
+    "home_team": "DEMO NBA Equipo B",
+    "away_team": "DEMO NBA Equipo A",
+    "bookmakers": [
+      {
+        "key": "demo_book_1",
+        "title": "Casa ficticia 1",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NBA Equipo A",
+                "price": 110
+              },
+              {
+                "name": "DEMO NBA Equipo B",
+                "price": -130
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "demo_book_2",
+        "title": "Casa ficticia 2",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NBA Equipo A",
+                "price": 105
+              },
+              {
+                "name": "DEMO NBA Equipo B",
+                "price": -125
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "demo_book_3",
+        "title": "Casa ficticia 3",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NBA Equipo A",
+                "price": 100
+              },
+              {
+                "name": "DEMO NBA Equipo B",
+                "price": -120
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "FICTICIO_NFL",
+    "sport_key": "americanfootball_nfl",
+    "_sport_name": "NFL",
+    "commence_time": "2026-01-02T12:00:00Z",
+    "home_team": "DEMO NFL Equipo B",
+    "away_team": "DEMO NFL Equipo A",
+    "bookmakers": [
+      {
+        "key": "demo_book_1",
+        "title": "Casa ficticia 1",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NFL Equipo A",
+                "price": 110
+              },
+              {
+                "name": "DEMO NFL Equipo B",
+                "price": -130
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "demo_book_2",
+        "title": "Casa ficticia 2",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NFL Equipo A",
+                "price": 105
+              },
+              {
+                "name": "DEMO NFL Equipo B",
+                "price": -125
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "demo_book_3",
+        "title": "Casa ficticia 3",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NFL Equipo A",
+                "price": 100
+              },
+              {
+                "name": "DEMO NFL Equipo B",
+                "price": -120
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "FICTICIO_NHL",
+    "sport_key": "icehockey_nhl",
+    "_sport_name": "NHL",
+    "commence_time": "2026-01-02T12:00:00Z",
+    "home_team": "DEMO NHL Equipo B",
+    "away_team": "DEMO NHL Equipo A",
+    "bookmakers": [
+      {
+        "key": "demo_book_1",
+        "title": "Casa ficticia 1",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NHL Equipo A",
+                "price": 110
+              },
+              {
+                "name": "DEMO NHL Equipo B",
+                "price": -130
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "demo_book_2",
+        "title": "Casa ficticia 2",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NHL Equipo A",
+                "price": 105
+              },
+              {
+                "name": "DEMO NHL Equipo B",
+                "price": -125
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "demo_book_3",
+        "title": "Casa ficticia 3",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO NHL Equipo A",
+                "price": 100
+              },
+              {
+                "name": "DEMO NHL Equipo B",
+                "price": -120
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "FICTICIO_TENIS",
+    "sport_key": "tennis_demo",
+    "_sport_name": "TENIS",
+    "commence_time": "2026-01-02T12:00:00Z",
+    "home_team": "DEMO Tenista B",
+    "away_team": "DEMO Tenista A",
+    "bookmakers": [
+      {
+        "key": "demo_book_1",
+        "title": "Casa ficticia 1",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO Tenista A",
+                "price": 110
+              },
+              {
+                "name": "DEMO Tenista B",
+                "price": -130
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "demo_book_2",
+        "title": "Casa ficticia 2",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO Tenista A",
+                "price": 105
+              },
+              {
+                "name": "DEMO Tenista B",
+                "price": -125
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "demo_book_3",
+        "title": "Casa ficticia 3",
+        "markets": [
+          {
+            "key": "h2h",
+            "last_update": "2026-01-01T12:00:00Z",
+            "outcomes": [
+              {
+                "name": "DEMO Tenista A",
+                "price": 100
+              },
+              {
+                "name": "DEMO Tenista B",
+                "price": -120
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
