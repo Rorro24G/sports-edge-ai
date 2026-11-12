@@ -35,9 +35,19 @@ class PublicCoversTests(TestCase):
         self.assertEqual(game["hora_cdmx"], "18:00")
         self.assertEqual(game["proyeccion_visitante"], 107.63)
         self.assertEqual(game["proyeccion_local"], 116.12)
+        self.assertEqual(game["momio_visitante"], "+265")
+        self.assertEqual(game["momio_local"], "-330")
         self.assertIn("o223.5 -111", game["totales_publicados"])
         self.assertIn("+8.5 -110", game["spreads_publicados"])
         self.assertIsNone(game["probabilidades_publicadas"])
+
+    def test_incomplete_moneyline_is_not_guessed(self):
+        html = PUBLIC_HTML.replace(
+            "TOR TOR 107.63 +8.5 -110 o223.5 -111 +265",
+            "TOR TOR 107.63 +8.5 -110 o223.5 -111")
+        result = parse_public_picks(html, "NBA", date(2026, 11, 12))
+        self.assertIsNone(result["events"][0]["momio_visitante"])
+        self.assertIsNone(result["events"][0]["momio_local"])
 
     def test_no_old_data_for_arbitrary_future_day(self):
         result = parse_public_picks(PUBLIC_HTML, "NBA", date(2026, 11, 18))
