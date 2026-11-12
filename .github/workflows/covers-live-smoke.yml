@@ -45,7 +45,10 @@ jobs:
                       print(
                           f"{league}: ejemplo={first['partido']} "
                           f"tipo_mercados={first['tipo_mercados']} "
-                          f"tiene_score={first['proyeccion_visitante'] is not None}",
+                          f"tiene_score={first['proyeccion_visitante'] is not None} "
+                          f"totales={first['totales_publicados']} "
+                          f"spreads={first['spreads_publicados']} "
+                          f"probabilidades={first['probabilidades_publicadas']}",
                           flush=True
                       )
               except (CoversSourceError, ValueError) as error:
