@@ -13,6 +13,7 @@ import streamlit as st
 from src.simulations import GameScenario, simulate_totals
 from src.live_board import fetch_scoreboard, CalendarSourceError
 from src.live_odds import odds_for_day
+from src.covers_reference import picks_links
 from src.odds_api import OddsAPIError
 from src.web_data import find_games, load_fixture
 from src.web_query import interpret_request
@@ -105,6 +106,21 @@ with analysis_tab:
             cols[1].metric("Ligas conectadas", len(selected_sports))
             cols[2].metric("Picks independientes validados", "0")
             st.caption("Solicitado: " + ", ".join(request.sports))
+            cover_links = picks_links(request.sports)
+            if cover_links:
+                st.subheader("Covers · referencia principal de picks")
+                st.caption(
+                    "Picks, análisis y comparativas disponibles en las páginas oficiales. "
+                    "Abre cada liga para ver los datos publicados y sus condiciones vigentes. "
+                    "Estos datos aún no se importan automáticamente a Sports Edge AI."
+                )
+                link_cols = st.columns(len(cover_links))
+                for column, (league_name, link) in zip(link_cols, cover_links):
+                    column.link_button(
+                        "Ver picks de " + league_name,
+                        link,
+                        use_container_width=True,
+                    )
             if not selected_sports:
                 st.warning("La conexión de calendario para tenis ATP/WTA aún está pendiente.")
             all_games = []
@@ -143,7 +159,7 @@ with analysis_tab:
                     else:
                         st.info("La fuente de cuotas no devolvió mercados prepartido para esa fecha y esas ligas.")
             st.subheader("Pronósticos de terceros y método")
-            st.markdown("**Picks publicados por expertos de Covers** (enlaces al origen, no predicciones de nuestro modelo): [NBA](https://www.covers.com/picks/nba) · [NFL](https://www.covers.com/picks/nfl) · [NHL](https://www.covers.com/picks/nhl). No se importan ni se presentan como recomendaciones propias sin autorización de datos y verificación.")
+            st.markdown("**Covers es la referencia principal para consultar picks de terceros.** Los enlaces correspondientes están arriba, junto al resultado de la consulta. Sports Edge AI todavía no importa automáticamente el contenido de Covers ni presenta esos pronósticos como propios; para eso se requiere confirmar una autorización de reutilización automatizada.")
             if "ATP" in request.sports or "WTA" in request.sports:
                 st.info("Tenis ATP/WTA: fuente de calendarios, momios y análisis aún sin validar.")
             if request.wants_picks or request.wants_parlay:
