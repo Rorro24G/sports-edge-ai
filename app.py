@@ -66,9 +66,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-analysis_tab, simulator_tab, context_tab, status_tab = st.tabs(
-    ["🧠 Preguntar al cerebro", "🎲 Laboratorio 10,000 simulaciones",
-     "🗞 Momentum y noticias", "⚙️ Estado del sistema"]
+analysis_tab, simulator_tab, calendar_tab, context_tab, status_tab, parlays_tab = st.tabs(
+    ["🎯 Picks por partido", "🎲 Simulaciones 10,000",
+     "📅 Calendario", "🗞 Jugadores y noticias", "⚙️ Estado", "🧩 Parlays (último paso)"]
 )
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -90,108 +90,96 @@ def safe_odds_key():
         return ""
 
 with analysis_tab:
-    st.subheader("Partidos, momios y fuentes")
-    st.caption("Escribe tu pregunta y consulta datos del día, sin calendarios fijos. Zona horaria: Ciudad de México.")
+    st.subheader("Ficha de picks · elige un partido")
+    st.caption(
+        "Escribe la liga, el equipo o un enfrentamiento. "
+        "La información de Covers es externa; Sports Edge AI no presume tener un pick propio."
+    )
     with st.form("sports_query"):
         prompt = st.text_input(
-            "Tu consulta",
-            value="Dame picks de NBA, NFL y NHL hoy",
-            placeholder="¿Qué partidos y momios hay hoy en NBA, NFL y NHL?",
+            "¿Qué partido quieres analizar?",
+            value="Dame los partidos de NBA, NFL y NHL hoy",
+            placeholder="Analiza Toronto contra Philadelphia hoy",
         )
-        submitted = st.form_submit_button("Consultar partidos de hoy", use_container_width=True)
+        submitted = st.form_submit_button("Analizar partido", use_container_width=True)
     if submitted:
         try:
-            request = interpret_request(prompt)
+            st.session_state["last_analysis_request"] = interpret_request(prompt)
+            st.session_state["last_analysis_text"] = prompt
+            st.session_state.pop("selected_match", None)
         except (ValueError, TypeError) as exc:
+            st.session_state.pop("last_analysis_request", None)
             st.error("Fecha solicitada no válida: " + str(exc))
+    request = st.session_state.get("last_analysis_request")
+    if request is not None:
+        st.caption("Fecha: " + request.target_date.strftime("%d/%m/%Y")
+                   + " · Ligas: " + ", ".join(request.sports) + " · CDMX")
+        links = picks_links(request.sports)
+        published = []
+        for league, link in links:
+            try:
+                covers = cached_covers(league, request.target_date)
+            except (CoversSourceError, ValueError) as exc:
+                st.warning(f"{league}: Covers no respondió con datos utilizables ({exc}).")
+                st.link_button("Consultar " + league + " en Covers", link)
+                continue
+            published.extend(covers["events"])
+            st.caption(f"{league}: Covers consultado {covers['checked_at_utc']} (UTC); "
+                       f"fecha editorial {covers['page_date']}")
+        if published:
+            from src.match_report import rank_matches
+            ranked = rank_matches(published, st.session_state.get("last_analysis_text", ""))
+            options = [
+                f"{game['liga']} · {game['partido']} · {game['hora_cdmx']} CDMX"
+                for game in ranked
+            ]
+            chosen = st.selectbox("Partido a analizar", options, key="selected_match")
+            game = ranked[options.index(chosen)]
+            st.markdown("### " + game["partido"] + " · " + game["liga"])
+            st.caption("Fecha " + game["fecha_cdmx"] + " · "
+                       + game["hora_cdmx"] + " CDMX · Covers (información de terceros)")
+            left, right = st.columns(2)
+            left.metric("Proyección visitante · Covers",
+                        str(game["proyeccion_visitante"])
+                        if game["proyeccion_visitante"] is not None else "No disponible")
+            right.metric("Proyección local · Covers",
+                         str(game["proyeccion_local"])
+                         if game["proyeccion_local"] is not None else "No disponible")
+            st.markdown("**Mercados publicados por Covers**")
+            st.write({
+                "Over/under": game["totales_publicados"] or "Sin datos extraíbles",
+                "Hándicaps": game["spreads_publicados"] or "Sin datos extraíbles",
+                "Porcentajes de Covers": game["probabilidades_publicadas"] or "No publicados en esta ficha",
+                "Tipo de cifras": game["tipo_mercados"],
+            })
+            st.link_button("Ver análisis original en Covers", game["fuente"])
+            st.markdown("**Dinero apostado, boletos y actividad de Las Vegas**")
+            st.info(
+                "No hay porcentajes de dinero o boletos verificados en esta ficha. "
+                "No confundimos probabilidades de Covers con porcentajes de apuestas. "
+                "Este apartado se completará cuando exista una fuente verificable."
+            )
+            st.markdown("**Jugadores, bajas, lesiones y entrenador**")
+            st.info(
+                "Alineaciones, lesiones, enfermedades, disponibilidad y noticias "
+                "del entrenador requieren consulta y fecha de fuente; "
+                "todavía no se han conectado para este partido."
+            )
+            st.markdown("**Picks de Sports Edge AI**")
+            st.warning(
+                "Aún no hay picks propios respaldados por probabilidades calibradas, "
+                "momios contrastados ni simulaciones ajustadas a datos reales. "
+                "No se asignará ventaja ni tamaño de apuesta inventado."
+            )
         else:
-            cols = st.columns(3)
-            cols[0].metric("Fecha (CDMX)", request.target_date.strftime("%d/%m/%Y"))
-            selected_sports = tuple(s for s in request.sports if s in ("NBA", "NFL", "NHL"))
-            cols[1].metric("Ligas conectadas", len(selected_sports))
-            cols[2].metric("Picks independientes validados", "0")
-            st.caption("Solicitado: " + ", ".join(request.sports))
-            cover_links = picks_links(request.sports)
-            if cover_links:
-                st.subheader("Covers · referencia principal de picks")
-                st.caption(
-                    "Consulta puntual de proyecciones y mercados visibles de Covers. "
-                    "Cada registro conserva liga, fecha, hora y URL de origen. "
-                    "Los porcentajes son de Covers, no probabilidades de nuestra IA."
-                )
-                link_cols = st.columns(len(cover_links))
-                for column, (league_name, link) in zip(link_cols, cover_links):
-                    column.link_button(
-                        "Ver picks de " + league_name,
-                        link,
-                        use_container_width=True,
-                    )
-                st.subheader("Lectura automática de Covers · proyecciones y líneas públicas")
-                st.caption("Datos consultados al pedirlos; no se guardan ni se republican. Los precios pueden cambiar, y una proyección publicada no garantiza aciertos.")
-                covers_rows = []
-                for league_name, _ in cover_links:
-                    try:
-                        data = cached_covers(league_name, request.target_date)
-                    except (CoversSourceError, ValueError) as exc:
-                        st.warning(f"{league_name}: lectura de Covers no disponible ({exc}). Utiliza el enlace original.")
-                        continue
-                    st.caption(
-                        f"{league_name}: encabezado de Covers {data['page_date']} · "
-                        f"consulta {data['checked_at_utc']} (UTC)"
-                    )
-                    covers_rows.extend(data["events"])
-                if covers_rows:
-                    st.dataframe(covers_rows, use_container_width=True, hide_index=True)
-                    st.info(
-                        "Las proyecciones, probabilidades y líneas mostradas proceden de Covers. "
-                        "No equivalen a nuestros picks ni son garantía de rentabilidad. "
-                        "Las celdas vacías indican datos no extraíbles o no publicados."
-                    )
-                else:
-                    st.info("No se pudieron extraer pronósticos de Covers para esa fecha. No se usarán datos viejos como si fueran actuales.")
-            if not selected_sports:
-                st.warning("La conexión de calendario para tenis ATP/WTA aún está pendiente.")
-            all_games = []
-            for league in selected_sports:
-                try:
-                    board = cached_scoreboard(league, request.target_date)
-                except CalendarSourceError:
-                    st.warning("No se pudo actualizar el calendario de " + league + ". No mostraré una copia vieja como si fuera de hoy.")
-                    continue
-                games = board["games"]
-                all_games.extend(games)
-                st.caption(league + ": consultado en " + board["source"] + " · " + board["checked_at_utc"] + " (UTC)")
-                if not games:
-                    st.info("No se encontraron partidos de " + league + " en la fecha solicitada.")
-            if all_games:
-                st.subheader("Partidos encontrados · hora Ciudad de México")
-                for match in sorted(all_games, key=lambda x: (x["local_time"], x["sport"])):
-                    with st.container(border=True):
-                        c1, c2 = st.columns([4, 1])
-                        c1.markdown(f"**{match['sport']} · {match['away']} vs. {match['home']}**")
-                        c1.caption(match["local_time"] + " CDMX · " + match["status"] + " · fuente: " + match["source_name"])
-                        c2.link_button("Ver fuente", match["source_url"], use_container_width=True)
-            st.subheader("Momios de casas de apuestas")
-            api_key = safe_odds_key()
-            if not api_key:
-                st.info("Fuente de momios aún no activada. Al añadir ODDS_API_KEY en los secretos privados de Streamlit aparecerán moneyline, spread y totales de las casas disponibles. No se inventan cuotas ni se piden contraseñas.")
-            elif selected_sports:
-                try:
-                    rows = cached_odds(api_key, selected_sports, request.target_date)
-                except (OddsAPIError, ValueError) as exc:
-                    st.warning("No se pudieron obtener momios: " + str(exc))
-                else:
-                    if rows:
-                        st.dataframe(rows, use_container_width=True, hide_index=True)
-                        st.caption("Momios prepartido en formato americano. Fuente: The Odds API; cada fila incluye casa y hora de actualización. No incluye necesariamente TEAM MÉXICO.")
-                    else:
-                        st.info("La fuente de cuotas no devolvió mercados prepartido para esa fecha y esas ligas.")
-            st.subheader("Pronósticos de terceros y método")
-            st.markdown("**Covers es la referencia principal de pronósticos externos.** La app realiza una lectura puntual de páginas públicas cuando responden, sin copiar artículos ni presentar las proyecciones como propias. La automatización puede fallar si cambia la página o bloquea la lectura.")
-            if "ATP" in request.sports or "WTA" in request.sports:
-                st.info("Tenis ATP/WTA: fuente de calendarios, momios y análisis aún sin validar.")
-            if request.wants_picks or request.wants_parlay:
-                st.warning("Las predicciones de Covers no son picks generados por nuestra IA. No hay recomendaciones de apuestas propias hasta entrenar y validar probabilidades con resultados históricos. Tamaño de apuesta recomendado actualmente: 0.")
+            st.warning(
+                "No se encontraron proyecciones extraíbles para esa fecha y ligas. "
+                "Esto no significa que no haya partidos. Consulta las fuentes originales."
+            )
+            for league, link in links:
+                st.link_button("Picks de " + league + " en Covers", link)
+        if "ATP" in request.sports or "WTA" in request.sports:
+            st.info("Los conectores de tenis ATP/WTA siguen pendientes de validación.")
 
 with simulator_tab:
     st.subheader("Laboratorio Monte Carlo")
@@ -257,6 +245,44 @@ with simulator_tab:
                 "Faltan parámetros entrenados con datos reales, pruebas fuera de muestra y cuotas verificadas."
             )
 
+with calendar_tab:
+    st.subheader("Calendario actualizado por fecha")
+    st.caption(
+        "Consulta los partidos de NBA, NFL y NHL en ESPN bajo demanda. "
+        "La consulta se renueva automáticamente como máximo cada diez minutos; "
+        "no depende de una fecha fija guardada."
+    )
+    day = st.date_input("Fecha en Ciudad de México",
+                        value=datetime.now(ZoneInfo("America/Mexico_City")).date(),
+                        key="calendar_date")
+    leagues = st.multiselect("Ligas", ["NBA", "NFL", "NHL"],
+                             default=["NBA", "NFL", "NHL"], key="calendar_leagues")
+    if st.button("Actualizar calendario ahora"):
+        cached_scoreboard.clear()
+    calendar_rows = []
+    for league in leagues:
+        try:
+            board = cached_scoreboard(league, day)
+        except CalendarSourceError:
+            st.warning(league + ": no se pudo actualizar el calendario; no se usarán datos antiguos.")
+            continue
+        st.caption(league + " · consulta " + board["checked_at_utc"] + " (UTC)")
+        if not board["games"]:
+            st.info("No se encontraron juegos de " + league + " para esa fecha en ESPN.")
+        for game in board["games"]:
+            calendar_rows.append({
+                "Liga": game["sport"],
+                "Visitante": game["away"],
+                "Local": game["home"],
+                "Hora CDMX": game["local_time"],
+                "Estado": game["status"],
+                "Fuente": game["source_url"],
+            })
+    if calendar_rows:
+        st.dataframe(sorted(calendar_rows, key=lambda row: (row["Hora CDMX"], row["Liga"])),
+                     use_container_width=True, hide_index=True)
+    st.caption("ATP/WTA: calendario por conectar. La ausencia de datos no equivale a partido cancelado.")
+
 with context_tab:
     st.subheader("Momentum y señales periodísticas")
     st.caption("Diseño del módulo de contexto; la ingesta automática todavía no está conectada.")
@@ -292,3 +318,15 @@ with status_tab:
         "o almacenar datos privados. No contiene contraseñas ni tokens."
     )
     st.caption("Sin operaciones reales. Historial de predicciones y tamaño de apuesta disponibles tras validación.")
+
+with parlays_tab:
+    st.subheader("Parlays · última etapa del proyecto")
+    st.caption(
+        "Primero deben funcionar las fichas por partido, las simulaciones "
+        "y el calendario. Después evaluaremos combinaciones."
+    )
+    st.warning(
+        "Todavía no hay parlays recomendados. Faltan probabilidades propias "
+        "validadas, momios comprobados y estimación de dependencia entre selecciones. "
+        "No multiplicaremos probabilidades independientes sin verificar esa condición."
+    )
