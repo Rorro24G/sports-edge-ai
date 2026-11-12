@@ -15,6 +15,7 @@ from src.live_board import fetch_scoreboard, CalendarSourceError
 from src.live_odds import odds_for_day
 from src.covers_reference import picks_links
 from src.covers_public import fetch_public_picks, CoversSourceError
+from src.pick_context import match_espn_event, fetch_summary, ContextSourceError
 from src.odds_api import OddsAPIError
 from src.web_data import find_games, load_fixture
 from src.web_query import interpret_request
@@ -61,7 +62,7 @@ st.markdown(
 
 st.markdown(
     '<span class="status green">✓ Consulta de calendarios por fecha</span>'
-    '<span class="status amber">◷ Momios requieren fuente autorizada</span>'
+    '<span class="status amber">◷ Momios de Covers consultados bajo demanda</span>'
     '<span class="status red">● Picks propios no validados</span>',
     unsafe_allow_html=True,
 )
@@ -78,6 +79,10 @@ def cached_scoreboard(sport, target):
 @st.cache_data(ttl=600, show_spinner=False)
 def cached_covers(league, target):
     return fetch_public_picks(league, target)
+
+@st.cache_data(ttl=600, show_spinner=False)
+def cached_pick_summary(league, event_id):
+    return fetch_summary(league, event_id)
 
 @st.cache_data(ttl=300, show_spinner=False)
 def cached_odds(key, sports, target):
@@ -159,11 +164,62 @@ with analysis_tab:
                 "No confundimos probabilidades de Covers con porcentajes de apuestas. "
                 "Este apartado se completará cuando exista una fuente verificable."
             )
-            st.markdown("**Jugadores, bajas, lesiones y entrenador**")
-            st.info(
-                "Alineaciones, lesiones, enfermedades, disponibilidad y noticias "
-                "del entrenador requieren consulta y fecha de fuente; "
-                "todavía no se han conectado para este partido."
+            st.markdown("**Jugadores, bajas, lesiones y contexto de ESPN**")
+            try:
+                espn_board = cached_scoreboard(game["liga"], request.target_date)
+            except CalendarSourceError:
+                st.warning("No fue posible contrastar el partido con el calendario de ESPN.")
+            else:
+                verified_game = match_espn_event(game, espn_board["games"])
+                if verified_game is None:
+                    st.info(
+                        "No se encontró una coincidencia inequívoca entre ambos equipos "
+                        "en ESPN para esta fecha. No atribuiremos lesiones o noticias "
+                        "de otro partido a esta ficha."
+                    )
+                else:
+                    st.caption(
+                        "ESPN · estado " + verified_game["status"]
+                        + " · actualizado " + espn_board["checked_at_utc"] + " (UTC)"
+                    )
+                    st.link_button("Ver partido confirmado por ESPN",
+                                   verified_game["source_url"])
+                    try:
+                        espn = cached_pick_summary(game["liga"], verified_game["event_id"])
+                    except (ContextSourceError, ValueError):
+                        st.warning(
+                            "ESPN no entregó un resumen válido para este encuentro. "
+                            "No se mostrarán reportes antiguos ni suposiciones."
+                        )
+                    else:
+                        st.caption("Resumen ESPN consultado " + espn["checked_at_utc"] + " (UTC)")
+                        if espn["venue"]:
+                            st.write("Sede: " + espn["venue"])
+                        if espn["injuries"]:
+                            st.markdown("**Reporte de lesiones y disponibilidad publicado por ESPN**")
+                            st.dataframe(espn["injuries"], use_container_width=True,
+                                         hide_index=True)
+                            st.caption(
+                                "Los estados corresponden al momento de consulta, "
+                                "no garantizan la alineación final ni sustituyen al reporte oficial."
+                            )
+                        else:
+                            st.info(
+                                "Sin reporte de lesiones disponible en este resumen de ESPN. "
+                                "No significa que los jugadores estén todos sanos o disponibles."
+                            )
+                        if espn["leaders"]:
+                            st.markdown("**Líderes estadísticos publicados por ESPN**")
+                            st.dataframe(espn["leaders"], use_container_width=True,
+                                         hide_index=True)
+                        else:
+                            st.caption(
+                                "ESPN no proporcionó líderes estadísticos "
+                                "utilizables para este partido."
+                            )
+            st.caption(
+                "Rachas de 5/10/15 juegos, noticias recientes de coaches, alineaciones "
+                "confirmadas y estados médicos específicos siguen sin un conector verificado."
             )
             st.markdown("**Picks de Sports Edge AI**")
             st.warning(
