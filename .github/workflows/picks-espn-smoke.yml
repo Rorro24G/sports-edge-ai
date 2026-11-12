@@ -30,6 +30,11 @@ jobs:
           games = fetch_public_picks("NBA", today)["events"]
           board = fetch_scoreboard("NBA", today)["games"]
           print(f"NBA Covers={len(games)} ESPN={len(board)}", flush=True)
+          for covers in games[:2]:
+              print(f"MARKETS {covers['partido']}: "
+                    f"ML_away={covers.get('momio_visitante')} "
+                    f"ML_home={covers.get('momio_local')} "
+                    f"total={covers['totales_publicados']}", flush=True)
           found = []
           for covers in games:
               espn = match_espn_event(covers, board)
