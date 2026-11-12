@@ -1,0 +1,47 @@
+name: Sports Edge AI - Picks live matchup context
+on:
+  push:
+    branches: [feature/picks-espn-context-nov12]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-picks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verificar un partido real Covers y resumen ESPN
+        run: |
+          python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          from src.covers_public import fetch_public_picks
+          from src.live_board import fetch_scoreboard
+          from src.pick_context import match_espn_event, fetch_summary
+
+          today = datetime.now(ZoneInfo("America/Mexico_City")).date()
+          print("FECHA_CDMX:", today, flush=True)
+          games = fetch_public_picks("NBA", today)["events"]
+          board = fetch_scoreboard("NBA", today)["games"]
+          print(f"NBA Covers={len(games)} ESPN={len(board)}", flush=True)
+          found = []
+          for covers in games:
+              espn = match_espn_event(covers, board)
+              if espn:
+                  found.append((covers, espn))
+                  print(f"CRUCE: {covers['partido']} -> {espn['away']} @ {espn['home']} id={espn['event_id']}", flush=True)
+          if not found:
+              raise SystemExit("ERROR: no se pudo confirmar ningún encuentro con ambos equipos")
+          summary = fetch_summary("NBA", found[0][1]["event_id"])
+          print(f"RESUMEN: lesiones_publicadas={len(summary['injuries'])} "
+                f"lideres_publicados={len(summary['leaders'])} "
+                f"sede={summary['venue'] or 'sin dato'} "
+                f"fuente={summary['source_url']}", flush=True)
+          print("RESULTADO: Picks enriquece un partido con resumen ESPN verificable", flush=True)
+          PY
