@@ -13,7 +13,7 @@ import streamlit as st
 from src.simulations import GameScenario, simulate_totals
 from src.live_board import fetch_scoreboard, CalendarSourceError
 from src.live_odds import odds_for_day
-from src.covers_reference import picks_links
+from src.covers_reference import picks_links, consensus_link, PUBLIC_MONEY_EXPLANATION
 from src.covers_public import fetch_public_picks, CoversSourceError
 from src.pick_context import match_espn_event, fetch_summary, ContextSourceError
 from src.odds_api import OddsAPIError
@@ -152,6 +152,8 @@ with analysis_tab:
                          if game["proyeccion_local"] is not None else "No disponible")
             st.markdown("**Mercados publicados por Covers**")
             st.write({
+                "Moneyline visitante": game.get("momio_visitante") or "Sin momio verificable",
+                "Moneyline local": game.get("momio_local") or "Sin momio verificable",
                 "Over/under": game["totales_publicados"] or "Sin datos extraíbles",
                 "Hándicaps": game["spreads_publicados"] or "Sin datos extraíbles",
                 "Porcentajes de Covers": game["probabilidades_publicadas"] or "No publicados en esta ficha",
@@ -160,10 +162,17 @@ with analysis_tab:
             st.link_button("Ver análisis original en Covers", game["fuente"])
             st.markdown("**Dinero apostado, boletos y actividad de Las Vegas**")
             st.info(
-                "No hay porcentajes de dinero o boletos verificados en esta ficha. "
-                "No confundimos probabilidades de Covers con porcentajes de apuestas. "
-                "Este apartado se completará cuando exista una fuente verificable."
+                "Los porcentajes de consenso de Covers proceden de sus concursos "
+                "gratuitos, no de dólares efectivamente apostados en casas de Las Vegas. "
+                "No hay datos de dinero ni boletos reales verificados para este juego; "
+                "no se inferirán a partir del consenso."
             )
+            consensus_url = consensus_link(game["liga"])
+            if consensus_url:
+                st.link_button("Ver consenso de " + game["liga"] + " en Covers",
+                               consensus_url)
+            st.link_button("Cómo calcula Covers el consenso",
+                           PUBLIC_MONEY_EXPLANATION)
             st.markdown("**Jugadores, bajas, lesiones y contexto de ESPN**")
             try:
                 espn_board = cached_scoreboard(game["liga"], request.target_date)
