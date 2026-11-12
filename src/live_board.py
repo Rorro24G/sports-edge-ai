@@ -4,7 +4,7 @@ Esta fuente ESPN es un endpoint web sin contrato de API comercial; puede cambiar
 sin aviso. No contiene cotizaciones ni pronosticos. Conservar URL y hora de consulta.
 """
 from __future__ import annotations
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timezone, timedelta
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
@@ -67,14 +67,21 @@ def normalize_scoreboard(payload: dict, sport: str, day: date) -> list[dict]:
     return sorted(rows, key=lambda g:(g["local_time"], g["home"]))
 
 def fetch_scoreboard(sport: str, day: date) -> dict:
-    url = scoreboard_url(sport, day)
-    request = Request(url, headers={"User-Agent":"SportsEdgeAI/1.0","Accept":"application/json"})
-    try:
-        with urlopen(request, timeout=10) as response:
-            payload = json.load(response)
-    except (OSError, HTTPError, URLError, ValueError, TimeoutError) as exc:
-        raise CalendarSourceError("No se pudo consultar el calendario de " + sport) from None
-    if not isinstance(payload, dict) or not isinstance(payload.get("events"), list):
-        raise CalendarSourceError("Respuesta de calendario no válida de " + sport)
-    return {"games": normalize_scoreboard(payload, sport, day), "url": url,
-            "checked_at_utc": datetime.now(timezone.utc).isoformat(), "source": "ESPN scoreboard"}
+    # Los eventos nocturnos pueden figurar en la jornada UTC siguiente.
+    # Consultar ambas fechas evita perder partidos nocturnos de México.
+    urls = [scoreboard_url(sport, day + timedelta(days=offset)) for offset in (0, 1)]
+    merged = {}
+    for url in urls:
+        request = Request(url, headers={"User-Agent":"SportsEdgeAI/1.0","Accept":"application/json"})
+        try:
+            with urlopen(request, timeout=10) as response:
+                payload = json.load(response)
+        except (OSError, HTTPError, URLError, ValueError, TimeoutError):
+            raise CalendarSourceError("No se pudo consultar el calendario de " + sport) from None
+        if not isinstance(payload, dict) or not isinstance(payload.get("events"), list):
+            raise CalendarSourceError("Respuesta de calendario no válida de " + sport)
+        for item in normalize_scoreboard(payload, sport, day):
+            merged[item["event_id"] or (item["away"], item["home"])] = item
+    return {"games": sorted(merged.values(), key=lambda row: (row["local_time"], row["home"])),
+            "url": urls[0], "checked_at_utc": datetime.now(timezone.utc).isoformat(),
+            "source": "ESPN scoreboard"}
