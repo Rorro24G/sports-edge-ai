@@ -243,9 +243,16 @@ with analysis_tab:
                                 "ESPN no proporcionó líderes estadísticos "
                                 "utilizables para este partido."
                             )
+                        if espn["news"]:
+                            st.markdown("**Noticias sobre el encuentro publicadas por ESPN**")
+                            for article in espn["news"]:
+                                st.markdown("- [" + article["Titular ESPN"].replace("[", "").replace("]", "") + "](" + article["Enlace"] + ")")
+                            st.caption("Titulares enlazados a ESPN; su contenido no se considera una lesión ni una alineación confirmada.")
+                        else:
+                            st.caption("ESPN no aportó artículos específicos en el resumen de este encuentro.")
             st.caption(
-                "Rachas de 5/10/15 juegos, noticias recientes de coaches, alineaciones "
-                "confirmadas y estados médicos específicos siguen sin un conector verificado."
+                "Las rachas completas de 5/10/15 partidos, estados médicos específicos "
+                "y noticias de entrenadores requieren fuentes adicionales verificadas."
             )
             st.markdown("**Picks de Sports Edge AI**")
             st.warning(
