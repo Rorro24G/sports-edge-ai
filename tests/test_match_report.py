@@ -31,20 +31,21 @@ class MatchReportTests(TestCase):
 
     def test_market_rows_require_two_teams_time_and_league(self):
         from src.match_report import verified_market_rows
-        game = {"liga": "NBA", "partido": "Toronto @ Philadelphia", "hora_cdmx": "18:00"}
+        game = {"liga": "NBA", "partido": "Toronto @ Philadelphia", "hora_cdmx": "18:00", "fecha_cdmx": "2026-11-13"}
         base = {"sport":"NBA", "event":"Toronto Raptors vs Philadelphia 76ers",
-                "start_local":"18:00", "market":"h2h", "pick":"Toronto Raptors",
+                "start_local":"18:00", "date_local":"2026-11-13", "market":"h2h", "pick":"Toronto Raptors",
                 "book":"Example", "odds":125}
         self.assertEqual(verified_market_rows(game, [base]), [base])
         self.assertEqual(verified_market_rows(game, [dict(base, start_local="19:00")]), [])
         self.assertEqual(verified_market_rows(game, [dict(base, sport="NHL")]), [])
+        self.assertEqual(verified_market_rows(game, [dict(base, date_local="2026-11-14")]), [])
         self.assertEqual(verified_market_rows(game, [dict(base, event="Toronto Raptors vs Boston Celtics")]), [])
 
     def test_ambiguous_odds_are_rejected(self):
         from src.match_report import verified_market_rows
-        game = {"liga":"NBA", "partido":"Toronto @ Philadelphia", "hora_cdmx":"18:00"}
+        game = {"liga":"NBA", "partido":"Toronto @ Philadelphia", "hora_cdmx":"18:00", "fecha_cdmx":"2026-11-13"}
         rows = [
-            {"sport":"NBA", "event":"Toronto Raptors vs Philadelphia 76ers", "start_local":"18:00"},
-            {"sport":"NBA", "event":"Toronto Exhibition vs Philadelphia Exhibition", "start_local":"18:00"},
+            {"sport":"NBA", "event":"Toronto Raptors vs Philadelphia 76ers", "start_local":"18:00", "date_local":"2026-11-13"},
+            {"sport":"NBA", "event":"Toronto Exhibition vs Philadelphia Exhibition", "start_local":"18:00", "date_local":"2026-11-13"},
         ]
         self.assertEqual(verified_market_rows(game, rows), [])
