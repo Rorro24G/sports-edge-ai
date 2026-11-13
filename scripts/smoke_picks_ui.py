@@ -45,7 +45,7 @@ with (
     patch("src.live_board.fetch_scoreboard", side_effect=fake_board),
     patch("src.pick_context.fetch_summary", side_effect=fake_summary),
 ):
-    app = AppTest.from_file("app.py", default_timeout=40).run()
+    app = AppTest.from_file("../app.py", default_timeout=40).run()
     assert not app.exception, [str(e.message) for e in app.exception]
     inputs = list(app.text_input)
     assert inputs, "No aparece el campo para preguntar por un partido"
