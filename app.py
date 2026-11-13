@@ -115,6 +115,12 @@ with analysis_tab:
         except (ValueError, TypeError) as exc:
             st.session_state.pop("last_analysis_request", None)
             st.error("Fecha solicitada no válida: " + str(exc))
+    if st.button("Actualizar datos de Picks ahora", key="refresh_picks"):
+        cached_covers.clear()
+        cached_scoreboard.clear()
+        cached_pick_summary.clear()
+        cached_odds.clear()
+        st.info("Se vació la caché de Picks. La próxima consulta volverá a solicitar datos a las fuentes; si alguna falla, se indicará.")
     request = st.session_state.get("last_analysis_request")
     if request is not None:
         st.caption("Fecha: " + request.target_date.strftime("%d/%m/%Y")
