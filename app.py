@@ -159,6 +159,19 @@ with analysis_tab:
                 "Porcentajes de Covers": game["probabilidades_publicadas"] or "No publicados en esta ficha",
                 "Tipo de cifras": game["tipo_mercados"],
             })
+            from src.market_summary import game_market_probabilities
+            market_p = game_market_probabilities(game)
+            st.markdown("**Probabilidad implícita de los momios publicados por Covers**")
+            p1, p2 = st.columns(2)
+            p1.metric("Visitante · umbral de equilibrio",
+                      f"{market_p['visitante']:.2f}%" if market_p["visitante"] is not None else "Sin momio")
+            p2.metric("Local · umbral de equilibrio",
+                      f"{market_p['local']:.2f}%" if market_p["local"] is not None else "Sin momio")
+            st.caption(
+                "Estos porcentajes se calculan únicamente a partir del precio americano; "
+                "NO son la probabilidad de acierto de Sports Edge AI ni de Covers. "
+                "Pueden incluir margen de la casa y proceder de operadores diferentes."
+            )
             st.markdown("**Momios por casa de apuestas (fuente independiente)**")
             api_key = safe_odds_key()
             if not api_key:
