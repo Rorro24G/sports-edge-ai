@@ -38,3 +38,37 @@ def rank_matches(rows: list[dict], question: str) -> list[dict]:
         return (both, away_hits + home_hits)
 
     return sorted(rows, key=score, reverse=True)
+
+def verified_market_rows(game: dict, rows: list[dict]) -> list[dict]:
+    """Asocia cuotas sólo si ambos equipos coinciden, misma liga y hora.
+
+    Rechaza coincidencias ambiguas (nombres genéricos o dos eventos candidatos)
+    antes de atribuir momios a un partido concreto.
+    """
+    from datetime import datetime
+    matchup = game.get("partido", "")
+    parts = matchup.split(" @ ")
+    if len(parts) != 2:
+        return []
+    away, home = (_terms(name) for name in parts)
+    if not away or not home:
+        return []
+    league = game.get("liga")
+    start = game.get("hora_cdmx")
+    by_event = {}
+    for row in rows:
+        if row.get("sport") != league or row.get("start_local") != start:
+            continue
+        sides = str(row.get("event", "")).split(" vs ")
+        if len(sides) != 2:
+            continue
+        full_away, full_home = (_terms(side) for side in sides)
+        # La ciudad de Covers debe estar presente en el nombre completo.
+        if not (away <= full_away and home <= full_home):
+            continue
+        key = (row["event"], row["start_local"])
+        by_event.setdefault(key, []).append(row)
+    # Sin identidad inequívoca, no atribuimos un mercado.
+    if len(by_event) != 1:
+        return []
+    return next(iter(by_event.values()))
