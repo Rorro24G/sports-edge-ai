@@ -50,6 +50,7 @@ def odds_for_day(api_key: str, sports: tuple[str,...], target: date, *,
                             result.append({
                                 "sport": sport, "event": event_name,
                                 "start_local": starts.astimezone(LOCAL).strftime("%H:%M"),
+                                "date_local": starts.astimezone(LOCAL).date().isoformat(),
                                 "market": market["key"],
                                 "pick": str(outcome.get("name","")),
                                 "line": outcome.get("point"),
