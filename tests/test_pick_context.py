@@ -78,3 +78,17 @@ class PickContextTests(TestCase):
                 "https://example.com/", 403, "Forbidden", {}, None)):
             with self.assertRaisesRegex(ContextSourceError, "HTTP 403"):
                 fetch_summary("NBA", "401123456")
+
+    def test_news_from_espn_summary_only(self):
+        payload = {"news": {"articles": [
+            {"headline": "Actualizacion de la plantilla", "links": {"web": {"href": "https://www.espn.com/nba/story/_/id/123/roster"}}},
+            {"headline": "URL no permitida", "links": {"web": {"href": "https://example.org/not-real"}}},
+            {"headline": "Duplicada", "links": {"web": {"href": "https://www.espn.com/nba/story/_/id/123/roster"}}},
+            {"headline": "No reportar sin fuente"},
+        ]}}
+        result = parse_summary(payload, url="https://site.api.espn.com/summary")
+        self.assertEqual(len(result["news"]), 1)
+        self.assertEqual(result["news"][0]["Titular ESPN"], "Actualizacion de la plantilla")
+
+    def test_no_news_when_missing(self):
+        self.assertEqual(parse_summary({}, url="https://espn.com/")["news"], [])
