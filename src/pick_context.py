@@ -137,12 +137,42 @@ def parse_summary(payload: dict, *, url: str) -> dict:
                             "Dato publicado": stat,
                         })
 
+    articles: list[dict] = []
+    seen_urls: set[str] = set()
+    raw_news = payload.get("news")
+    if isinstance(raw_news, dict):
+        raw_news = raw_news.get("articles")
+    if isinstance(raw_news, list):
+        from urllib.parse import urlsplit
+        for item in raw_news[:20]:
+            if not isinstance(item, dict):
+                continue
+            headline = _as_text(item.get("headline")) or _as_text(item.get("title"))
+            candidate = item.get("links") or {}
+            source_link = candidate.get("web") if isinstance(candidate, dict) else None
+            link = (source_link.get("href") if isinstance(source_link, dict) else None)
+            if not link and isinstance(item.get("link"), str):
+                link = item["link"]
+            if not isinstance(link, str) or not headline:
+                continue
+            parsed = urlsplit(link)
+            if parsed.scheme != "https" or not (parsed.hostname == "espn.com" or
+                (parsed.hostname or "").endswith(".espn.com")):
+                continue
+            if link in seen_urls:
+                continue
+            seen_urls.add(link)
+            articles.append({"Titular ESPN": headline[:180], "Enlace": link})
+            if len(articles) >= 8:
+                break
+
     venue = ""
     if isinstance(payload.get("gameInfo"), dict):
         venue = _as_text(payload["gameInfo"].get("venue"))
     return {
         "injuries": injuries,
         "leaders": leaders,
+        "news": articles,
         "venue": venue,
         "source_url": url,
     }
