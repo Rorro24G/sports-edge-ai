@@ -45,19 +45,20 @@ def verified_market_rows(game: dict, rows: list[dict]) -> list[dict]:
     Rechaza coincidencias ambiguas (nombres genéricos o dos eventos candidatos)
     antes de atribuir momios a un partido concreto.
     """
-    from datetime import datetime
     matchup = game.get("partido", "")
-    parts = matchup.split(" @ ")
+    parts = matchup.split(" @ ", 1)
     if len(parts) != 2:
         return []
     away, home = (_terms(name) for name in parts)
-    if not away or not home:
+    if not away or not home or not game.get("fecha_cdmx"):
         return []
     league = game.get("liga")
     start = game.get("hora_cdmx")
     by_event = {}
     for row in rows:
         if row.get("sport") != league or row.get("start_local") != start:
+            continue
+        if row.get("date_local") != game["fecha_cdmx"]:
             continue
         sides = str(row.get("event", "")).split(" vs ")
         if len(sides) != 2:
