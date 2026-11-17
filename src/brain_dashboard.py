@@ -76,6 +76,65 @@ def morning_rows(report: dict) -> list[dict]:
     return sorted(results, key=lambda e: (e["Hora CDMX"], e["Liga"], e["Partido"]))
 
 
+
+def morning_covers_picks(report: dict, *, now: datetime | None = None,
+                         per_league: int = 3) -> list[dict]:
+    """Select a short, clearly labelled *external reference* list.
+
+    Within each league, order by projected-score difference, NOT by estimated
+    win probability, expected value or profitability. Do not include started
+    games, events without an identifiable Covers projection, or unverifiable
+    moneyline prices.
+    """
+    from .pick_reference import covers_projection
+    if not report or not isinstance(report.get("leagues"), dict):
+        return []
+    if per_league < 1:
+        return []
+    snapshot_day = report.get("date_cdmx")
+    clock = now or datetime.now(MEXICO)
+    if clock.tzinfo is None:
+        clock = clock.replace(tzinfo=MEXICO)
+    if clock.astimezone(MEXICO).date().isoformat() != snapshot_day:
+        return []
+    chosen = []
+    for league in LEAGUES:
+        league_rows = []
+        for event in report["leagues"].get(league, {}).get("events", []):
+            if (not isinstance(event, dict)
+                    or event.get("fecha_cdmx") != snapshot_day
+                    or not event.get("fuente_covers")
+                    or event.get("datos_covers") == "no_verificados_para_este_partido"):
+                continue
+            scores = event.get("proyeccion_covers")
+            if not isinstance(scores, list) or len(scores) != 2:
+                continue
+            signal = covers_projection({
+                "liga": league, "partido": event.get("partido"),
+                "fecha_cdmx": snapshot_day, "hora_cdmx": event.get("hora_cdmx"),
+                "proyeccion_visitante": scores[0],
+                "proyeccion_local": scores[1],
+                "momio_visitante": (event.get("momios_covers") or [None, None])[0],
+                "momio_local": (event.get("momios_covers") or [None, None])[1],
+                "fuente": event["fuente_covers"],
+            }, now=clock)
+            if not signal or not signal["vigente_para_analisis_prepartido"]:
+                continue
+            if not signal["momio_covers"]:
+                continue
+            league_rows.append({
+                "Liga": league,
+                "Partido": signal["partido"],
+                "Hora CDMX": signal["hora_cdmx"],
+                "Referencia ML (Covers)": signal["seleccion_de_referencia"],
+                "Momio publicado": signal["momio_covers"],
+                "Diferencia de marcador": signal["margen_proyectado"],
+                "Fuente": event["fuente_covers"],
+            })
+        league_rows.sort(key=lambda x: (-x["Diferencia de marcador"], x["Hora CDMX"]))
+        chosen.extend(league_rows[:per_league])
+    return chosen
+
 def render_brain_header() -> None:
     """Static SVG/HTML and CSS motion: no scripts, user tracking or external assets."""
     import streamlit as st
@@ -151,6 +210,23 @@ def render_morning_snapshot() -> None:
     cols[3].metric("Picks propios validados", 0, help="Sin modelo entrenado/calibrado")
     st.caption("Informe generado " + report["generated_at_utc"] +
                " UTC · Fuentes: Covers y ESPN · Precios sujetos a cambios.")
+    st.markdown("#### Selecciones de referencia de Covers para hoy")
+    selected = morning_covers_picks(report)
+    if selected:
+        st.caption("Hasta 3 por liga, ordenadas por diferencia de marcador proyectada. "
+                   "No es una clasificación por probabilidad de acertar ni por ventaja de apuesta. "
+                   "Los momios son los de Covers cuando se generó el informe, "
+                   "no cotizaciones en vivo.")
+        st.dataframe(selected, use_container_width=True, hide_index=True,
+                     column_config={
+                         "Fuente": st.column_config.LinkColumn("Origen Covers"),
+                     })
+    else:
+        st.info("No hay selecciones de referencia prepartido con moneyline publicado "
+                "y verificable para hoy. Puedes consultar el partido en Picks "
+                "o esperar nuevas publicaciones de Covers.")
+    st.warning("Estos son ganadores favorecidos por los marcadores proyectados de Covers, "
+               "NO picks validados de Sports Edge AI ni apuestas con rentabilidad demostrada.")
     with st.expander("Abrir partidos y referencias del informe matutino", expanded=True):
         if rows:
             st.dataframe(rows, use_container_width=True, hide_index=True)
