@@ -4,7 +4,6 @@ from __future__ import annotations
 from datetime import date
 
 from .pick_context import match_espn_event
-from .pick_reference import covers_projection
 
 
 def live_picks_catalog(covers_events: list[dict], boards: dict[str, list[dict]],
@@ -60,7 +59,6 @@ def pick_catalog_rows(events: list[dict]) -> list[dict]:
     """UI data: original moneylines, not projection percentages disguised as odds."""
     rows = []
     for game in events:
-        signal = covers_projection(game)
         away, _, home = game["partido"].partition(" @ ")
         away_ml = game.get("momio_visitante")
         home_ml = game.get("momio_local")
@@ -70,7 +68,6 @@ def pick_catalog_rows(events: list[dict]) -> list[dict]:
             "Hora CDMX": game["hora_cdmx"],
             "ML visitante": str(away_ml) if away_ml else "—",
             "ML local": str(home_ml) if home_ml else "—",
-            "Favorece Covers": signal["equipo_proyectado"] if signal else "—",
             "Estado": game.get("estado", "—"),
             "Fuente": game.get("origen", "Covers"),
         })
