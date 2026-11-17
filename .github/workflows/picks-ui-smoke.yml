@@ -26,5 +26,7 @@ jobs:
         run: PYTHONPATH=. python scripts/smoke_parlay_ui.py
       - name: Probar asistente natural sin API
         run: PYTHONPATH=. python scripts/smoke_assistant_ui.py
+      - name: Comprobar simulaciones con resultados históricos ESPN y estadio NFL
+        run: PYTHONPATH=. python scripts/smoke_simulator_ui.py
       - name: Comprobar entrada de apuesta y bank en Streamlit
         run: PYTHONPATH=. python scripts/smoke_ledger_ui.py
