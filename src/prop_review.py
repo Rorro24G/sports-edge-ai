@@ -13,6 +13,8 @@ def matching_player_game(player: dict, games: list[dict],
                          target: date) -> dict | None:
     """Unique scheduled game containing the ESPN roster team ID."""
     team_id = str(player.get("team_id") or "")
+    if not team_id:
+        return None
     possible = [
         g for g in games if g.get("sport") == "NBA"
         and team_id in (str(g.get("away_team_id") or ""),
@@ -35,6 +37,8 @@ def player_prop_review(player: dict, history: list[dict],
         risks.append("Muestra inferior a 5 partidos anteriores; insuficiente para una tendencia sólida.")
     if player.get("injuries"):
         risks.append("ESPN publica reportes de lesión para este jugador; revisa su disponibilidad.")
+    if not player.get("injuries"):
+        risks.append("Sin lesión reportada en esta consulta de plantilla; no confirma disponibilidad ni minutos.")
     status = str(player.get("status") or "").strip()
     if status and status.lower() not in ("active", "activo"):
         risks.append("Estado de plantilla ESPN: " + status + "; no confirma que vaya a jugar.")
@@ -72,3 +76,4 @@ def player_prop_review(player: dict, history: list[dict],
         "recommendation": None,
         "reason_unvalidated": "Sin modelo predictivo validado por resultados fuera de muestra.",
     }
+
