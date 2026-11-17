@@ -202,45 +202,40 @@ with analysis_tab:
             right.metric("Proyección local · Covers",
                          str(game["proyeccion_local"])
                          if game["proyeccion_local"] is not None else "No disponible")
-            st.markdown("**Mercados publicados por Covers**")
-            st.write({
-                "Moneyline visitante": game.get("momio_visitante") or "Sin momio verificable",
-                "Moneyline local": game.get("momio_local") or "Sin momio verificable",
-                "Over/under": game["totales_publicados"] or "Sin datos extraíbles",
-                "Hándicaps": game["spreads_publicados"] or "Sin datos extraíbles",
-                "Porcentajes de Covers": game["probabilidades_publicadas"] or "No publicados en esta ficha",
-                "Tipo de cifras": game["tipo_mercados"],
-            })
+            from src.pick_evidence_ui import render_covers_evidence
+            render_covers_evidence(game)
             from src.market_summary import game_market_probabilities
             market_p = game_market_probabilities(game)
-            st.markdown("**Probabilidad implícita de los momios publicados por Covers**")
-            p1, p2 = st.columns(2)
-            p1.metric("Visitante · umbral de equilibrio",
-                      f"{market_p['visitante']:.2f}%" if market_p["visitante"] is not None else "Sin momio")
-            p2.metric("Local · umbral de equilibrio",
-                      f"{market_p['local']:.2f}%" if market_p["local"] is not None else "Sin momio")
-            st.caption(
-                "Estos porcentajes se calculan únicamente a partir del precio americano; "
-                "NO son la probabilidad de acierto de Sports Edge AI ni de Covers. "
-                "Pueden incluir margen de la casa y proceder de operadores diferentes."
-            )
-            st.markdown("**Momios por casa de apuestas (fuente independiente)**")
-            api_key = safe_odds_key()
-            if not api_key:
-                st.info("Sin proveedor de cuotas en tiempo real configurado. Los momios visibles arriba son exclusivamente los que Covers publicó; para comparar casas falta ODDS_API_KEY en los secretos privados de Streamlit.")
+            st.markdown("**Probabilidad implícita del moneyline (solo si hay momio real)**")
+            if all(value is None for value in market_p.values()):
+                st.caption("Sin moneyline verificable para ambos equipos; "
+                           "no es posible calcular un umbral real de equilibrio. "
+                           "Las proyecciones porcentuales de Covers no son momios.")
             else:
-                from src.match_report import verified_market_rows
-                try:
-                    market_rows = cached_odds(api_key, (game["liga"],), request.target_date)
-                except (OddsAPIError, ValueError) as exc:
-                    st.warning("No se pudieron actualizar momios externos: " + str(exc))
+                p1, p2 = st.columns(2)
+                if market_p["visitante"] is not None:
+                    p1.metric("Visitante · umbral de equilibrio", f"{market_p['visitante']:.2f}%")
+                if market_p["local"] is not None:
+                    p2.metric("Local · umbral de equilibrio", f"{market_p['local']:.2f}%")
+                st.caption("Calculado exclusivamente a partir del precio americano, con "
+                           "posible margen del operador. NO es nuestra probabilidad de acierto.")
+            with st.expander("Comparación opcional de casas (necesita proveedor externo)", expanded=False):
+                api_key = safe_odds_key()
+                if not api_key:
+                    st.info("Sin proveedor de cuotas en tiempo real configurado. Los momios visibles arriba son exclusivamente los que Covers publicó; para comparar casas falta ODDS_API_KEY en los secretos privados de Streamlit.")
                 else:
-                    confirmed = verified_market_rows(game, market_rows)
-                    if confirmed:
-                        st.dataframe(confirmed, use_container_width=True, hide_index=True)
-                        st.caption("Momios americanos de The Odds API; consulta con caché máxima de cinco minutos. Comprueba hora de actualización y casa antes de usarlos. No son probabilidades estimadas por nuestra IA.")
+                    from src.match_report import verified_market_rows
+                    try:
+                        market_rows = cached_odds(api_key, (game["liga"],), request.target_date)
+                    except (OddsAPIError, ValueError) as exc:
+                        st.warning("No se pudieron actualizar momios externos: " + str(exc))
                     else:
-                        st.info("No hay momios externos que coincidan inequívocamente con ambos equipos, liga y hora de este partido. No se mostrarán cuotas de otro encuentro.")
+                        confirmed = verified_market_rows(game, market_rows)
+                        if confirmed:
+                            st.dataframe(confirmed, use_container_width=True, hide_index=True)
+                            st.caption("Momios americanos de The Odds API; consulta con caché máxima de cinco minutos. Comprueba hora de actualización y casa antes de usarlos. No son probabilidades estimadas por nuestra IA.")
+                        else:
+                            st.info("No hay momios externos que coincidan inequívocamente con ambos equipos, liga y hora de este partido. No se mostrarán cuotas de otro encuentro.")
             st.link_button("Ver análisis original en Covers", game["fuente"])
             st.markdown("**Dinero apostado, boletos y actividad de Las Vegas**")
             st.info(
@@ -319,12 +314,12 @@ with analysis_tab:
                 "Las rachas completas de 5/10/15 partidos, estados médicos específicos "
                 "y noticias de entrenadores requieren fuentes adicionales verificadas."
             )
-            st.markdown("**Picks de Sports Edge AI**")
-            st.warning(
-                "Aún no hay picks propios respaldados por probabilidades calibradas, "
-                "momios contrastados ni simulaciones ajustadas a datos reales. "
-                "No se asignará ventaja ni tamaño de apuesta inventado."
-            )
+            st.markdown("**Validación de Picks de Sports Edge AI**")
+            st.caption("La selección de referencia anterior es únicamente una lectura del marcador "
+                       "proyectado por Covers. Para promoverla a pick propio se requiere backtesting, "
+                       "calibración y momios comparables de la misma fecha y mercado.")
+            st.warning("PICKS PROPIOS PENDIENTES DE VALIDACIÓN. No se atribuye probabilidad, "
+                       "EV, rentabilidad ni tamaño de apuesta a esta proyección externa.")
         else:
             if published and specific_request:
                 st.warning(
