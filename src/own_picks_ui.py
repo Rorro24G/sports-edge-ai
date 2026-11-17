@@ -17,11 +17,21 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
             p2.metric("Momio publicado · Covers", item.get("market_price") or "—")
             p3.metric("Juegos ESPN analizados",
                       str(item["away_games"]) + " / " + str(item["home_games"]))
-            if not compact:
-                st.caption("Marcador estimado SEAI: "
-                           + str(item["predicted_away"]) + " - "
-                           + str(item["predicted_home"])
-                           + " · ajuste de localía y forma reciente")
+            st.caption("Marcador estimado SEAI: "
+                       + str(item["predicted_away"]) + " - "
+                       + str(item["predicted_home"])
+                       + " · forma reciente y defensa rival")
+            if item.get("evidence"):
+                with st.expander("Cómo razonó el cerebro", expanded=False):
+                    st.markdown("**Pruebas independientes de la elección**")
+                    for label, value in item["evidence"].items():
+                        st.write(label + ": " + f"{value:+.2f}" +
+                                 " puntos de margen local")
+                    st.caption("Robustez de la elección: " +
+                               f"{item.get('stability',0):.0%}" +
+                               " en pruebas de sensibilidad. "
+                               "No es una tasa de acierto.")
+                    st.caption(item.get("reason", ""))
             st.caption("Estimación NO calibrada: no demuestra ventaja ni valor esperado. "
                        "Sin recomendación de importe.")
             if item.get("espn_url", "").startswith("https://"):
@@ -29,7 +39,7 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
             if item.get("market_source", "") and item["market_source"].startswith("https://"):
                 st.link_button("Momios Covers", item["market_source"])
     elif status == "PASAR":
-        st.caption("Sports Edge AI: sin selección propia · el encuentro está demasiado equilibrado.")
+        st.caption("Sports Edge AI: PASAR. " + item.get("reason", "Señales contradictorias."))
     else:
         st.caption("Sports Edge AI: sin selección · " +
                    str(item.get("reason") or "sin datos suficientes"))

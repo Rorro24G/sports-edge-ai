@@ -89,41 +89,49 @@ def _scene(sport: str, away_name: str, home_name: str,
     return f"""
 <style>
 .sim-stadium {{
- background:linear-gradient(145deg,#091d24,#061018 70%);
- border-radius:19px;border:1px solid #2e655c;
- box-shadow:0 14px 38px #0006;overflow:hidden;margin:.8rem 0;
+ position:relative;overflow:hidden;margin:1rem 0 1.3rem;
+ background:radial-gradient(ellipse at 50% 15%,#481224 0%,#0d0814 65%,#05050a 100%);
+ border:1px solid #8c3b5b;border-radius:24px;
+ box-shadow:0 15px 42px #0009,inset 0 0 45px #ff285410;
+ color:#ffeff3;font-family:system-ui,-apple-system,sans-serif;
+}}
+.sim-stadium::before {{
+ content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(110deg,transparent 10%,#ff3a6420 33%,transparent 55%);
+ animation:sim-sheen 7s linear infinite;z-index:1;
 }}
 .sim-scoretop {{display:flex;justify-content:space-between;align-items:center;
- gap:1rem;padding:18px 24px;background:linear-gradient(90deg,#132833,#122b28);
- color:#eafff2;flex-wrap:wrap}}
-.sim-name {{font-size:1rem;font-weight:800;letter-spacing:.03em}}
-.sim-score {{font-size:1.4rem;color:#b9ffdf;font-weight:900}}
-.sim-sub {{font-size:.72rem;letter-spacing:.12em;color:#8ccbbc}}
-.sim-stage {{padding:18px 18px 10px;background:
- radial-gradient(ellipse at 50% 30%,#19473a 0%,#071b1f 75%);
+ gap:1rem;padding:19px 23px;background:linear-gradient(110deg,#2d0d1ad9,#120d1fe5);
+ flex-wrap:wrap;position:relative;z-index:2}}
+.sim-name {{font-size:clamp(14px,2vw,23px);font-weight:900;letter-spacing:.02em}}
+.sim-score {{font-size:clamp(29px,4vw,44px);color:#ff6e8b;font-weight:900;
+ text-shadow:0 0 18px #ff305bbd;font-variant-numeric:tabular-nums}}
+.sim-sub {{font-size:10px;letter-spacing:.15em;color:#d79bae;font-weight:800}}
+.sim-stage {{padding:18px 18px 6px;background:radial-gradient(ellipse at 50% 32%,#59233b 0%,#160e1d 68%,#0b0812 100%);
  display:flex;justify-content:center;overflow:hidden}}
 .sim-stage svg {{width:100%;max-width:800px;aspect-ratio:800/280;
- filter:drop-shadow(0 15px 12px #0007)}}
-.sim-ball {{animation:ball-demo 4.6s ease-in-out infinite;
+ filter:drop-shadow(0 17px 13px #0009);animation:sim-camera 6s ease-in-out infinite}}
+.sim-ball {{animation:ball-demo 3.2s ease-in-out infinite;
  transform-origin:center;transform-box:fill-box}}
-.sim-players {{animation:attacking-demo 4.6s ease-in-out infinite}}
-.sim-defense {{animation:defending-demo 4.6s ease-in-out infinite}}
-.sim-footer {{padding:13px 20px;background:#0b2626;color:#b7ddcf;
- font-size:.74rem;border-top:1px solid #24554d}}
+.sim-players {{animation:attacking-demo 3.2s ease-in-out infinite}}
+.sim-defense {{animation:defending-demo 3.2s ease-in-out infinite}}
+.sim-footer {{padding:14px 22px;background:#120a17;color:#d7a3b4;
+ font-size:11px;border-top:1px solid #82354a;position:relative;z-index:2}}
+@keyframes sim-sheen {{0%{{transform:translateX(-130%)}}100%{{transform:translateX(130%)}}}}
+@keyframes sim-camera {{0%,100%{{transform:scale(1)}}50%{{transform:scale(1.035)}}}}
 @keyframes ball-demo {{
  0%,100%{{transform:translate(0,0)}}
- 35%{{transform:translate(40px,-35px)}}
- 70%{{transform:translate(90px,8px)}}
+ 40%{{transform:translate(40px,-35px)}}
+ 75%{{transform:translate(93px,7px)}}
 }}
 @keyframes attacking-demo {{
  0%,100%{{transform:translateX(0)}}45%{{transform:translateX(22px)}}
 }}
 @keyframes defending-demo {{
- 0%,100%{{transform:translate(-0px,0px)}}
- 55%{{transform:translate(-24px,-2px)}}
+ 0%,100%{{transform:translate(0,0)}}55%{{transform:translate(-24px,-2px)}}
 }}
 @media(prefers-reduced-motion:reduce){{
- .sim-ball,.sim-players,.sim-defense{{animation:none}}
+ .sim-ball,.sim-players,.sim-defense,.sim-stadium::before,.sim-stage svg{{animation:none}}
 }}
 </style>
 <div class="sim-stadium">
@@ -148,33 +156,76 @@ def _scene(sport: str, away_name: str, home_name: str,
 """
 
 
+
+def _distribution_meter(result: SimulationResult) -> str:
+    over = min(100, max(0, 100 * result.over_probability))
+    under = min(100, max(0, 100 * result.under_probability))
+    home = min(100, max(0, 100 * result.home_win_probability))
+    return f"""
+<style>
+.sim-meters {{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
+ margin:18px 0;color:#f8e7ec;font-family:system-ui,-apple-system,sans-serif}}
+.sim-meter {{padding:16px;border:1px solid #643044;border-radius:17px;
+ background:linear-gradient(145deg,#25101a,#100a10);min-width:0}}
+.sim-meter .meta {{font-size:11px;color:#c997a7;letter-spacing:.08em}}
+.sim-meter .value {{font-size:27px;font-weight:900;color:#ff7a99;margin:8px 0;
+ font-variant-numeric:tabular-nums}}
+.sim-meter .track {{height:8px;border-radius:20px;background:#4b2836;overflow:hidden}}
+.sim-meter .fill {{height:100%;border-radius:20px;background:linear-gradient(90deg,#ff355f,#ffa4b5);
+ box-shadow:0 0 17px #ff5071;position:relative;overflow:hidden}}
+.sim-meter .fill:after {{content:"";position:absolute;inset:0;
+ background:linear-gradient(90deg,transparent,#ffffff88,transparent);
+ animation:sim-fill-shine 3s linear infinite}}
+@keyframes sim-fill-shine {{from{{transform:translateX(-100%)}}to{{transform:translateX(100%)}}}}
+@media(max-width:620px){{.sim-meters{{grid-template-columns:1fr}}}}
+@media(prefers-reduced-motion:reduce){{.sim-meter .fill:after{{animation:none}}}}
+</style>
+<section class="sim-meters" aria-label="Resultados del laboratorio Monte Carlo">
+ <div class="sim-meter"><div class="meta">TOTAL · OVER</div>
+  <div class="value">{over:.1f}%</div>
+  <div class="track"><div class="fill" style="width:{over:.1f}%"></div></div>
+ </div>
+ <div class="sim-meter"><div class="meta">TOTAL · UNDER</div>
+  <div class="value">{under:.1f}%</div>
+  <div class="track"><div class="fill" style="width:{under:.1f}%"></div></div>
+ </div>
+ <div class="sim-meter"><div class="meta">LOCAL GANA · SIMULADO</div>
+  <div class="value">{home:.1f}%</div>
+  <div class="track"><div class="fill" style="width:{home:.1f}%"></div></div>
+ </div>
+</section>
+"""
+
+
 def render_results(scenario: GameScenario, result: SimulationResult, *,
                    away_name: str = "Visitante", home_name: str = "Local",
                    source_note: str = "Parámetros hipotéticos") -> None:
     import streamlit as st
-    st.markdown(_scene(scenario.sport, away_name, home_name,
-                       scenario.away_mean, scenario.home_mean),
-                unsafe_allow_html=True)
-    st.caption(source_note + " · Distribución normal bivariada con truncamiento "
-               "y redondeo; parámetros no calibrados frente a resultados.")
-    a, b, c, d = st.columns(4)
-    a.metric("Over simulado", f"{result.over_probability:.1%}")
-    b.metric("Under simulado", f"{result.under_probability:.1%}")
-    c.metric("Push simulado", f"{result.push_probability:.1%}")
-    d.metric("Total medio", f"{result.simulated_mean_total:.1f}")
-    st.markdown("**Distribución de los 10.000 marcadores simulados**")
+    # CRITICAL: Do not pass HTML/SVG to st.markdown. st.html renders the
+    # presentation instead of exposing HTML source as ugly Markdown/code.
+    st.html(_scene(scenario.sport, away_name, home_name,
+                   scenario.away_mean, scenario.home_mean))
+    st.html(_distribution_meter(result))
+    a, b, c = st.columns(3)
+    a.metric("Total medio", f"{result.simulated_mean_total:.1f}")
+    b.metric("Rango central 80%", f"{result.simulated_p10_total} – {result.simulated_p90_total}")
+    c.metric("Línea estudiada", f"{scenario.total_line:g}")
+    st.markdown("#### Distribución de 10,000 escenarios")
     st.bar_chart(result.histogram, x="Puntos", y="Frecuencia",
                  use_container_width=True)
-    st.caption(
-        f"Percentiles del escenario: 10.º = {result.simulated_p10_total} puntos, "
-        f"mediana = {result.simulated_median_total}, "
-        f"90.º = {result.simulated_p90_total}. "
-        f"Margen Monte Carlo de over (solo muestreo): "
-        f"±{result.over_mc_margin_95:.1%}. "
-        "NO es un intervalo de confianza de la predicción."
-    )
-    st.warning(
-        "NO ES PICK VALIDADO: el simulador genera escenarios matemáticos, "
-        "no probabilidades de apuestas calibradas ni garantías de resultado. "
-        "No asigna stakes ni asume un momio del mercado."
-    )
+    method = ("Muestreo empírico de marcadores ESPN previos + variación residual"
+              if result.simulation_method == "BOOTSTRAP_ESPN_RECIENTE"
+              else "Distribución normal exploratoria")
+    st.caption(source_note + " · " + method + " · no calibrado.")
+    with st.expander("Precisión del simulador y supuestos", expanded=False):
+        st.caption(
+            f"Mediana {result.simulated_median_total} puntos. "
+            f"Over {result.over_probability:.1%} · Under {result.under_probability:.1%} "
+            f"· Push {result.push_probability:.1%}. "
+            f"Error de muestreo Monte Carlo del over: ±{result.over_mc_margin_95:.1%}. "
+            "Este error no contempla fallas del modelo ni incertidumbre en parámetros."
+        )
+        st.caption(
+            "NO ES PICK VALIDADO. El simulador no calcula ventaja ni recomienda "
+            "apuestas. El campo y los jugadores son ilustrativos, no un replay."
+        )

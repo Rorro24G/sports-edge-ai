@@ -11,7 +11,7 @@ from zoneinfo import ZoneInfo
 import streamlit as st
 
 from .live_board import CalendarSourceError
-from .team_form import TeamFormError, recent_team_form, scenario_from_forms
+from .team_form import TeamFormError, recent_team_form, scenario_from_history
 from .simulations import GameScenario, simulate_totals
 from .simulation_view import render_results
 
@@ -19,11 +19,10 @@ LOCAL = ZoneInfo("America/Mexico_City")
 
 
 def render(*, board_fetch, team_fetch) -> None:
-    st.subheader("Escenario real · resultados históricos ESPN")
+    st.markdown("## Laboratorio de simulaciones")
     st.caption(
-        "Elige partido y fecha: recuperamos los resultados anteriores de ambos "
-        "equipos y generamos 10.000 marcadores hipotéticos. "
-        "No es una simulación jugada a jugada ni una probabilidad calibrada."
+        "10,000 escenarios de puntuación a partir de resultados ESPN anteriores "
+        "al partido: ataque, defensa rival, forma reciente, localía y descanso."
     )
     c1, c2 = st.columns([1, 2])
     with c1:
@@ -83,10 +82,24 @@ def render(*, board_fetch, team_fetch) -> None:
         try:
             away_data = team_fetch(league, away_id, day)
             home_data = team_fetch(league, home_id, day)
-            away_form = recent_team_form(away_data["games"], last=10, minimum=5)
-            home_form = recent_team_form(home_data["games"], last=10, minimum=5)
-            params = scenario_from_forms(
-                league, away_form, home_form, total_line=float(line)
+            # Defend against unexpectedly broad or stale connector results.
+            from datetime import date
+            def before_game(entries):
+                rows = []
+                for row in entries:
+                    try:
+                        if date.fromisoformat(str(row["date"])) < day:
+                            rows.append(row)
+                    except (ValueError, TypeError, KeyError):
+                        continue
+                return rows
+            away_games = before_game(away_data["games"])
+            home_games = before_game(home_data["games"])
+            away_form = recent_team_form(away_games, last=12, minimum=6)
+            home_form = recent_team_form(home_games, last=12, minimum=6)
+            params = scenario_from_history(
+                league, away_games, home_games,
+                before=day, total_line=float(line),
             )
             allowed = {field for field in GameScenario.__dataclass_fields__}
             scenario = GameScenario(**{k: v for k, v in params.items() if k in allowed})
@@ -117,33 +130,31 @@ def render(*, board_fetch, team_fetch) -> None:
         away_name=analysis["away_name"], home_name=analysis["home_name"],
         source_note="Estadísticas de los últimos partidos de temporada regular ESPN",
     )
-    st.markdown("#### Cómo calculamos este escenario")
-    st.write(analysis["method"])
-    a, b = st.columns(2)
-    for col, side, label in (
-        (a, analysis["away_form"], analysis["away_name"]),
-        (b, analysis["home_form"], analysis["home_name"]),
-    ):
-        with col:
-            st.markdown("**" + label + "**")
-            st.metric("Partidos históricos", side["partidos"])
-            st.metric("Puntos a favor por partido",
-                      f"{side['puntos_anotados_media']:.2f}")
-            st.metric("Puntos concedidos por partido",
-                      f"{side['puntos_recibidos_media']:.2f}")
-            st.caption("Racha reciente (W/L): " + side["racha"])
-            st.dataframe(
-                [{"Fecha CDMX": r["date"], "Rival": r["opponent"],
-                  "Anotados": r["points_for"], "Recibidos": r["points_against"],
-                  "Resultado": r["result"]}
-                 for r in side["partidos_reales"]],
-                hide_index=True, use_container_width=True,
-            )
-    st.link_button("Origen del historial visitante (ESPN)", analysis["away_source"])
-    st.link_button("Origen del historial local (ESPN)", analysis["home_source"])
-    st.warning(
-        "Los 10.000 sorteos son un modelo experimental de puntuación, NO un "
-        "sistema entrenado y calibrado para apostar. Las lesiones, el descanso, "
-        "los esquemas y la correlación real no están modelados. No calcula EV "
-        "ni porcentaje de bank recomendado."
+    with st.expander("Qué datos utilizó el simulador", expanded=False):
+        st.caption(analysis["method"])
+        a, b = st.columns(2)
+        for col, side, label in (
+            (a, analysis["away_form"], analysis["away_name"]),
+            (b, analysis["home_form"], analysis["home_name"]),
+        ):
+            with col:
+                st.markdown("**" + label + "**")
+                st.metric("Partidos anteriores", side["partidos"])
+                st.metric("Puntos anotados / partido",
+                          f"{side['puntos_anotados_media']:.1f}")
+                st.metric("Puntos concedidos / partido",
+                          f"{side['puntos_recibidos_media']:.1f}")
+                st.caption("Últimos resultados: " + side["racha"])
+                st.dataframe([
+                    {"Fecha CDMX": r["date"], "Rival": r.get("opponent", "—"),
+                     "A favor": r["points_for"], "En contra": r["points_against"],
+                     "Resultado": r.get("result", "—")}
+                    for r in side["partidos_reales"]
+                ], hide_index=True, use_container_width=True)
+        st.link_button("Historial visitante (ESPN)", analysis["away_source"])
+        st.link_button("Historial local (ESPN)", analysis["home_source"])
+    st.caption(
+        "Es un escenario estadístico experimental, no una reproducción de "
+        "jugadas reales ni un modelo calibrado para apostar. "
+        "Las lesiones y alineaciones del día aún no están modeladas."
     )

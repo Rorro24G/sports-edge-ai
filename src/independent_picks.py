@@ -10,16 +10,16 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
-from math import erf, isfinite, sqrt
-from statistics import mean, stdev
+from math import isfinite
 from zoneinfo import ZoneInfo
 
 from .market_summary import implied_percent
 from .pick_context import match_espn_event
 from .team_form import TeamFormError
+from .pick_judgement import judge
 
 MX = ZoneInfo("America/Mexico_City")
-VERSION = "SEAI-FORMA-0.1"
+VERSION = "SEAI-JUICIO-0.2"
 # Home edge and variance floors are transparent *hypotheses*; not fitted.
 SPEC = {
     "NBA": {"min_games": 7, "home_bonus": 2.0, "floor_sd": 13.0, "window": 10},
@@ -72,11 +72,6 @@ def _history(raw: dict | None, target: date, window: int) -> list[dict]:
     return [row for _, row in good[:window]]
 
 
-def _weighted(values: list[float]) -> float:
-    weights = [.86 ** i for i in range(len(values))]
-    return sum(v * w for v, w in zip(values, weights)) / sum(weights)
-
-
 def predict_from_results(sport: str, away: str, home: str,
                          away_data: dict, home_data: dict, target: date) -> dict:
     """Make an independent directional choice with pregame ESPN evidence only."""
@@ -93,44 +88,20 @@ def predict_from_results(sport: str, away: str, home: str,
             "away_games": len(away_games), "home_games": len(home_games),
             "version": VERSION,
         }
-    af = _weighted([r["points_for"] for r in away_games])
-    aa = _weighted([r["points_against"] for r in away_games])
-    hf = _weighted([r["points_for"] for r in home_games])
-    ha = _weighted([r["points_against"] for r in home_games])
-    # Both offenses are contrasted against the opposing defenses.
-    away_pts = .5 * (af + ha)
-    home_pts = .5 * (hf + aa) + cfg["home_bonus"]
-    # Spread of game margins is wider than a score's isolated variance;
-    # use observed margins with an explicit sport-specific uncertainty floor.
-    a_margin_sd = stdev([r["points_for"] - r["points_against"] for r in away_games])
-    h_margin_sd = stdev([r["points_for"] - r["points_against"] for r in home_games])
-    sd = max(cfg["floor_sd"], sqrt((a_margin_sd ** 2 + h_margin_sd ** 2) / 2))
-    p_home = .5 * (1 + erf((home_pts - away_pts) / (sd * sqrt(2))))
-    p_home = min(.99, max(.01, p_home))
-    side = "local" if p_home > .5 else "visitante"
-    p_selected = p_home if side == "local" else 1 - p_home
-    # Minimum separation avoids manufacturing picks for near coin-flips.
-    candidate = p_selected >= .57
-    return {
-        "status": "CANDIDATO_EXPERIMENTAL" if candidate else "PASAR",
-        "team": home if side == "local" else away,
-        "side": side,
-        "probability_experimental": round(p_selected, 4),
-        "probability_home_experimental": round(p_home, 4),
-        "predicted_home": round(home_pts, 1),
-        "predicted_away": round(away_pts, 1),
-        "margin_experimental": round(abs(home_pts - away_pts), 1),
+    verdict = judge(away_games, home_games, sport=sport,
+                    config=cfg, target=target)
+    verdict.update({
+        "team": home if verdict["side"] == "local" else away,
         "away_games": len(away_games),
         "home_games": len(home_games),
-        "reason": ("Señal estadística propia con ventaja direccional"
-                   if candidate else "Partido demasiado equilibrado para seleccionar"),
+        "reason": verdict.pop("status_reason"),
         "version": VERSION,
         "model_validated": False,
         "calibrated": False,
         "stake": 0,
         "source": "ESPN team schedules",
-    }
-
+    })
+    return verdict
 
 def evaluate_game(game: dict, target: date, *,
                   team_fetch, now: datetime | None = None) -> dict:
@@ -199,9 +170,9 @@ def add_covers_price(result: dict, original_game: dict,
 def build_slate(boards: dict[str, list[dict]], target: date, *,
                 team_fetch, covers_events: list[dict] | None = None,
                 now: datetime | None = None,
-                per_league: int = 5) -> dict:
+                per_league: int = 12) -> dict:
     """Evaluate future ESPN games, not the favorites named on Covers."""
-    if not 1 <= per_league <= 8:
+    if not 1 <= per_league <= 16:
         raise ValueError("per_league fuera de rango")
     fixtures = []
     total = 0
@@ -232,7 +203,12 @@ def build_slate(boards: dict[str, list[dict]], target: date, *,
             out.append(add_covers_price(result, game, covers_events or [], target))
     out.sort(key=lambda r: (r.get("sport", ""), r.get("time", ""), r.get("event_id", "")))
     candidates = [r for r in out if r.get("status") == "CANDIDATO_EXPERIMENTAL"]
-    candidates.sort(key=lambda r: r.get("probability_experimental", 0), reverse=True)
+    candidates.sort(key=lambda r: (
+        -r.get("stability", 0),
+        -r.get("probability_experimental", 0),
+        -r.get("margin_experimental", 0),
+        r.get("time", ""),
+    ))
     return {"picks": candidates, "evaluated": out,
             "eligible_games": total, "model": VERSION,
             "status": "EXPERIMENTAL_SIN_BACKTEST_VALIDADO"}

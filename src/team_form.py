@@ -167,6 +167,115 @@ def scenario_from_forms(sport: str, away: dict, home: dict,
     }
 
 
+def scenario_from_history(sport: str, away_games: list[dict], home_games: list[dict],
+                          *, before: date, total_line: float) -> dict:
+    """Model a score distribution from prior verified ESPN history.
+
+    Unlike a plain season mean, this uses recency, the opposing defense,
+    game-to-game variability, and actual home/away splits when supported.
+    Locality and recovery adjustments are explicit hypotheses, NOT learned.
+    """
+    from math import sqrt
+
+    if sport not in ("NFL", "NBA"):
+        raise ValueError("La simulación real admite NBA y NFL")
+    if isinstance(total_line, bool) or not isinstance(total_line, (float, int)) or not isfinite(total_line):
+        raise ValueError("Línea de puntos no válida")
+    if not 0 <= total_line <= 400:
+        raise ValueError("Línea de puntos fuera de rango")
+    def clean(games):
+        result = []
+        used = set()
+        for row in games:
+            if not isinstance(row, dict):
+                continue
+            try:
+                stamp = date.fromisoformat(str(row["date"]))
+                pf, pa = float(row["points_for"]), float(row["points_against"])
+                event_id = str(row["event_id"])
+            except (ValueError, TypeError, KeyError):
+                continue
+            if (stamp >= before or event_id in used or not event_id
+                    or not (isfinite(pf) and isfinite(pa))
+                    or min(pf, pa) < 0 or max(pf, pa) > 300):
+                continue
+            used.add(event_id)
+            result.append((stamp, row))
+        result.sort(key=lambda x: (x[0], str(x[1]["event_id"])), reverse=True)
+        return [row for _, row in result[:12]]
+    away = clean(away_games)
+    home = clean(home_games)
+    if len(away) < 6 or len(home) < 6:
+        raise ValueError("Se requieren al menos seis resultados ESPN anteriores por equipo")
+
+    def weight_avg(values):
+        weights = [0.88 ** i for i in range(len(values))]
+        return sum(w * x for w, x in zip(weights, values)) / sum(weights)
+
+    def averages(games):
+        scored = [float(x["points_for"]) for x in games]
+        allowed = [float(x["points_against"]) for x in games]
+        return weight_avg(scored), weight_avg(allowed), stdev(scored), stdev(allowed)
+    af, aa, asd, aad = averages(away)
+    hf, ha, hsd, had = averages(home)
+    means = [
+        (af + ha) / 2,
+        (hf + aa) / 2,
+    ]
+    notes = ["Ataque propio vs defensa rival (ponderación reciente, máximo 12 juegos)"]
+    away_venue = [r for r in away if r.get("home") is False]
+    home_venue = [r for r in home if r.get("home") is True]
+    if len(away_venue) >= 3 and len(home_venue) >= 3:
+        # Small venue split adjustment: each venue sample is noisy and may
+        # share games with the unconditional estimate.
+        venue_away = weight_avg([float(r["points_for"]) for r in away_venue])
+        venue_home = weight_avg([float(r["points_for"]) for r in home_venue])
+        adjustment_cap = 2.0 if sport == "NBA" else 1.0
+        means[0] += max(-adjustment_cap, min(adjustment_cap, (venue_away - af) * .25))
+        means[1] += max(-adjustment_cap, min(adjustment_cap, (venue_home - hf) * .25))
+        notes.append("Ajuste pequeño de localía con 3+ partidos reales por condición")
+    else:
+        notes.append("Sin ajuste de localía: muestra en sede insuficiente")
+
+    # Hypothesis: fatigue matters only when recovery time is imbalanced.
+    # The size is bounded and intentionally modest; no live injury guesses.
+    rest_away = max(0, (before - date.fromisoformat(away[0]["date"])).days - 1)
+    rest_home = max(0, (before - date.fromisoformat(home[0]["date"])).days - 1)
+    if abs(rest_away - rest_home) >= 2:
+        rest_cap = .8 if sport == "NBA" else .6
+        rest_bias = rest_cap if rest_home > rest_away else -rest_cap
+        means[1] += rest_bias
+        notes.append("Ajuste exploratorio de descanso desigual (no calibrado)")
+
+    # Model variability is drawn from both team's own scoring and opposing
+    # defensive allowance, with a floor guarding against tiny samples.
+    sd_floor = 7.0 if sport == "NBA" else 4.5
+    away_sd = max(sd_floor, sqrt(.5 * (asd**2 + had**2)))
+    home_sd = max(sd_floor, sqrt(.5 * (hsd**2 + aad**2)))
+    return {
+        "sport": sport,
+        "away_mean": round(max(0, means[0]), 3),
+        "home_mean": round(max(0, means[1]), 3),
+        "away_sd": round(away_sd, 3),
+        "home_sd": round(home_sd, 3),
+        "score_correlation": 0.0,  # no matched pair correlation estimated
+        "total_line": float(total_line),
+        "simulations": 10_000,
+        "seed": 42,
+        "away_scored": tuple(float(r["points_for"]) for r in away),
+        "away_allowed": tuple(float(r["points_against"]) for r in away),
+        "home_scored": tuple(float(r["points_for"]) for r in home),
+        "home_allowed": tuple(float(r["points_against"]) for r in home),
+        "away_count": len(away),
+        "home_count": len(home),
+        "rest_away": rest_away,
+        "rest_home": rest_home,
+        "status": "HISTORICO_ESPN_PREPARTIDO_NO_CALIBRADO",
+        "method": ". ".join(notes) + ". Se remuestrean marcadores ESPN anteriores y "
+                  "se agrega variación residual; correlación asumida cero, no medida.",
+    }
+
+
 def fetch_team_schedule(sport: str, team_id: str, day: date) -> dict:
     url = schedule_url(sport, team_id, day)
     request = Request(url, headers={
