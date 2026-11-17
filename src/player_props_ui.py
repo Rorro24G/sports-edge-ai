@@ -4,6 +4,8 @@ from __future__ import annotations
 from datetime import date
 import streamlit as st
 
+from .prop_review import matching_player_game, player_prop_review
+from .odds_api import OddsAPIError
 from .player_props import (
     PlayerSourceError, fetch_gamelog, fetch_roster, parse_gamelog,
     parse_player_question, resolve_player_in_games, summarize_prop,
@@ -13,7 +15,8 @@ from .player_props import (
 def render_player_research(question: str, day: date, *,
                            games: list[dict],
                            roster_fetch=fetch_roster,
-                           gamelog_fetch=fetch_gamelog) -> bool:
+                           gamelog_fetch=fetch_gamelog,
+                           prop_odds_fetch=None, prop_api_key: str = "") -> bool:
     """Returns True when a player-stat query was handled."""
     request = parse_player_question(question)
     if request is None:
@@ -53,6 +56,20 @@ def render_player_research(question: str, day: date, *,
         st.link_button("Consultar registros en ESPN",
                        "https://www.espn.com/nba/player/gamelog/_/id/" + player["id"])
         return True
+    matching_game = matching_player_game(player, games, day)
+    offers = []
+    if (prop_api_key and prop_odds_fetch and matching_game
+            and request.line is not None and request.direction):
+        try:
+            offers = prop_odds_fetch(
+                prop_api_key, matching_game, day, player["name"],
+                request.stat, request.direction, request.line,
+            )
+        except (OddsAPIError, ValueError, TypeError) as exc:
+            st.caption("El proveedor de momios no pudo verificar esta línea. "
+                       "No se mostrarán precios sin confirmación.")
+    review = player_prop_review(player, history, request,
+                                game=matching_game, offers=offers)
     stat = summarize_prop(history, request)
     a, b, c = st.columns(3)
     a.metric("Promedio últimos 5", f"{stat['last5']:.1f} {label}")
@@ -87,6 +104,22 @@ def render_player_research(question: str, day: date, *,
                    "https://www.espn.com/nba/player/gamelog/_/id/" + player["id"])
     st.caption("Consulta ESPN: " + info["checked_at_utc"] +
                " UTC. Datos previos al día solicitado; pueden modificarse en origen.")
-    st.warning("Sin momio verificable de este prop ni modelo validado: "
-               "no corresponde recomendar un Over/Under ni asignar % del bank.")
+    if offers:
+        st.markdown("**Momios para exactamente este jugador, línea y mercado**")
+        st.dataframe([
+            {"Casa": o["casa"], "Selección": o["direccion"].title(),
+             "Línea": o["linea"], "Momio americano": o["momio_americano"],
+             "Actualización UTC": o["actualizado_utc"],
+             "Proveedor": o["fuente"]}
+            for o in offers
+        ], hide_index=True, use_container_width=True)
+        st.caption("Precios publicados por el proveedor y sujetos a cambios. "
+                   "Comprobarlos en la casa antes de apostar.")
+    st.link_button("Ver líneas y proyecciones públicas de Covers",
+                   "https://www.covers.com/sport/basketball/nba/player-props")
+    st.markdown("**Factores que faltan para una recomendación fiable**")
+    for item in review["risk_flags"]:
+        st.caption("• " + item)
+    st.warning("No existe todavía probabilidad predictiva calibrada ni EV propio "
+               "para este mercado. No se asigna porcentaje del bank automáticamente.")
     return True
