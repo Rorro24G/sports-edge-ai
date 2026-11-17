@@ -6,7 +6,7 @@ frecuencias históricas de probabilidades futuras y cuotas de casa.
 """
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 import re
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
@@ -105,6 +105,8 @@ def answer_query(
     expanded = _adapt_followup(message, context)
     request = interpret_request(expanded, now=clock)
     target = request.target_date
+    if re.search(r"\bayer\b", q):
+        target = clock.date() - timedelta(days=1)
     if not _is_explicit_date(expanded) and context.get("date_cdmx"):
         try:
             target = date.fromisoformat(context["date_cdmx"])
@@ -153,7 +155,8 @@ def answer_query(
         roi = 100 * profit / n
         return {
             "reply": (
-                f"Auditoría de referencias de Covers: {n} encuentros "
+                f"Auditoría de referencias de Covers: {n} " +
+                ("encuentro " if n == 1 else "encuentros ") +
                 f"verificados por ID con resultado FINAL ESPN. "
                 f"Ganadas {wins}; perdidas {n-wins}; "
                 f"acierto observado {pct:.1f}%. "
