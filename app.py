@@ -206,17 +206,19 @@ with analysis_tab:
             render_covers_evidence(game)
             from src.market_summary import game_market_probabilities
             market_p = game_market_probabilities(game)
-            st.markdown("**Probabilidad implícita de los momios publicados por Covers**")
-            p1, p2 = st.columns(2)
-            p1.metric("Visitante · umbral de equilibrio",
-                      f"{market_p['visitante']:.2f}%" if market_p["visitante"] is not None else "Sin momio")
-            p2.metric("Local · umbral de equilibrio",
-                      f"{market_p['local']:.2f}%" if market_p["local"] is not None else "Sin momio")
-            st.caption(
-                "Estos porcentajes se calculan únicamente a partir del precio americano; "
-                "NO son la probabilidad de acierto de Sports Edge AI ni de Covers. "
-                "Pueden incluir margen de la casa y proceder de operadores diferentes."
-            )
+            st.markdown("**Probabilidad implícita del moneyline (solo si hay momio real)**")
+            if all(value is None for value in market_p.values()):
+                st.caption("Sin moneyline verificable para ambos equipos; "
+                           "no es posible calcular un umbral real de equilibrio. "
+                           "Las proyecciones porcentuales de Covers no son momios.")
+            else:
+                p1, p2 = st.columns(2)
+                if market_p["visitante"] is not None:
+                    p1.metric("Visitante · umbral de equilibrio", f"{market_p['visitante']:.2f}%")
+                if market_p["local"] is not None:
+                    p2.metric("Local · umbral de equilibrio", f"{market_p['local']:.2f}%")
+                st.caption("Calculado exclusivamente a partir del precio americano, con "
+                           "posible margen del operador. NO es nuestra probabilidad de acierto.")
             st.markdown("**Momios por casa de apuestas (fuente independiente)**")
             api_key = safe_odds_key()
             if not api_key:
