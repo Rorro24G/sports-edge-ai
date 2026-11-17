@@ -88,6 +88,9 @@ def extract_exact_prop_offers(event_data: dict, *, player_name: str,
     if stat not in MARKET_KEYS or direction not in ("over", "under"):
         return []
     clock = now or datetime.now(timezone.utc)
+    start = _timestamp(event_data.get("commence_time"))
+    if start is None or start <= clock:
+        return []
     try:
         expected = Decimal(str(line))
         if not expected.is_finite() or expected <= 0:
@@ -124,6 +127,9 @@ def extract_exact_prop_offers(event_data: dict, *, player_name: str,
                 if price is None:
                     continue
                 results.append({
+                    "evento_proveedor": event_data.get("id"),
+                    "inicio_utc": start.astimezone(timezone.utc).isoformat(),
+                    "consultado_utc": clock.astimezone(timezone.utc).isoformat(),
                     "jugador": player_name,
                     "mercado": MARKET_KEYS[stat],
                     "direccion": direction,
@@ -173,3 +179,4 @@ def fetch_player_prop_offers(api_key: str, *, game: dict, target: date,
         data, player_name=player_name, stat=stat,
         direction=direction, line=line, now=clock,
     )
+

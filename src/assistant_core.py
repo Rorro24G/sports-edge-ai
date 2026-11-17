@@ -65,6 +65,17 @@ def _adapt_followup(question: str, previous: dict) -> str:
     previous_player = previous.get("player_name")
     if not previous_player:
         return question
+    # Only a short, unambiguous follow-up inherits the complete market.
+    risk_followup = re.fullmatch(
+        r"(?:y )?(?:(?:las?|los?|su|sus|que) )?"
+        r"(?:lesiones?|riesgos?|disponibilidad|esta lesionado|va a jugar)"
+        r"[?¿! .]*", q.lstrip("¿ ")
+    )
+    if risk_followup and previous.get("player_stat") in _PROP_LABEL:
+        market = _PROP_LABEL[previous["player_stat"]]
+        if previous.get("player_direction") in ("over", "under") and previous.get("player_line") is not None:
+            market = f"{previous['player_direction']} {previous['player_line']} {market}"
+        return market + " de " + previous_player + " NBA"
     # Restrict context carryover to prop follow-ups. Do not append a player to
     # new unrelated matchup or parlay questions.
     if re.search(r"\b(?:parlay|parlays|combinadas?|bank|historial|mi apuesta)\b", q):
@@ -241,19 +252,10 @@ def answer_query(
             return {"reply": "ESPN no entregó el calendario NBA de esta fecha. "
                              "No puedo confirmar el jugador ni sus promedios.",
                     "sources": [], "context": context}
-        player = None
-        if context.get("player_name") and context.get("player_id") and (
-                normalized(context["player_name"]) in normalized(expanded)):
-            player = {
-                "id": context["player_id"], "name": context["player_name"],
-                "team_id": context.get("player_team_id") or "",
-                "injuries": context.get("player_injuries") or [],
-                "status": context.get("player_status") or None,
-            }
-        else:
-            player = resolve_player_in_games(
-                expanded, board["games"], roster_fetch=roster_fetch
-            )
+        # Session memory identifies the subject, never current availability.
+        player = resolve_player_in_games(
+            expanded, board["games"], roster_fetch=roster_fetch
+        )
         if player is None:
             return {"reply": "No pude identificar al jugador de forma única "
                              "en las plantillas NBA de hoy. Dime su nombre "
@@ -307,6 +309,7 @@ def answer_query(
         else:
             response += ("\n\nPara evaluar un Over/Under necesito que indiques "
                          "la línea: «over 24.5 puntos» o «under 8.5 rebotes».")
+        response += "\n\nConsulta del historial ESPN: " + str(source.get("checked_at_utc") or "hora no disponible") + "."
         if matchup:
             response += (
                 "\n\nPartido ESPN: " + matchup["away"] + " @ " + matchup["home"]
@@ -332,6 +335,8 @@ def answer_query(
             "player_injuries": player.get("injuries") or [],
             "player_status": player.get("status"),
             "player_stat": parsed.stat,
+            "player_line": parsed.line,
+            "player_direction": parsed.direction,
             "sport": "NBA",
         })
         return {
@@ -440,3 +445,4 @@ def answer_query(
     return {"reply": "\n\n".join(lines),
             "sources": _trusted_sources([game.get("fuente", "")]),
             "context": context}
+

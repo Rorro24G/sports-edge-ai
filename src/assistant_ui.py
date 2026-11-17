@@ -18,7 +18,7 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
     examples = (
         "«Picks NBA hoy» · «Lakers contra Warriors» · "
         "«Over de 24.5 puntos de Luka Doncic NBA» · "
-        "«¿Y el under de 27.5?» · «Dame 3 parlays de 2 selecciones» · "
+        "«¿Y el under de 27.5?» · «¿Y las lesiones?» · «Dame 3 parlays de 2 selecciones» · "
         "«¿Qué porcentaje de picks de Covers acertaron?»"
     )
     st.caption("Ejemplos: " + examples)
@@ -68,3 +68,4 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
                         "sources": answer.get("sources", [])})
         del history[:-14]
         st.rerun()
+
