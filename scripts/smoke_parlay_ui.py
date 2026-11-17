@@ -30,7 +30,9 @@ for league in ("NBA", "NHL", "NFL"):
     }
 
 with patch("src.brain_dashboard.load_today_snapshot", return_value=report), patch("src.parlay_ui.load_today_snapshot", return_value=report):
-    app = AppTest.from_file("../app.py", default_timeout=45).run()
+    app = AppTest.from_file("../app.py", default_timeout=45)
+    app.session_state["brain_section"] = "parlays"
+    app = app.run()
     assert not app.exception, [str(x.message) for x in app.exception]
     visible = "\n".join(str(x.value) for x in app.markdown)
     assert "Combinadas de referencia" in visible, "Faltan borradores parlays"
