@@ -35,7 +35,7 @@ function run(reduced,page){
  vm.runInNewContext(code,context);
  assert(messages.some(m=>m.type==='streamlit:componentReady'));
  listeners.message({source:parent,data:{type:'streamlit:render',args:{}}});
- if(reduced){elements['motion-toggle'].onclick();assert.equal(elements['motion-toggle'].style.display,undefined)}
+ assert(elements['motion-toggle'].textContent.includes(reduced?'ACTIVAR':'ON'));
   elements.enter.onclick();if(!reduced)callback(1800);
  assert.equal(elements['brain-ui'].inert,false);
  nodes[pages.indexOf(page)].onclick();if(!reduced)callback(3100);
