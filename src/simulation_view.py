@@ -6,7 +6,6 @@ tracking model, or play-by-play simulation (those would need licensed feeds).
 from __future__ import annotations
 
 from html import escape
-import streamlit as st
 
 from .simulations import GameScenario, SimulationResult
 
@@ -152,6 +151,7 @@ def _scene(sport: str, away_name: str, home_name: str,
 def render_results(scenario: GameScenario, result: SimulationResult, *,
                    away_name: str = "Visitante", home_name: str = "Local",
                    source_note: str = "Parámetros hipotéticos") -> None:
+    import streamlit as st
     st.markdown(_scene(scenario.sport, away_name, home_name,
                        scenario.away_mean, scenario.home_mean),
                 unsafe_allow_html=True)
