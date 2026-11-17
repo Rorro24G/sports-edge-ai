@@ -112,6 +112,56 @@ class PublicCoversTests(TestCase):
         self.assertIn("+1.5 68%", game["spreads_publicados"])
         self.assertEqual(game["tipo_mercados"], "proyecciones_porcentuales")
 
+
+    def test_nhl_moneyline_first_column_inline(self):
+        html = """
+        <h1>NHL Picks</h1>
+        <div>Free NHL Expert and Computer Picks For Every Game Nov. 12, 2026</div>
+        <div>Montreal @ Boston</div><div>Today • 7:00 PM ET</div>
+        <p>Predicted Score</p><div>2.92 @ 3.25</div>
+        <p>Canadiens vs Bruins · Prediction & Game Odds</p>
+        <div>Team Predicted Score ML Total Puck Line</div>
+        <div>MON MON 2.92 +140 o6.0 -110 +1.5 -180</div>
+        <div>BOS BOS 3.25 -165 u6.5 -115 -1.5 +160</div>
+        """
+        games = parse_public_picks(html, "NHL", date(2026, 11, 12))["events"]
+        self.assertEqual(len(games), 1)
+        self.assertEqual(games[0]["momio_visitante"], "+140")
+        self.assertEqual(games[0]["momio_local"], "-165")
+
+    def test_nhl_moneyline_first_column_separate_cells(self):
+        html = """
+        <h1>NHL Picks</h1>
+        <div>Free NHL Expert and Computer Picks For Every Game Nov. 12, 2026</div>
+        <div>Montreal @ Boston</div><div>Today • 7:00 PM ET</div>
+        <p>Predicted Score</p><div>2.92 @ 3.25</div>
+        <p>Canadiens vs Bruins · Prediction & Game Odds</p>
+        <div>Team</div><div>Predicted Score</div><div>ML</div>
+        <div>Total</div><div>Puck Line</div>
+        <div>MON MON</div><div>2.92</div><div>+140</div>
+        <div>BetRivers</div><div>o6.0 -110</div><div>+1.5 +190</div>
+        <div>BOS BOS</div><div>3.25</div><div>-165</div>
+        <div>Bet365</div><div>u6.5 -115</div><div>-1.5 +160</div>
+        """
+        games = parse_public_picks(html, "NHL", date(2026, 11, 12))["events"]
+        self.assertEqual(games[0]["momio_visitante"], "+140")
+        self.assertEqual(games[0]["momio_local"], "-165")
+
+    def test_nhl_never_treats_spread_as_ml_without_price(self):
+        html = """
+        <h1>NHL Picks</h1>
+        <div>Free NHL Expert and Computer Picks For Every Game Nov. 12, 2026</div>
+        <div>Montreal @ Boston</div><div>Today • 7:00 PM ET</div>
+        <p>Predicted Score</p><div>2.92 @ 3.25</div>
+        <p>Canadiens vs Bruins · Prediction & Game Odds</p>
+        <div>Team Predicted Score ML Total Puck Line</div>
+        <div>MON MON 2.92 46% o6.0 -110 +1.5 -180</div>
+        <div>BOS BOS 3.25 54% u6.5 -115 -1.5 +160</div>
+        """
+        games = parse_public_picks(html, "NHL", date(2026, 11, 12))["events"]
+        self.assertIsNone(games[0]["momio_visitante"])
+        self.assertIsNone(games[0]["momio_local"])
+
     def test_nfl_probabilities_with_local_start(self):
         html = """
         <h1>Best NFL Picks Today</h1>
