@@ -58,4 +58,10 @@ with (
     assert "Toronto @ Philadelphia" in visible, "No se renderizo el partido"
     assert "Momios por casa de apuestas" in visible, "Falta panel de momios"
     assert "Noticias" in visible or "noticias" in visible, "Falta panel de contexto"
+    app.text_input[0].set_value("Analiza Dallas contra Phoenix 13 de noviembre de 2026")
+    app = [b for b in app.button if b.label == "Analizar partido"][0].click().run()
+    assert not app.exception, [str(e.message) for e in app.exception]
+    visible = "\n".join(str(x.value) for x in app.markdown)
+    assert any("Los equipos solicitados no coinciden" in str(x.value) for x in app.warning), "No avisa que el partido no existe"
+    assert "### Toronto @ Philadelphia" not in visible, "Mostro un partido ajeno"
     print("STREAMLIT_PICKS_UI_OK")
