@@ -62,6 +62,6 @@ with (
     app = [b for b in app.button if b.label == "Analizar partido"][0].click().run()
     assert not app.exception, [str(e.message) for e in app.exception]
     visible = "\n".join(str(x.value) for x in app.markdown)
-    assert any("Los equipos solicitados no coinciden" in str(x.message) for x in app.warning), "No avisa que el partido no existe"
+    assert any("Los equipos solicitados no coinciden" in str(x.value) for x in app.warning), "No avisa que el partido no existe"
     assert "### Toronto @ Philadelphia" not in visible, "Mostro un partido ajeno"
     print("STREAMLIT_PICKS_UI_OK")
