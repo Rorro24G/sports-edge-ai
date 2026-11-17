@@ -53,7 +53,7 @@ class BacktestAssistantTests(TestCase):
 
     def test_specific_date_not_global_success(self):
         r = chat("¿Cuántos picks Covers pegaron ayer?", audit())
-        self.assertIn("1 encuentros", r["reply"])
+        self.assertIn("1 encuentro", r["reply"])
         self.assertIn("100.0%", r["reply"])
         self.assertNotIn("-10.0%", r["reply"])
         # No matches today, so never reuse global historical accuracy.
