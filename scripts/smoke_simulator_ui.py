@@ -50,7 +50,9 @@ with (
     patch("src.live_board.fetch_scoreboard", side_effect=board),
     patch("src.team_form.fetch_team_schedule", side_effect=team_form),
 ):
-    app = AppTest.from_file("../app.py", default_timeout=40).run()
+    app = AppTest.from_file("../app.py", default_timeout=40)
+    app.session_state["brain_section"] = "simulaciones"
+    app = app.run()
     assert not app.exception, [str(e.message) for e in app.exception]
     app = app.button(key="real_sim_find").click().run()
     assert not app.exception, [str(e.message) for e in app.exception]
