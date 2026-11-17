@@ -53,6 +53,14 @@ class ScheduleTests(unittest.TestCase):
         self.assertEqual(result.missing_sports, ("ATP",))
         self.assertEqual(result.games, ())
 
+
+    def test_nba_today_present_without_fake_picks(self):
+        result = find_games(self.fixture, date(2026, 11, 12), ("NBA",))
+        self.assertTrue(result.date_covered)
+        self.assertEqual(len(result.games), 4)
+        self.assertTrue(all(g["market_status"] == "SIN_CUOTAS_VERIFICADAS" for g in result.games))
+        self.assertTrue(all(g["prediction_status"] == "SIN_MODELO_VALIDADO" for g in result.games))
+
     def test_known_snapshot_has_games_and_sources(self):
         result = find_games(self.fixture, date(2026, 11, 13), ("NBA", "NHL"))
         self.assertTrue(result.date_covered)

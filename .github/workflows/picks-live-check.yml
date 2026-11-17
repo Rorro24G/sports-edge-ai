@@ -1,0 +1,58 @@
+name: Picks - comprobacion de fuentes reales
+on:
+  push:
+    branches: [feature/picks-live-gate-nov17, webdemo]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  live-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Comprobar fuentes publicas de hoy en CDMX
+        run: |
+          python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          from src.covers_public import fetch_public_picks
+          from src.live_board import fetch_scoreboard
+          from src.pick_context import match_espn_event, fetch_summary
+          day = datetime.now(ZoneInfo("America/Mexico_City")).date()
+          print("FECHA", day, flush=True)
+          covers_count = 0
+          espn_count = 0
+          summary_count = 0
+          failures = []
+          for league in ("NBA", "NFL", "NHL"):
+              try:
+                  covers = fetch_public_picks(league, day)
+                  events = covers["events"]
+                  covers_count += len(events)
+                  print(league, "COVERS", len(events), "editorial", covers["page_date"], flush=True)
+              except Exception as error:
+                  failures.append(f"{league}/Covers/{type(error).__name__}: {error}")
+                  events = []
+              try:
+                  board = fetch_scoreboard(league, day)
+                  espn_count += len(board["games"])
+                  print(league, "ESPN", len(board["games"]), flush=True)
+                  for game in events[:2]:
+                      match = match_espn_event(game, board["games"])
+                      if match:
+                          summary = fetch_summary(league, match["event_id"])
+                          summary_count += 1
+                          print(league, "SUMMARY", bool(summary["injuries"]), bool(summary["leaders"]), bool(summary["news"]), flush=True)
+                          break
+              except Exception as error:
+                  failures.append(f"{league}/ESPN/{type(error).__name__}: {error}")
+          for error in failures:
+              print("ADVERTENCIA", error, flush=True)
+          print("TOTALES", "covers", covers_count, "espn", espn_count, "summaries", summary_count, flush=True)
+          if covers_count == 0 or espn_count == 0:
+              raise SystemExit("No se verificaron ambas fuentes de Picks hoy; no marcar listo.")
+          PY
