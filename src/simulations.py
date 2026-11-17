@@ -56,6 +56,10 @@ class SimulationResult:
     home_win_probability: float
     simulated_mean_total: float
     over_mc_margin_95: float
+    simulated_p10_total: int
+    simulated_median_total: int
+    simulated_p90_total: int
+    histogram: list[dict]
     status: str = "ESCENARIO_NO_VALIDADO"
     model_note: str = "Distribucion normal bivariada y puntos redondeados; sin datos ni backtesting certificados"
 
@@ -72,6 +76,7 @@ def simulate_totals(scenario: GameScenario) -> SimulationResult:
     scenario.validate()
     rng = Random(scenario.seed)
     over = under = push = home_wins = total_sum = 0
+    totals = []
     correlated_scale = sqrt(1.0 - scenario.score_correlation ** 2)
     for _ in range(scenario.simulations):
         z1 = rng.gauss(0, 1)
@@ -79,6 +84,7 @@ def simulate_totals(scenario: GameScenario) -> SimulationResult:
         away = max(0, round(scenario.away_mean + scenario.away_sd * z1))
         home = max(0, round(scenario.home_mean + scenario.home_sd * z2))
         total = away + home
+        totals.append(total)
         total_sum += total
         if total > scenario.total_line:
             over += 1
@@ -90,6 +96,17 @@ def simulate_totals(scenario: GameScenario) -> SimulationResult:
             home_wins += 1
     n = scenario.simulations
     p_over = over / n
+    totals.sort()
+    width = 5 if scenario.sport == "NFL" else 10
+    bins = {}
+    for total in totals:
+        center = (total // width) * width
+        bins[center] = bins.get(center, 0) + 1
+    histogram = [
+        {"Puntos": str(left) + "–" + str(left + width - 1),
+         "Frecuencia": bins[left]}
+        for left in sorted(bins)
+    ]
     return SimulationResult(
         sport=scenario.sport,
         simulations=n,
@@ -103,4 +120,8 @@ def simulate_totals(scenario: GameScenario) -> SimulationResult:
         home_win_probability=home_wins / n,
         simulated_mean_total=total_sum / n,
         over_mc_margin_95=1.96 * sqrt(p_over * (1 - p_over) / n),
+        simulated_p10_total=totals[int((n - 1) * 0.10)],
+        simulated_median_total=totals[int((n - 1) * 0.50)],
+        simulated_p90_total=totals[int((n - 1) * 0.90)],
+        histogram=histogram,
     )
