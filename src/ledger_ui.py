@@ -127,6 +127,43 @@ def render() -> None:
             except (LedgerError, OSError) as exc:
                 st.error(str(exc))
 
+    if pending and st.button("Buscar resultados terminados en ESPN", key="ledger_check_results"):
+        from datetime import date as parse_date
+        from src.live_board import fetch_scoreboard, CalendarSourceError
+        from src.pick_grading import propose_moneyline_results
+        all_games = []
+        dates = sorted({(bet["sport"], bet.get("event_date_cdmx"))
+                        for bet in pending
+                        if bet.get("sport") in ("NBA", "NFL", "NHL")
+                        and bet.get("event_date_cdmx")})
+        if len(dates) > 20:
+            st.warning("Hay demasiadas jornadas pendientes; comprueba por fecha manualmente.")
+        else:
+            for league, day in dates:
+                try:
+                    board = fetch_scoreboard(league, parse_date.fromisoformat(day))
+                    all_games.extend(board["games"])
+                except (CalendarSourceError, ValueError) as exc:
+                    st.warning(league + " " + day + ": ESPN no verificable (" + str(exc) + ")")
+            st.session_state["ledger_grade_suggestions"] = propose_moneyline_results(
+                pending, all_games
+            )
+    suggested = st.session_state.get("ledger_grade_suggestions", [])
+    if suggested:
+        st.markdown("**Resultados Moneyline detectados (requieren tu confirmación)**")
+        for candidate in suggested:
+            st.write(candidate["score"], " · sugerencia:", candidate["status"])
+            if candidate.get("source_url"):
+                st.link_button("Ver resultado en ESPN", candidate["source_url"])
+            if st.button("Confirmar " + candidate["status"] + " · " +
+                         candidate["bet_id"][:8], key="grade_" + candidate["bet_id"]):
+                try:
+                    transact(path, lambda data: settle_bet(
+                        data, candidate["bet_id"], candidate["status"]))
+                    st.session_state.pop("ledger_grade_suggestions", None)
+                    st.rerun()
+                except (LedgerError, OSError) as exc:
+                    st.error(str(exc))
     rows = ledger_rows(ledger)
     if rows:
         st.dataframe(rows, hide_index=True, use_container_width=True)
