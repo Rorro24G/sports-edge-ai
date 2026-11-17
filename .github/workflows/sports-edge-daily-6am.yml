@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: sports-edge-picks-daily
@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: webdemo
-          persist-credentials: false
+          persist-credentials: true
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -40,3 +40,35 @@ jobs:
           path: daily-output/
           retention-days: 7
           if-no-files-found: error
+
+      - name: Publicar informe del dia en la rama que ejecuta Streamlit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin feature/web-mvp-2026-11-12
+          git checkout -B morning-data origin/feature/web-mvp-2026-11-12
+          mkdir -p data
+          cp daily-output/picks.json data/picks_diario.json
+          # No publicar jamás un informe de otra fecha por equivocación.
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          with open("data/picks_diario.json", encoding="utf-8") as f:
+              payload = json.load(f)
+          today = datetime.now(ZoneInfo("America/Mexico_City")).date().isoformat()
+          if payload.get("date_cdmx") != today:
+              raise SystemExit("Informe de fecha equivocada; cancelada la publicación")
+          if payload.get("pick_status") != "SIN_MODELO_VALIDADO":
+              raise SystemExit("No publicar un estado de picks no verificado")
+          print("Informe validado para", today, flush=True)
+          PY
+          git add data/picks_diario.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios en el informe"
+          else
+            git commit -m "Actualizar radar de Picks en CDMX"
+            git push origin HEAD:feature/web-mvp-2026-11-12
+          fi
