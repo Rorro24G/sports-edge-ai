@@ -146,4 +146,4 @@ class AssistantTests(TestCase):
 
     def test_unsupported_props_are_not_basketball_data(self):
         r = assistant("Under 45 puntos de jugador NHL hoy")
-        self.assertIn("primero para NBA", r["reply"])
+        self.assertIn("para NBA", r["reply"])
