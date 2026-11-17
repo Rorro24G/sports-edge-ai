@@ -5,14 +5,15 @@ import streamlit.components.v1 as components
 
 SECTIONS = {"picks": "Picks", "parlays": "Parlays", "noticias": "Noticias",
             "simulaciones": "Simulaciones", "historial": "Mi historial", "calendario": "Calendario"}
-portal = components.declare_component("sports_brain_portal", path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"))
+# Version the component endpoint to bypass stale browser/static iframe caches.
+portal = components.declare_component("sports_brain_portal_motion_v4", path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"))
 
 
 def render_navigation():
     section = st.session_state.get("brain_section")
     if section not in (*SECTIONS, "asistente", "estado"):
         value = portal(skip_intro=st.session_state.get("brain_entered", False),
-                       key="brain_portal_" + str(st.session_state.get("brain_visit", 0)), default=None)
+                       key="brain_portal_motion_v4_" + str(st.session_state.get("brain_visit", 0)), default=None)
         if isinstance(value, dict) and value.get("page") in SECTIONS:
             st.session_state["brain_section"] = value["page"]
             st.session_state["brain_entered"] = True
@@ -25,6 +26,10 @@ def render_navigation():
                     st.session_state["brain_entered"] = True
                     st.rerun()
         st.stop()
+    # The portal flies into its chosen connection; this second layer continues
+    # the transition on the destination Streamlit page after the iframe rerun.
+    st.markdown('<div class="brain-page-entry" aria-hidden="true"></div>',
+                unsafe_allow_html=True)
     left, middle, right = st.columns([2, 6, 2])
     if left.button("← Cerebro", key="back_to_brain"):
         st.session_state["brain_section"] = None
@@ -67,11 +72,22 @@ def apply_theme():
     .stCaption{color:#ab9aa3!important}
     .odds-price{color:#76f5a6;font-variant-numeric:tabular-nums;font-weight:800}
     @keyframes section-arrive{from{opacity:0;transform:translateY(26px) scale(.985);filter:blur(5px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+    .brain-page-entry{position:fixed;inset:0;z-index:999999;pointer-events:none;
+      background:radial-gradient(circle at 50% 50%,#ffc6d1dd 0%,#ff315bcc 4%,#6a0a2788 10%,#080308dd 34%,transparent 70%);
+      animation:brain-dive-screen 1.05s cubic-bezier(.12,.7,.15,1) both}
+    .brain-page-entry::before,.brain-page-entry::after{content:"";position:absolute;left:50%;top:50%;
+      width:65vmin;height:65vmin;border:2px solid #ff527dbb;border-radius:50%;
+      box-shadow:0 0 25px #ff315b,0 0 55px #ff315b88;transform:translate(-50%,-50%);
+      animation:brain-dive-ring 1.05s ease-out both}
+    .brain-page-entry::after{animation-delay:.14s;opacity:.55}
+    @keyframes brain-dive-screen{0%{opacity:1;transform:scale(.18);filter:blur(4px)}55%{opacity:.92;transform:scale(3);filter:blur(0)}100%{opacity:0;transform:scale(9);filter:blur(10px)}}
+    @keyframes brain-dive-ring{0%{transform:translate(-50%,-50%) scale(.5);opacity:.9}100%{transform:translate(-50%,-50%) scale(8);opacity:0}}
     @keyframes heading-glow{0%,100%{text-shadow:0 0 7px #ffe8ec,0 0 21px #ff3059dd,0 0 44px #ff30598c}50%{text-shadow:0 0 13px #fff,0 0 35px #ff3059,0 0 70px #ff3059dd}}
     @keyframes section-neon{0%,100%{transform:translateY(0);text-shadow:0 0 8px #ffeaef,0 0 22px #ff3059,0 0 48px #ff305995}50%{transform:translateY(-4px);text-shadow:0 0 15px #fff,0 0 42px #ff3059,0 0 82px #ff3059dd}}
     @keyframes button-breathe{0%,100%{box-shadow:0 0 15px #ff536566;transform:scale(1)}50%{box-shadow:0 0 29px #ff5365c2;transform:scale(1.025)}}
     .block-container{animation:section-arrive .65s cubic-bezier(.18,.76,.23,1)}
-    @media(prefers-reduced-motion:reduce){.block-container,h1,h2,h3,h4,.section-brand,button[kind="primary"],div.stFormSubmitButton>button{animation:none!important}
+    @media(prefers-reduced-motion:reduce){.block-container,h1,h2,h3,h4,.section-brand,button[kind="primary"],div.stFormSubmitButton>button,.brain-page-entry,.brain-page-entry::before,.brain-page-entry::after{animation:none!important}
+      .brain-page-entry{display:none!important}
       button[kind="primary"],div.stFormSubmitButton>button,button[kind="secondary"]{transition:none!important}}
     @media(max-width:640px){.section-brand{font-size:11px;letter-spacing:.05em}.section-brand span{display:block;font-size:10px}}
     </style>''', unsafe_allow_html=True)
