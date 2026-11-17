@@ -1,7 +1,7 @@
 name: Picks - comprobacion de fuentes reales
 on:
   push:
-    branches: [feature/picks-live-check-nov13]
+    branches: [feature/picks-live-gate-nov17, webdemo]
   workflow_dispatch:
 permissions:
   contents: read
