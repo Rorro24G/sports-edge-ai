@@ -1,0 +1,42 @@
+name: Sports Edge AI - informe diario 6 AM Mexico
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Ciudad de Mexico (UTC-6 durante todo el ano): 06:00 hora local.
+    # Los cron de GitHub Actions pueden retrasarse; no garantizan minuto exacto.
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sports-edge-picks-daily
+  cancel-in-progress: false
+
+jobs:
+  build-daily-report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Leer la aplicacion activa en webdemo
+        uses: actions/checkout@v4
+        with:
+          ref: webdemo
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generar informe diario sin publicar datos de terceros
+        env:
+          ODDS_API_KEY: ${{ secrets.ODDS_API_KEY }}
+        run: python -m src.daily_picks --output-dir daily-output
+      - name: Guardar informe privado en GitHub Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: informe-picks-del-dia
+          path: daily-output/
+          retention-days: 7
+          if-no-files-found: error
