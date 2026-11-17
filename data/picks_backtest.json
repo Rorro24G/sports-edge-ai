@@ -1,0 +1,15 @@
+{
+  "fecha_cdmx": "2026-11-17",
+  "generado_utc": "2026-11-17T18:29:59.252298+00:00",
+  "unidades_simuladas": 0,
+  "ganadas": 0,
+  "perdidas": 0,
+  "acierto_observado_pct": null,
+  "beneficio_unidades": "0.00",
+  "roi_observado_pct": null,
+  "metodo": "Una unidad hipotetica por referencia Covers prepartido, resuelta con resultado final ESPN. NO representa apuestas realizadas ni probabilidades de modelo validado.",
+  "grades": {},
+  "fuentes_con_error": [],
+  "pendientes_de_verificar": 0,
+  "consultas_espn": 0
+}
