@@ -111,9 +111,10 @@ st.markdown(
 
 render_brain_header()
 
-analysis_tab, simulator_tab, calendar_tab, context_tab, status_tab, parlays_tab, ledger_tab = st.tabs(
-    ["🎯 Picks por partido", "🎲 Simulaciones 10,000",
-     "📅 Calendario", "🗞 Jugadores y noticias", "⚙️ Estado", "🧩 Parlays", "📊 Mi historial"]
+analysis_tab, assistant_tab, simulator_tab, calendar_tab, context_tab, status_tab, parlays_tab, ledger_tab = st.tabs(
+    ["🎯 Picks por partido", "🧠 Pregunta al asistente",
+     "🎲 Simulaciones 10,000", "📅 Calendario",
+     "🗞 Jugadores y noticias", "⚙️ Estado", "🧩 Parlays", "📊 Mi historial"]
 )
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -374,6 +375,16 @@ with analysis_tab:
                 st.link_button("Picks de " + league + " en Covers", link)
         if not player_question and ("ATP" in request.sports or "WTA" in request.sports):
             st.info("Los conectores de tenis ATP/WTA siguen pendientes de validación.")
+
+
+with assistant_tab:
+    from src.assistant_ui import render as render_assistant
+    render_assistant(
+        board_fetch=cached_scoreboard,
+        covers_fetch=cached_covers,
+        roster_fetch=cached_player_roster,
+        gamelog_fetch=cached_player_gamelog,
+    )
 
 with simulator_tab:
     st.subheader("Laboratorio Monte Carlo")
