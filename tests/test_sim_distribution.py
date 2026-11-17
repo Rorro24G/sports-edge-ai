@@ -20,6 +20,32 @@ class SimulationDistributionTests(TestCase):
         self.assertEqual(a.over_count + a.under_count + a.push_count, 10000)
         self.assertEqual(a.status, "ESCENARIO_NO_VALIDADO")
 
+    def test_empirical_bootstrap_uses_real_results_and_is_deterministic(self):
+        history = (94.0, 112.0, 124.0, 98.0, 110.0, 107.0,
+                   109.0, 117.0, 97.0, 122.0)
+        allowed = (101.0, 115.0, 96.0, 118.0, 107.0, 112.0,
+                   100.0, 104.0, 109.0, 95.0)
+        scenario = GameScenario(
+            "NBA", 109.1, 112.3, 12.5, 11.7, 0.0, 224.5,
+            simulations=10000, seed=10,
+            away_scored=history, away_allowed=allowed,
+            home_scored=tuple(reversed(history)),
+            home_allowed=tuple(reversed(allowed)),
+        )
+        a, b = simulate_totals(scenario), simulate_totals(scenario)
+        self.assertEqual(a.simulation_method, "BOOTSTRAP_ESPN_RECIENTE")
+        self.assertEqual(a.histogram, b.histogram)
+        self.assertEqual(sum(x["Frecuencia"] for x in a.histogram), 10000)
+        self.assertEqual(a.over_count + a.under_count + a.push_count, 10000)
+        self.assertNotEqual(a.simulation_method, "GAUSSIANA_EXPLORATORIA")
+
+    def test_incomplete_histories_rejected_before_bootstrap(self):
+        with self.assertRaisesRegex(ValueError, "Bootstrap"):
+            simulate_totals(GameScenario(
+                "NBA", 100, 104, 10, 11, 0, 220.5,
+                away_scored=(100.0,), away_allowed=(95.0,)
+            ))
+
     def test_visual_meters_use_actual_simulation_outcomes(self):
         scenario = GameScenario(
             "NBA", 110, 115, 11, 10, 0.0, 223.5,
