@@ -74,15 +74,18 @@ def completed_team_games(payload: dict, sport: str, team_id: str,
             day = kickoff.astimezone(LOCAL).date()
             if day >= before:
                 continue
-            status = event.get("status") or {}
+            competitions = event["competitions"]
+            competition = competitions[0]
+            # ESPN team schedules put FINAL on competitions[0].status,
+            # not on event.status (unlike ESPN scoreboard).
+            status = event.get("status") or competition.get("status") or {}
             type_status = status.get("type") if isinstance(status, dict) else {}
             if not isinstance(type_status, dict):
                 continue
             if not (type_status.get("completed") is True or
-                    type_status.get("state", "").lower() == "post"):
+                    str(type_status.get("state", "")).lower() == "post"):
                 continue
-            competitions = event["competitions"]
-            competitors = competitions[0]["competitors"]
+            competitors = competition["competitors"]
             if len(competitors) != 2:
                 continue
             team = next((x for x in competitors if
