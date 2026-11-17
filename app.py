@@ -393,6 +393,7 @@ if section == "asistente":
         covers_fetch=cached_covers,
         roster_fetch=cached_player_roster,
         gamelog_fetch=cached_player_gamelog,
+        team_fetch=cached_team_schedule,
         prop_odds_fetch=cached_prop_offers if safe_odds_key() else None,
         prop_api_key=safe_odds_key(),
     )
