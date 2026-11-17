@@ -73,3 +73,103 @@ def verified_market_rows(game: dict, rows: list[dict]) -> list[dict]:
     if len(by_event) != 1:
         return []
     return next(iter(by_event.values()))
+
+
+# Words describing the request, not a team. Team matching never treats these
+# as evidence that a specific game was requested.
+_QUERY_FILLER = {
+    "hoy", "manana", "ayer", "picks", "pick", "partido", "partidos",
+    "dame", "quiero", "analiza", "analizar", "contra", "entre", "equipo",
+    "equipos", "juego", "juegos", "del", "los", "las", "con", "para",
+    "nba", "nfl", "nhl", "atp", "wta", "hockey", "basquetbol",
+    "futbol", "americano", "este", "esta", "que", "son", "cuales",
+    "mejores", "probabilidades", "momios", "noticias", "lesiones",
+    "estadisticas", "fecha", "calendario", "todos", "todas",
+    "noviembre", "diciembre", "octubre", "enero", "febrero", "marzo",
+    "abril", "mayo", "junio", "julio", "agosto", "septiembre",
+}
+
+# Alias frecuentes cuando Covers usa ciudades y el usuario usa apodos.
+# La coincidencia de ciudades ambiguas (p. ej., Lakers / Clippers)
+# exige que el resto de la consulta identifique un único encuentro.
+_NICKNAME_CITY = {
+    "lakers": ("los", "angeles"), "clippers": ("los", "angeles"),
+    "warriors": ("golden", "state"), "celtics": ("boston",),
+    "knicks": ("new", "york"), "nets": ("brooklyn",),
+    "sixers": ("philadelphia",), "76ers": ("philadelphia",),
+    "raptors": ("toronto",), "bulls": ("chicago",),
+    "heat": ("miami",), "cavaliers": ("cleveland",),
+    "bucks": ("milwaukee",), "nuggets": ("denver",),
+    "thunder": ("oklahoma", "city"), "spurs": ("san", "antonio"),
+    "rockets": ("houston",), "mavericks": ("dallas",),
+    "suns": ("phoenix",), "kings": ("sacramento",),
+    "timberwolves": ("minnesota",), "grizzlies": ("memphis",),
+    "pelicans": ("new", "orleans"), "pistons": ("detroit",),
+    "wizards": ("washington",), "pacers": ("indiana",),
+    "magic": ("orlando",), "hawks": ("atlanta",),
+    "jazz": ("utah",), "blazers": ("portland",),
+    "trail": ("portland",), "hornets": ("charlotte",),
+    "eagles": ("philadelphia",), "chiefs": ("kansas", "city"),
+    "cowboys": ("dallas",), "packers": ("green", "bay"),
+    "ravens": ("baltimore",), "steelers": ("pittsburgh",),
+    "bills": ("buffalo",), "dolphins": ("miami",),
+    "patriots": ("new", "england"), "49ers": ("san", "francisco"),
+    "bruins": ("boston",), "canadiens": ("montreal",),
+    "maple": ("toronto",), "oilers": ("edmonton",),
+    "penguins": ("pittsburgh",),
+}
+_DATE_PART = {"20", "2026", "2027", "2028", "2029", "2030"}
+
+
+def _requested_tokens(text: str) -> set[str]:
+    return _terms(text) - _QUERY_FILLER - _DATE_PART - {"2025", "2024"}
+
+
+def _side_matches(requested: set[str], game_side: str) -> bool:
+    side = _terms(game_side)
+    if requested & side:
+        return True
+    for word in requested:
+        city = _NICKNAME_CITY.get(word)
+        if city and set(city) <= side:
+            return True
+    return False
+
+
+def relevant_matches(rows: list[dict], question: str) -> tuple[list[dict], bool]:
+    """Returns (possible games, specific_team_requested).
+
+    Broad questions list every game. For queries naming teams, only games
+    meeting that request are returned, never an unrelated first result.
+    Explicit 'contra/vs' requires *both* teams, in either home/away order.
+    """
+    query = normalized(question)
+    # Strip common date formats before finding an explicit two-team query.
+    query = re.sub(r"\\b20\\d{2}-\\d{2}-\\d{2}\\b", " ", query)
+    explicit = re.search(r"(.+?)\\s+(?:vs\\.?|versus|contra|@)\\s+(.+)", query)
+    if explicit:
+        first = _requested_tokens(explicit.group(1))
+        second = _requested_tokens(explicit.group(2))
+        if first and second:
+            found = []
+            for game in rows:
+                sides = str(game.get("partido", "")).split(" @ ", 1)
+                if len(sides) != 2:
+                    continue
+                away, home = sides
+                if ((_side_matches(first, away) and _side_matches(second, home))
+                        or (_side_matches(first, home) and _side_matches(second, away))):
+                    found.append(game)
+            return found, True
+
+    requested = _requested_tokens(query)
+    if not requested:
+        return list(rows), False
+    found = []
+    for game in rows:
+        sides = str(game.get("partido", "")).split(" @ ", 1)
+        if len(sides) != 2:
+            continue
+        if any(_side_matches({word}, side) for word in requested for side in sides):
+            found.append(game)
+    return found, True
