@@ -22,5 +22,7 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Comprobar interfaz de Picks
         run: PYTHONPATH=. python scripts/smoke_picks_ui.py
+      - name: Comprobar borradores Parlays de Covers y discusión
+        run: PYTHONPATH=. python scripts/smoke_parlay_ui.py
       - name: Comprobar entrada de apuesta y bank en Streamlit
         run: PYTHONPATH=. python scripts/smoke_ledger_ui.py
