@@ -5,15 +5,17 @@ import streamlit as st
 
 from .assistant_core import answer_query
 from .brain_dashboard import load_today_snapshot
+from .team_form import fetch_team_schedule
 
 
 def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
-           prop_odds_fetch=None, prop_api_key: str = "") -> None:
+           prop_odds_fetch=None, prop_api_key: str = "",
+           team_fetch=fetch_team_schedule) -> None:
     st.subheader("Asistente · pregunta por partidos y jugadores")
     st.caption(
-        "Respuestas basadas en datos verificables de ESPN y Covers. "
-        "Recuerda el jugador y la fecha durante esta sesión para preguntas de "
-        "seguimiento. No es un modelo de lenguaje ni inventa momios."
+        "Sports Edge AI analiza resultados de ESPN para formar sus propias selecciones. "
+        "Covers sirve para consultar momios. "
+        "Es un motor estadístico experimental, no una IA predictiva validada."
     )
     examples = (
         "«Picks NBA hoy» · «Lakers contra Warriors» · "
@@ -54,6 +56,7 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
                     question, context=ctx,
                     board_fetch=board_fetch, covers_fetch=covers_fetch,
                     roster_fetch=roster_fetch, gamelog_fetch=gamelog_fetch,
+                    team_fetch=team_fetch,
                     report_loader=load_today_snapshot,
                     prop_odds_fetch=prop_odds_fetch,
                     prop_api_key=prop_api_key,
