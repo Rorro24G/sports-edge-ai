@@ -134,7 +134,10 @@ def _side_matches(requested: set[str], game_side: str) -> bool:
         return True
     for word in requested:
         city = _NICKNAME_CITY.get(word)
-        if city and set(city) <= side:
+        # Una ciudad compartida por varias franquicias no identifica
+        # por sí sola qué apodo quiso decir el usuario.
+        ambiguous_city = sum(1 for other in _NICKNAME_CITY.values() if other == city) > 1
+        if city and not ambiguous_city and set(city) <= side:
             return True
     return False
 
