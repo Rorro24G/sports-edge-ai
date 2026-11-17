@@ -4,6 +4,10 @@ from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 from streamlit.testing.v1 import AppTest
+from unittest.mock import patch as content_patch
+# Keep unrelated content services independent of the network in UI tests.
+content_patch("src.news_ui.cached_news", return_value={"articles": [], "checked_at_utc": "offline fixture"}).start()
+content_patch("src.parlay_ui.cached_live_report", return_value={"leagues": {}, "generated_at_utc": "offline fixture"}).start()
 
 today = datetime.now(ZoneInfo("America/Mexico_City")).date()
 
@@ -62,3 +66,4 @@ with (
     assert "VISUALIZACIÓN ILUSTRATIVA" in visible
     assert "NO ES PICK VALIDADO" in "\n".join(str(x.value) for x in app.warning)
     print("STREAMLIT_ESPN_SIMULATOR_UI_OK")
+
