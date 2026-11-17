@@ -83,10 +83,12 @@ with (
     patch("src.live_board.fetch_scoreboard", side_effect=fake_board),
     patch("src.pick_context.fetch_summary", side_effect=fake_summary),
 ):
-    app = AppTest.from_file("../app.py", default_timeout=40).run()
+    app = AppTest.from_file("../app.py", default_timeout=40)
+    app.session_state["brain_section"] = "picks"
+    app = app.run()
     assert not app.exception, [str(e.message) for e in app.exception]
     initial_text = "\n".join(str(x.value) for x in app.markdown)
-    assert "EL CEREBRO" in initial_text, "No apareció la portada neuronal nueva"
+    assert "SPORTS EDGE AI" in initial_text, "No apareció la cabecera"
     assert "Radar del día" in initial_text, "No apareció el radar diario"
     inputs = list(app.text_input)
     assert inputs, "No aparece el campo para preguntar por un partido"

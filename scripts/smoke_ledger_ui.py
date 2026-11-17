@@ -11,6 +11,7 @@ from src.ledger_store import read_ledger
 with tempfile.TemporaryDirectory() as folder:
     path = str(Path(folder) / "historial.sqlite")
     app = AppTest.from_file("../app.py", default_timeout=50)
+    app.session_state["brain_section"] = "historial"
     app.secrets["LEDGER_ACCESS_PASSWORD"] = "test-password-only"
     app.secrets["LEDGER_DB_PATH"] = path
     app = app.run()
