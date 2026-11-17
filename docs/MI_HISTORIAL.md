@@ -4,7 +4,23 @@ Se agregó una última pestaña a Sports Edge AI que permite registrar **solo ap
 
 ## Seguridad y almacenamiento
 
-Para activar la pestaña debes establecer estos secretos en **Streamlit > App settings > Secrets**:
+## Opción recomendada: guardar en GitHub PRIVADO
+
+La app admite un repositorio **privado dedicado** como almacenamiento duradero, sin depender del disco temporal de Streamlit. Crea un repositorio privado vacío (por ejemplo, `tu-usuario/historial-picks-privado`). Después crea en GitHub un *fine-grained personal access token* limitado **solo** a ese repositorio, con permiso de lectura y escritura de contenido. No pegues el token en el chat ni en ningún fichero del repositorio.
+
+En **Streamlit > App settings > Secrets** configura:
+
+```toml
+LEDGER_ACCESS_PASSWORD = "UNA_CONTRASEÑA_PRIVADA_Y_LARGA"
+LEDGER_GITHUB_REPO = "tu-usuario/historial-picks-privado"
+LEDGER_GITHUB_TOKEN = "TOKEN_PRIVADO_PONLO_AQUI_EN_SECRETS"
+LEDGER_GITHUB_BRANCH = "main"
+LEDGER_GITHUB_PATH = "private/historial.json"
+```
+
+El repositorio debe permanecer privado; el sistema **rechaza repositorios públicos**. Cada modificación se guarda con control de versión por SHA y no sobrescribe silenciosamente cambios de otra sesión. Los archivos quedan en el historial Git del repositorio privado, por lo que solo deben tener acceso las personas autorizadas. Protege también la aplicación publicada con acceso privado; una única contraseña compartida de la pestaña no sustituye autenticación personal si amplías el proyecto a varios usuarios.
+
+Como alternativa a GitHub privado, puedes establecer estos secretos en **Streamlit > App settings > Secrets**:
 
 ```toml
 LEDGER_ACCESS_PASSWORD = "CONTRASEÑA_LARGA_GENERADA_POR_TI"
@@ -13,7 +29,7 @@ LEDGER_DB_PATH = "/RUTA/REAL/A/UN/VOLUMEN/PERSISTENTE/historial.sqlite"
 
 **Importante:** el almacenamiento local de Streamlit Community Cloud normalmente no persiste al reiniciar la instancia. Si no tienes un volumen persistente conectado, **no configures una ruta temporal pensando que conservará tu dinero y tu historial**. La aplicación bloquea la edición de historial cuando falta la configuración. Nunca subas una contraseña, token o el fichero SQLite a GitHub. La copia JSON descargable es manual y contiene datos personales: guárdala en un lugar privado.
 
-La carpeta del fichero SQLite debe existir o ser creable por el proceso de Streamlit, tener permisos apropiados y sobrevivir reinicios y redeploys. **Aún falta conectar un almacenamiento externo duradero** si tu hosting no admite ese volumen. SQLite es adecuado para un usuario con escritor único; si la app va a ser multiusuario, habrá que separar cuentas y permisos mediante un backend autenticado real.
+Si utilizas SQLite, la carpeta del fichero debe existir o ser creable por el proceso de Streamlit, tener permisos apropiados y sobrevivir reinicios y redeploys. **En Streamlit Community Cloud, el repositorio GitHub privado es la opción de persistencia disponible en este código**; hay que configurarlo con tu token personal y comprobarlo en la aplicación desplegada. SQLite es adecuado para un usuario con escritor único; si la app va a ser multiusuario, habrá que separar cuentas y permisos mediante un backend autenticado real.
 
 ## Entrada por texto
 
