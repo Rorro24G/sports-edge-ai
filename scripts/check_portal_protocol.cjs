@@ -12,6 +12,9 @@ assert(html.includes('@media(prefers-reduced-motion:reduce)'),'motion-reduction 
 assert(code.includes('breathing=reduced?1'),'motion-reduction JS missing');
 assert(code.includes('if(!reduced&&i%5===0'),'travelling wire highlights missing');
 assert(code.includes('thinkingPoint(p,t,i,j)'),'real line deformation missing');
+assert(html.includes('MOVIMIENTO ON'),'motion control must be visible');
+assert(html.includes('rgba(5,5,6,.24)'),'intro must reveal moving brain');
+assert(code.includes('ctx.globalAlpha=1;drawBrain(t)'),'intro canvas must be visible');
 assert(code.includes("state==='intro'"),'ambient brain on entry screen missing');
 assert(code.includes("angle+=dt*.00010"),'visible idle spin missing');
 assert(code.includes('flightBlend=ease'),'node-directed transition missing');
@@ -20,7 +23,7 @@ assert(html.includes('neuron-heartbeat 1.75s'),'always-on node beat missing');
 function run(reduced,page){
  const messages=[],listeners={};let callback;
  const element=()=>({style:{},classList:{add(){},toggle(){}},setAttribute(){},focus(){},inert:false,clientWidth:1000,clientHeight:760});
- const elements=Object.fromEntries(['scene','stage','intro','brain-ui','flight-label','enter','rotate','reset'].map(n=>[n,element()]));
+ const elements=Object.fromEntries(['scene','stage','intro','brain-ui','flight-label','enter','rotate','reset','motion-toggle'].map(n=>[n,element()]));
  elements.scene.getContext=()=>new Proxy({},{get:()=>()=>{}});
  const nodes=pages.map(page=>Object.assign(element(),{dataset:{page},innerText:page.toUpperCase()}));
  const parent={postMessage:v=>messages.push(v)};
@@ -32,7 +35,8 @@ function run(reduced,page){
  vm.runInNewContext(code,context);
  assert(messages.some(m=>m.type==='streamlit:componentReady'));
  listeners.message({source:parent,data:{type:'streamlit:render',args:{}}});
- elements.enter.onclick();if(!reduced)callback(1800);
+ if(reduced){elements['motion-toggle'].onclick();assert.equal(elements['motion-toggle'].style.display,undefined)}
+  elements.enter.onclick();if(!reduced)callback(1800);
  assert.equal(elements['brain-ui'].inert,false);
  nodes[pages.indexOf(page)].onclick();if(!reduced)callback(3100);
  const selected=messages.find(m=>m.type==='streamlit:setComponentValue');
