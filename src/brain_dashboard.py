@@ -15,6 +15,7 @@ from .pick_reference import covers_projection
 
 MEXICO = ZoneInfo("America/Mexico_City")
 LATEST = Path(__file__).resolve().parents[1] / "data" / "picks_diario.json"
+BACKTEST_PATH = LATEST.parent / "picks_backtest.json"
 LEAGUES = ("NBA", "NFL", "NHL")
 BUILD = "CEREBRO 2.0 · NOV 2026"
 
@@ -135,6 +136,80 @@ def morning_covers_picks(report: dict, *, now: datetime | None = None,
         chosen.extend(league_rows[:per_league])
     return chosen
 
+def load_backtest(day: date, path: Path = BACKTEST_PATH) -> dict | None:
+    """Only load a current-day, timestamped backtest from disk."""
+    try:
+        if not path.is_file() or path.stat().st_size > 1_500_000:
+            return None
+        report = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(report, dict) or report.get("fecha_cdmx") != day.isoformat():
+            return None
+        stamp = datetime.fromisoformat(report["generado_utc"].replace("Z", "+00:00"))
+        if stamp.tzinfo is None or stamp > datetime.now(timezone.utc):
+            return None
+        if not isinstance(report.get("grades"), dict):
+            return None
+        return report
+    except (OSError, ValueError, TypeError, KeyError):
+        return None
+
+
+def render_reference_backtest() -> None:
+    """Real scoreboard results of past Covers *references*, not model accuracy."""
+    import streamlit as st
+
+    today = datetime.now(MEXICO).date()
+    data = load_backtest(today)
+    with st.expander("📋 Auditoría: cómo les fue a las referencias anteriores", expanded=False):
+        if data is None:
+            st.info("El historial verificable empezará a acumularse cuando haya "
+                    "pronósticos guardados antes del juego y ESPN publique "
+                    "el resultado final. No calcularemos aciertos retroactivos "
+                    "con momios obtenidos después del partido.")
+            return
+        count = data.get("unidades_simuladas", 0)
+        st.caption("Pronósticos prepartido conservados por día, contrastados por "
+                   "ID de evento con marcadores finales ESPN. "
+                   "NO son las apuestas personales de tu historial.")
+        if not count:
+            st.info("Todavía no hay referencias terminadas y contrastadas "
+                    "con suficientes datos para mostrar porcentajes.")
+            return
+        a, b, c, d = st.columns(4)
+        a.metric("Referencias resueltas", count)
+        b.metric("Acierto observado", f"{data['acierto_observado_pct']:.1f}%")
+        c.metric("Resultado hipotético por unidad",
+                 f"{data['beneficio_unidades']} uds.")
+        d.metric("ROI histórico hipotético",
+                 f"{data['roi_observado_pct']:+.1f}%")
+        st.warning(
+            "Estadísticas descriptivas de referencias de Covers. "
+            "Una unidad hipotética por partido a precio publicado en Covers. "
+            "No son dinero ganado, rentabilidad futura demostrada, "
+            "picks validados ni cuotas combinables de una casa."
+        )
+        grades = list(data["grades"].values())
+        grades.sort(key=lambda row: (row.get("fecha", ""), row.get("partido", "")),
+                    reverse=True)
+        rows = [{
+            "Fecha": g.get("fecha"), "Liga": g.get("liga"),
+            "Partido": g.get("partido"), "Referencia Covers": g.get("seleccion_covers"),
+            "Momio capturado": g.get("momio_covers"), "Resultado": g.get("resultado"),
+            "Marcador ESPN": g.get("resultado_espn"),
+            "P&L por 1 ud.": g.get("beneficio_unidad"),
+            "Fuente": g.get("fuente_espn_resultado") or g.get("fuente_espn"),
+        } for g in grades[:40] if isinstance(g, dict)]
+        if rows:
+            st.dataframe(rows, use_container_width=True, hide_index=True,
+                         column_config={"Fuente": st.column_config.LinkColumn("ESPN")})
+        pending = data.get("pendientes_de_verificar", 0)
+        if pending:
+            st.caption(f"{pending} referencias pendientes de verificación ESPN.")
+        if data.get("fuentes_con_error"):
+            st.caption("Algunas fechas no se pudieron contrastar; esas selecciones "
+                       "no cuentan como aciertos ni pérdidas.")
+
+
 def render_brain_header() -> None:
     """Static SVG/HTML and CSS motion: no scripts, user tracking or external assets."""
     import streamlit as st
@@ -227,6 +302,7 @@ def render_morning_snapshot() -> None:
                 "o esperar nuevas publicaciones de Covers.")
     st.warning("Estos son ganadores favorecidos por los marcadores proyectados de Covers, "
                "NO picks validados de Sports Edge AI ni apuestas con rentabilidad demostrada.")
+    render_reference_backtest()
     with st.expander("Abrir partidos y referencias del informe matutino", expanded=True):
         if rows:
             st.dataframe(rows, use_container_width=True, hide_index=True)
