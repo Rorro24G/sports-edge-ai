@@ -46,6 +46,22 @@ st.markdown(
     [data-testid="stForm"] {border:1px solid #315a49; background:#0d2521; border-radius:16px}
     div.stButton > button[kind="primary"], div.stFormSubmitButton > button {background:#38ca85 !important;color:#05221a!important;border-radius:12px!important; font-weight:800!important;border:0!important}
     a {color:#89e4af!important}
+    .hero {position:relative; overflow:hidden; isolation:isolate}
+    .hero:before {content:"";position:absolute;right:-8%;top:-90px;width:390px;height:390px;
+        border-radius:50%;border:1px solid rgba(124,230,167,.27);
+        box-shadow:0 0 0 24px rgba(124,230,167,.035),0 0 0 65px rgba(124,230,167,.025);
+        animation:neuron-pulse 7s ease-in-out infinite;z-index:-1}
+    .hero:after {content:"🧠";position:absolute;right:12%;top:20px;font-size:5.5rem;
+        opacity:.25;filter:drop-shadow(0 0 20px #70de9f);
+        animation:neuron-float 6s ease-in-out infinite;z-index:-1}
+    [data-testid="stMetric"] {transition:transform .25s ease,border-color .25s ease}
+    [data-testid="stMetric"]:hover {transform:translateY(-3px);border-color:#38ca85}
+    @keyframes neuron-pulse {0%,100%{transform:scale(.98);opacity:.65}50%{transform:scale(1.08);opacity:1}}
+    @keyframes neuron-float {0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    @media (prefers-reduced-motion:reduce) {
+        .hero:before,.hero:after {animation:none}
+        [data-testid="stMetric"] {transition:none}
+    }
     </style>
     """,
     unsafe_allow_html=True,
