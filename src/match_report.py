@@ -86,6 +86,9 @@ _QUERY_FILLER = {
     "mejores", "probabilidades", "momios", "noticias", "lesiones",
     "estadisticas", "fecha", "calendario", "todos", "todas",
     "noviembre", "diciembre", "octubre", "enero", "febrero", "marzo",
+    "por", "informacion", "sobre", "cuando", "donde", "cual",
+    "muestra", "muestrame", "ver", "hay", "dia", "jornada",
+    "quieres", "puedes", "cuanto", "cuantos", "actualizado",
     "abril", "mayo", "junio", "julio", "agosto", "septiembre",
 }
 
