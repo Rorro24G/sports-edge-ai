@@ -1,6 +1,8 @@
 name: Sports Edge AI - informe diario 6 AM Mexico
 
 on:
+  push:
+    branches: [main]
   schedule:
     # Ciudad de Mexico (UTC-6 durante todo el ano): 06:00 hora local.
     # Los cron de GitHub Actions pueden retrasarse; no garantizan minuto exacto.
