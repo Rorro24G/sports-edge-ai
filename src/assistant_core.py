@@ -16,7 +16,7 @@ from .player_props import (
     PlayerSourceError, parse_player_question, resolve_player_in_games,
     fetch_roster, fetch_gamelog, parse_gamelog, summarize_prop,
 )
-from .brain_dashboard import load_today_snapshot, morning_covers_picks
+from .brain_dashboard import load_today_snapshot, morning_covers_picks, load_backtest
 from .parlay_research import build_reference_parlays
 from .covers_public import fetch_public_picks, CoversSourceError
 from .live_board import fetch_scoreboard, CalendarSourceError
@@ -86,7 +86,7 @@ def answer_query(
     question: str, *, context: dict | None = None, now: datetime | None = None,
     board_fetch=fetch_scoreboard, covers_fetch=fetch_public_picks,
     roster_fetch=fetch_roster, gamelog_fetch=fetch_gamelog,
-    report_loader=load_today_snapshot,
+    report_loader=load_today_snapshot, backtest_loader=load_backtest,
 ) -> dict:
     """Returns a text answer with traceable sources and conversation context."""
     context = dict(context or {})
@@ -111,6 +111,64 @@ def answer_query(
         except ValueError:
             target = request.target_date
     context["date_cdmx"] = target.isoformat()
+
+    # Resultados históricos de REFERENCIAS públicas, nunca el historial privado.
+    about_audit = bool(re.search(
+        r"\b(?:acierto|aciertos|pegaron|ganaron|perdieron|rendimiento|"
+        r"resultados|roi|rentabilidad|retroceso|backtest)\b", q
+    ) and re.search(r"\b(?:covers|picks?|pronosticos?|referencias?)\b", q)
+        and not re.search(r"\b(?:mi historial|bank|mis apuestas)\b", q))
+    if about_audit:
+        audit = backtest_loader(clock.date())
+        if audit is None:
+            return {
+                "reply": "Aún no tengo un reporte de auditoría de hoy. "
+                         "La app guarda las referencias antes de los partidos "
+                         "y comprueba sus resultados al día siguiente con ESPN. "
+                         "No se calcularán aciertos con pronósticos obtenidos "
+                         "después del resultado.",
+                "sources": [], "context": context,
+            }
+        filtered = list(audit.get("grades", {}).values())
+        # Al solicitar ayer/una fecha, mostrar exclusivamente esa fecha,
+        # sin transformar la tasa global en la de una jornada concreta.
+        if _is_explicit_date(message):
+            filtered = [x for x in filtered if x.get("fecha") == target.isoformat()]
+        filtered = [x for x in filtered if x.get("resultado") in ("ganado", "perdido")]
+        if not filtered:
+            return {
+                "reply": "No hay referencias de Covers con resultado FINAL de ESPN "
+                         "verificado para " +
+                         (target.isoformat() if _is_explicit_date(message)
+                          else "las jornadas archivadas") +
+                         ". No se pueden presentar porcentajes todavía.",
+                "sources": [], "context": context,
+            }
+        wins = sum(row["resultado"] == "ganado" for row in filtered)
+        from decimal import Decimal
+        profit = sum((Decimal(row["beneficio_unidad"]) for row in filtered),
+                     Decimal("0"))
+        n = len(filtered)
+        pct = 100 * wins / n
+        roi = 100 * profit / n
+        return {
+            "reply": (
+                f"Auditoría de referencias de Covers: {n} encuentros "
+                f"verificados por ID con resultado FINAL ESPN. "
+                f"Ganadas {wins}; perdidas {n-wins}; "
+                f"acierto observado {pct:.1f}%. "
+                f"Resultado hipotético de 1 unidad por partido: "
+                f"{profit:+.2f} unidades; ROI retrospectivo {roi:+.1f}%. "
+                "NO son apuestas que hayas hecho, ni ganancias reales, "
+                "ni la tasa de acierto futura del modelo. "
+                "Las cuotas proceden de capturas Covers prepartido, "
+                "no de una casa que garantice aceptarlas."
+            ),
+            "sources": _trusted_sources([
+                row.get("fuente_espn_resultado", "") for row in filtered[-6:]
+            ]),
+            "context": context,
+        }
 
     if re.search(r"\b(?:bank|historial|registrar|voy a meter|apostar)\b", q):
         return {
