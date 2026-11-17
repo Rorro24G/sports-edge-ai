@@ -3,6 +3,10 @@ from datetime import datetime
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 from streamlit.testing.v1 import AppTest
+from unittest.mock import patch as content_patch
+# Keep unrelated content services independent of the network in UI tests.
+content_patch("src.news_ui.cached_news", return_value={"articles": [], "checked_at_utc": "offline fixture"}).start()
+content_patch("src.parlay_ui.cached_live_report", return_value={"leagues": {}, "generated_at_utc": "offline fixture"}).start()
 
 today = datetime.now(ZoneInfo("America/Mexico_City")).date().isoformat()
 report = {"date_cdmx": today, "generated_at_utc": datetime.now(
@@ -38,3 +42,4 @@ with patch("src.brain_dashboard.load_today_snapshot", return_value=report):
     assert "Fuente:" in draft and "Covers" in draft
     assert "NO es una cuota real" in draft
     print("STREAMLIT_PARLAY_REVIEW_UI_OK")
+
