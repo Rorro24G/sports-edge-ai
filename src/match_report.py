@@ -151,8 +151,8 @@ def relevant_matches(rows: list[dict], question: str) -> tuple[list[dict], bool]
     """
     query = normalized(question)
     # Strip common date formats before finding an explicit two-team query.
-    query = re.sub(r"\\b20\\d{2}-\\d{2}-\\d{2}\\b", " ", query)
-    explicit = re.search(r"(.+?)\\s+(?:vs\\.?|versus|contra|@)\\s+(.+)", query)
+    query = re.sub(r"\b20\d{2}-\d{2}-\d{2}\b", " ", query)
+    explicit = re.search(r"(.+?)\s+(?:vs\.?|versus|contra|@)\s+(.+)", query)
     if explicit:
         first = _requested_tokens(explicit.group(1))
         second = _requested_tokens(explicit.group(2))
