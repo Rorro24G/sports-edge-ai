@@ -213,7 +213,10 @@ def render_results(scenario: GameScenario, result: SimulationResult, *,
     st.markdown("#### Distribución de 10,000 escenarios")
     st.bar_chart(result.histogram, x="Puntos", y="Frecuencia",
                  use_container_width=True)
-    st.caption(source_note + " · distribución normal aproximada con variación histórica.")
+    method = ("Muestreo empírico de marcadores ESPN previos + variación residual"
+              if result.simulation_method == "BOOTSTRAP_ESPN_RECIENTE"
+              else "Distribución normal exploratoria")
+    st.caption(source_note + " · " + method + " · no calibrado.")
     with st.expander("Precisión del simulador y supuestos", expanded=False):
         st.caption(
             f"Mediana {result.simulated_median_total} puntos. "
