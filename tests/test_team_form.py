@@ -110,6 +110,9 @@ class TeamFormTests(TestCase):
         self.assertIn("localía", base["method"])
         self.assertGreater(base["away_sd"], 0)
         self.assertEqual(base["score_correlation"], 0.0)
+        self.assertEqual(len(base["away_scored"]), 10)
+        self.assertEqual(len(base["home_allowed"]), 10)
+        self.assertEqual(base["away_scored"][0], 108.0)
         self.assertEqual(base["status"], "HISTORICO_ESPN_PREPARTIDO_NO_CALIBRADO")
 
     def test_history_simulation_refuses_insufficient_samples(self):
