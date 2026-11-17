@@ -8,6 +8,7 @@ import streamlit as st
 from .ledger_text import parse_bet_message
 from .pick_ledger import add_bet, settle_bet, ledger_rows, metrics, LedgerError
 from .ledger_store import initialize, read_ledger, transact, export_json, restore_backup
+from . import ledger_github_store as github_store
 
 
 def _secret(name: str) -> str:
@@ -28,9 +29,32 @@ def render() -> None:
                    "en los secretos de Streamlit. No se guardarán datos personales sin protección.")
         return
     path = _secret("LEDGER_DB_PATH")
-    if not path:
-        st.warning("No hay almacenamiento persistente configurado (LEDGER_DB_PATH). "
-                   "El disco temporal de Streamlit no garantiza conservar apuestas después de reinicios.")
+    repo = _secret("LEDGER_GITHUB_REPO")
+    token = _secret("LEDGER_GITHUB_TOKEN")
+    if repo or token:
+        if not repo or not token:
+            st.warning("Configura juntos LEDGER_GITHUB_REPO y LEDGER_GITHUB_TOKEN.")
+            return
+        branch = _secret("LEDGER_GITHUB_BRANCH") or "main"
+        file_path = _secret("LEDGER_GITHUB_PATH") or "private/historial.json"
+        store_read = lambda: github_store.read_ledger(repo, token, branch=branch, path=file_path)
+        store_initialize = lambda amount, currency: github_store.initialize(
+            repo, token, amount, currency, branch=branch, path=file_path)
+        store_transact = lambda operation: github_store.transact(
+            repo, token, operation, branch=branch, path=file_path)
+        store_restore = lambda blob: github_store.restore_backup(
+            repo, token, blob, branch=branch, path=file_path)
+        st.caption("Historial guardado en repositorio privado de GitHub. Cada cambio es versionado.")
+    elif path:
+        store_read = lambda: read_ledger(path)
+        store_initialize = lambda amount, currency: initialize(path, amount, currency)
+        store_transact = lambda operation: transact(path, operation)
+        store_restore = lambda blob: restore_backup(path, blob)
+        st.caption("Historial SQLite local: el volumen configurado debe ser persistente.")
+    else:
+        st.warning("Falta almacenamiento persistente. Configura un repositorio privado "
+                   "de GitHub con token de acceso limitado, o un LEDGER_DB_PATH "
+                   "en volumen persistente. No se guardarán apuestas en disco temporal.")
         return
     if not st.session_state.get("ledger_unlocked", False):
         supplied = st.text_input("Clave privada del historial", type="password",
@@ -47,7 +71,7 @@ def render() -> None:
         st.session_state.pop("ledger_draft", None)
         st.rerun()
     try:
-        ledger = read_ledger(path)
+        ledger = store_read()
     except (LedgerError, OSError, ValueError) as exc:
         st.error("No se pudo leer el historial: " + str(exc))
         return
@@ -58,7 +82,7 @@ def render() -> None:
             currency = st.selectbox("Moneda", ["MXN", "USD"])
             if st.form_submit_button("Crear historial"):
                 try:
-                    initialize(path, starting, currency)
+                    store_initialize(starting, currency)
                     st.rerun()
                 except (LedgerError, OSError) as exc:
                     st.error(str(exc))
@@ -66,7 +90,7 @@ def render() -> None:
                                   type=["json"], key="restore_ledger")
         if backup is not None and st.button("Confirmar restauración"):
             try:
-                restore_backup(path, backup.getvalue())
+                store_restore(backup.getvalue())
                 st.rerun()
             except (LedgerError, OSError) as exc:
                 st.error(str(exc))
@@ -101,7 +125,7 @@ def render() -> None:
         if st.button("Confirmar y guardar apuesta", key="bet_save"):
             try:
                 command = dict(draft, date_cdmx=event_date.isoformat())
-                transact(path, lambda data: add_bet(data, **command))
+                store_transact(lambda data: add_bet(data, **command))
                 st.session_state.pop("ledger_draft", None)
                 st.success("Apuesta guardada en el historial privado")
                 st.rerun()
@@ -121,7 +145,7 @@ def render() -> None:
         outcome = st.selectbox("Resultado confirmado", ["ganado", "perdido", "push", "anulado"])
         if st.button("Confirmar resultado", key="bet_settle"):
             try:
-                transact(path, lambda data: settle_bet(data, chosen, outcome))
+                store_transact(lambda data: settle_bet(data, chosen, outcome))
                 st.success("Resultado registrado")
                 st.rerun()
             except (LedgerError, OSError) as exc:
@@ -158,7 +182,7 @@ def render() -> None:
             if st.button("Confirmar " + candidate["status"] + " · " +
                          candidate["bet_id"][:8], key="grade_" + candidate["bet_id"]):
                 try:
-                    transact(path, lambda data: settle_bet(
+                    store_transact(lambda data: settle_bet(
                         data, candidate["bet_id"], candidate["status"]))
                     st.session_state.pop("ledger_grade_suggestions", None)
                     st.rerun()
