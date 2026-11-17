@@ -114,7 +114,7 @@ def answer_query(
 
     # Resultados históricos de REFERENCIAS públicas, nunca el historial privado.
     about_audit = bool(re.search(
-        r"\b(?:acierto|aciertos|pegaron|ganaron|perdieron|rendimiento|"
+        r"\b(?:acierto|aciertos|acertaron|pegaron|ganaron|perdieron|rendimiento|"
         r"resultados|roi|rentabilidad|retroceso|backtest)\b", q
     ) and re.search(r"\b(?:covers|picks?|pronosticos?|referencias?)\b", q)
         and not re.search(r"\b(?:mi historial|bank|mis apuestas)\b", q))
