@@ -25,6 +25,9 @@ from .live_board import fetch_scoreboard, CalendarSourceError
 from .match_report import relevant_matches
 from .pick_reference import covers_projection
 from .pick_context import match_espn_event
+from .team_form import fetch_team_schedule
+from .independent_picks import build_slate, evaluate_game, add_covers_price
+from .picks_feed import live_picks_catalog
 
 MX = ZoneInfo("America/Mexico_City")
 _PROP_LABEL = {"PTS": "puntos", "REB": "rebotes",
@@ -99,6 +102,7 @@ def answer_query(
     question: str, *, context: dict | None = None, now: datetime | None = None,
     board_fetch=fetch_scoreboard, covers_fetch=fetch_public_picks,
     roster_fetch=fetch_roster, gamelog_fetch=fetch_gamelog,
+    team_fetch=fetch_team_schedule,
     report_loader=load_today_snapshot, backtest_loader=load_backtest,
     prop_odds_fetch=None, prop_api_key: str = "",
 ) -> dict:
@@ -132,7 +136,7 @@ def answer_query(
     about_audit = bool(re.search(
         r"\b(?:acierto|aciertos|acertaron|pegaron|ganaron|perdieron|rendimiento|"
         r"resultados|roi|rentabilidad|retroceso|backtest)\b", q
-    ) and re.search(r"\b(?:covers|picks?|pronosticos?|referencias?)\b", q)
+    ) and re.search(r"\b(?:covers|referencias?)\b", q)
         and not re.search(r"\b(?:mi historial|bank|mis apuestas)\b", q))
     if about_audit:
         audit = backtest_loader(clock.date())
@@ -354,95 +358,144 @@ def answer_query(
             "reply": "Prueba «Picks NBA hoy», «Analiza Charlotte vs Lakers», "
                      "«Over de 24.5 puntos de Luka Doncic NBA», "
                      "«Dame 3 parlays de 2 selecciones». "
-                     "Solo presentaré datos verificables de Covers y ESPN. "
+                     "Mis selecciones propias se basan en históricos ESPN; Covers da los momios. "
                      "Para registrar apuestas debes usar Mi historial.",
             "sources": [], "context": context,
         }
 
-    # When asking only for picks, use the daily report for an instant reply.
+    # Sports Edge AI owns its picks: historical ESPN -> independent model;
+    # Covers is consulted only AFTER the team is selected, for optional prices.
     broad_picks = bool(re.search(r"\b(?:picks?|pronosticos?|selecciones)\b", q))
     has_matchup = bool(re.search(r"\b(?:vs|versus|contra|@)\b", q))
-    if broad_picks and not has_matchup and target == clock.date():
-        report = report_loader(target)
-        if report:
-            references = morning_covers_picks(report, now=clock, per_league=3)
-            selected = [r for r in references if r["Liga"] in request.sports]
-            if selected:
-                lines = ["Referencias prepartido de Covers (no picks propios):"]
-                for r in selected:
-                    lines.append(
-                        "- " + r["Liga"] + " · " + r["Partido"] +
-                        " · " + r["Referencia ML (Covers)"] +
-                        " a " + r["Momio publicado"] +
-                        " · " + r["Hora CDMX"] + " CDMX"
-                    )
-                lines.append("Seleccionadas por diferencia de marcador, "
-                             "NO por probabilidad de ganar. Precios capturados "
-                             "por el informe, no momios en vivo.")
-                return {"reply": "\n".join(lines), "sources": _trusted_sources(
-                    [r["Fuente"] for r in selected]), "context": context}
+    if broad_picks and not has_matchup:
+        leagues = [x for x in request.sports if x in _SPORTS]
+        if not leagues:
+            leagues = list(_SPORTS)
+        boards, prices = {}, []
+        for league in leagues:
+            try:
+                boards[league] = board_fetch(league, target)["games"]
+            except (CalendarSourceError, OSError, KeyError, ValueError):
+                boards[league] = []
+            try:
+                prices.extend(covers_fetch(league, target).get("events", []))
+            except (CoversSourceError, OSError, ValueError):
+                continue
+        slate = build_slate(
+            boards, target, team_fetch=team_fetch,
+            covers_events=prices, now=clock, per_league=5,
+        )
+        picks = slate["picks"]
+        if not picks:
+            return {"reply": (
+                "Sports Edge AI no encontró una selección propia suficientemente "
+                "definida para esa jornada. "
+                "Puede faltar historial ESPN, no haber juegos por empezar o "
+                "resultar demasiado equilibrados. "
+                "No elijo al favorito de Covers para rellenar la lista."
+                ), "sources": [], "context": context}
+        lines = [
+            "Selecciones experimentales del cerebro Sports Edge AI "
+            "(modelo propio basado en resultados previos de ESPN):"
+        ]
+        urls = []
+        for item in picks:
+            price = (" · Momio publicado por Covers " + item["market_price"]
+                     if item.get("market_price") else " · sin momio verificable")
+            lines.append(
+                "- " + item["sport"] + " · " + item["away"] + " vs " +
+                item["home"] + " · " + item["team"] + " ML · estimación "
+                f"{item['probability_experimental']:.1%}" +
+                price + " · " + item["time"] + " CDMX"
+            )
+            urls.extend([item.get("espn_url"), item.get("market_source")])
+        lines.append(
+            "El ganador lo decide SEAI, no Covers. "
+            "Modelo estadístico inicial NO calibrado ni validado fuera de muestra; "
+            "estimaciones experimentales, sin apuestas ni importe recomendado."
+        )
+        return {"reply": "\n".join(lines),
+                "sources": _trusted_sources([x for x in urls if x]), "context": context}
 
-    # For a specific matchup (including follow-ups), check Covers for that date.
+    # A specific matchup is found in ESPN too; a Covers pick is NEVER the
+    # substitute for the model decision.
     query = message
     if not has_matchup and context.get("matchup") and re.search(
         r"\b(?:momios?|total|spread|handicap|lesiones|de ese partido)\b", q
     ):
         query = context["matchup"]
-    leagues = [s for s in request.sports if s in _SPORTS]
+    leagues = [x for x in request.sports if x in _SPORTS]
     if not leagues:
         leagues = list(_SPORTS)
     if context.get("sport") in _SPORTS and not re.search(
         r"\b(?:nba|nfl|nhl)\b", normalized(query)
     ):
         leagues = [context["sport"]]
-    candidates = []
-    errors = []
+
+    external, boards, errors = [], {}, []
     for league in leagues:
         try:
-            batch = covers_fetch(league, target)
-            candidates.extend(batch.get("events", []))
-        except (CoversSourceError, ValueError, OSError) as exc:
-            errors.append(league + " (" + str(exc) + ")")
-    exact, was_specific = relevant_matches(candidates, query)
+            boards[league] = board_fetch(league, target)["games"]
+        except (CalendarSourceError, OSError, ValueError, KeyError):
+            boards[league] = []
+        try:
+            external.extend(covers_fetch(league, target).get("events", []))
+        except (CoversSourceError, OSError, ValueError):
+            errors.append(league)
+    events = live_picks_catalog(external, boards, target)
+    exact, was_specific = relevant_matches(events, query)
     if not exact:
         return {"reply": (
-            "No encontré un partido inequívoco en Covers para la fecha indicada. "
-            "No voy a enseñarte un encuentro distinto al que pediste. "
-            "Escribe ambos equipos y la liga."
-            + (" Fuentes con fallos: " + ", ".join(errors) if errors else "")
-        ), "sources": [], "context": context}
-    game = exact[0]
+            "No encontré un partido inequívoco en ESPN/Covers para la fecha indicada. "
+            "Escribe ambos equipos y la liga para ubicar el juego exacto."
+            ), "sources": [], "context": context}
     if was_specific and len(exact) > 1:
         return {"reply": "Encontré varios encuentros compatibles. Escribe ambos "
                          "equipos y la liga para no confundirme de partido.",
                 "sources": [], "context": context}
-    reference = covers_projection(game, now=clock)
-    lines = [
-        game["liga"] + " · " + game["partido"] + " · " +
-        game["hora_cdmx"] + " CDMX."
-    ]
-    if reference:
-        lines.append(
-            "Marcador proyectado por Covers: " +
-            reference["marcador_proyectado"] + " (visitante/local). "
-            "Favorece a " + reference["equipo_proyectado"] + "."
-        )
-        if reference["momio_covers"]:
-            lines.append(
-                "Moneyline de referencia del equipo favorecido: " +
-                reference["momio_covers"] + " publicado por Covers. "
-                "No es cotización vigente confirmada de una casa."
-            )
+
+    game = exact[0]
+    verified = next((
+        row for row in boards.get(game["liga"], [])
+        if str(row.get("event_id")) == str(game.get("espn_event_id"))
+    ), None)
+    if verified is None:
+        verified = match_espn_event(game, boards.get(game["liga"], []))
+    lines = [game["liga"] + " · " + game["partido"] +
+             " · " + game["hora_cdmx"] + " CDMX."]
+    sources = [game.get("fuente", "")]
+    if verified is None:
+        lines.append("No tengo un evento ESPN inequívoco: no emitiré un pick propio.")
     else:
-        lines.append("Sin marcador completo proyectado por Covers.")
-    for label, value in (("Spread", game.get("spreads_publicados")),
-                         ("Total", game.get("totales_publicados"))):
+        own = evaluate_game(verified, target, team_fetch=team_fetch, now=clock)
+        own = add_covers_price(own, verified, external, target)
+        sources.append(own.get("espn_url", ""))
+        if own["status"] == "CANDIDATO_EXPERIMENTAL":
+            lines.append(
+                "SELECCIÓN SPORTS EDGE AI (experimental): " + own["team"] +
+                " ML. Estimación exploratoria " +
+                f"{own['probability_experimental']:.1%}" +
+                " basada en " + str(own["away_games"]) +
+                "/" + str(own["home_games"]) + " resultados ESPN previos."
+            )
+        elif own["status"] == "PASAR":
+            lines.append("Decisión Sports Edge AI: PASAR. " + own["reason"] + ".")
+        else:
+            lines.append("Decisión Sports Edge AI: sin selección. " +
+                         own.get("reason", "Faltan datos"))
+        if own.get("market_price"):
+            lines.append("Momio de Covers para la selección SEAI: " +
+                         own["market_price"] +
+                         " (precio publicado, sujeto a cambios).")
+            sources.append(own.get("market_source", ""))
+    for label, value in (("Spread Covers", game.get("spreads_publicados")),
+                         ("Total Covers", game.get("totales_publicados"))):
         if value:
-            lines.append(label + " publicado: " + str(value))
-    lines.append("Esto es una lectura de datos de terceros, NO un pick propio "
-                 "con valor esperado validado.")
+            lines.append(label + ": " + str(value))
+    lines.append("Modelo propio estadístico, aún NO calibrado ni validado. "
+                 "No garantiza rentabilidad ni propone importe de apuesta.")
     context.update({"matchup": game["partido"], "sport": game["liga"]})
     return {"reply": "\n\n".join(lines),
-            "sources": _trusted_sources([game.get("fuente", "")]),
+            "sources": _trusted_sources([url for url in sources if url]),
             "context": context}
 

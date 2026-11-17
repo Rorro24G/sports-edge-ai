@@ -1,4 +1,4 @@
-"""Formas recientes de equipos NFL/NBA desde resultados oficiales ESPN.
+"""Formas recientes de equipos NFL/NBA/NHL desde resultados oficiales ESPN.
 
 Los datos solamente incluyen partidos COMPLETADOS antes de la fecha del
 encuentro a analizar. Las medias son descripciones, NO un modelo calibrado.
@@ -25,15 +25,15 @@ class TeamFormError(RuntimeError):
 
 
 def season_year(sport: str, day: date) -> int:
-    if sport == "NBA":
+    if sport in ("NBA", "NHL"):
         return day.year + 1 if day.month >= 7 else day.year
     if sport == "NFL":
         return day.year if day.month >= 7 else day.year - 1
-    raise ValueError("Solo NBA o NFL")
+    raise ValueError("Solo NBA, NFL o NHL")
 
 
 def schedule_url(sport: str, team_id: str, day: date) -> str:
-    if sport not in ("NBA", "NFL") or not re.fullmatch(r"\d{1,8}", str(team_id)):
+    if sport not in ("NBA", "NFL", "NHL") or not re.fullmatch(r"\d{1,8}", str(team_id)):
         raise ValueError("Deporte o equipo no válido")
     group, league = SPORT_PATH[sport]
     return (f"https://site.api.espn.com/apis/site/v2/sports/{group}/{league}"
@@ -58,7 +58,7 @@ def _score(raw: object) -> float | None:
 def completed_team_games(payload: dict, sport: str, team_id: str,
                          before: date) -> list[dict]:
     """ESPN schedule events to verified per-team chronological results."""
-    if sport not in ("NFL", "NBA"):
+    if sport not in ("NFL", "NBA", "NHL"):
         raise ValueError("Liga sin historial conectado")
     events = payload.get("events") or []
     if not isinstance(events, list):

@@ -263,36 +263,21 @@ def render_brain_header() -> None:
 
 
 def render_morning_snapshot() -> None:
-    """One compact radar; current ESPN/Covers requests appear below."""
+    """Compact daily radar; Covers never appears as Sports Edge AI's pick."""
     import streamlit as st
 
     today = datetime.now(MEXICO).date()
     report = load_today_snapshot(today)
     st.markdown("#### Radar del día")
     if not report:
-        # No stale or missing report banners. The live catalog below works
-        # independently of the morning GitHub Action.
         return
-
     rows = morning_rows(report)
     cols = st.columns(3)
-    for index, league in enumerate(LEAGUES):
-        cols[index].metric(league, sum(row["Liga"] == league for row in rows))
-
-    selected = morning_covers_picks(report)
-    if selected:
-        st.caption("Proyecciones y precios de Covers guardados en el informe matutino.")
-        display = [
-            {("Selección ML" if k == "Referencia ML (Covers)" else k): v
-             for k, v in item.items() if k != "Fuente"}
-            for item in selected
-        ]
-        st.dataframe(display, hide_index=True, use_container_width=True)
-    with st.expander("Informe matutino y resultados anteriores", expanded=False):
-        st.caption("Corte: " + report["generated_at_utc"]
-                   + " UTC · cuotas históricas del momento de captura")
-        if not selected:
-            st.caption("El corte matutino no registró referencias prepartido con ML.")
+    for i, league in enumerate(LEAGUES):
+        cols[i].metric(league, sum(row["Liga"] == league for row in rows))
+    with st.expander("Archivo de datos del informe matutino", expanded=False):
+        st.caption("Corte ESPN/Covers: " + report["generated_at_utc"]
+                   + " UTC. Son datos externos, no elecciones del cerebro.")
         if rows:
             st.dataframe(rows, use_container_width=True, hide_index=True)
         render_reference_backtest()
