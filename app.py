@@ -24,6 +24,7 @@ from src.simulator_research_ui import render as render_real_simulator
 from src.simulation_view import render_results as show_simulated_scenario
 from src.player_props import fetch_roster, fetch_gamelog, parse_player_question
 from src.player_props_ui import render_player_research
+from src.prop_offers import fetch_player_prop_offers
 from src.brain_dashboard import render_brain_header, render_morning_snapshot
 
 st.set_page_config(
@@ -144,6 +145,13 @@ def cached_player_roster(team_id):
 def cached_player_gamelog(player_id, target):
     return fetch_gamelog(player_id, target)
 
+@st.cache_data(ttl=180, show_spinner=False)
+def cached_prop_offers(api_key, game, target, player_name, stat, direction, line):
+    return fetch_player_prop_offers(
+        api_key, game=game, target=target, player_name=player_name,
+        stat=stat, direction=direction, line=line,
+    )
+
 @st.cache_data(ttl=3600, show_spinner=False)
 def cached_team_schedule(sport, team_id, target):
     return fetch_team_schedule(sport, team_id, target)
@@ -184,6 +192,7 @@ with analysis_tab:
         cached_odds.clear()
         cached_player_roster.clear()
         cached_player_gamelog.clear()
+        cached_prop_offers.clear()
         st.info("Se vació la caché de Picks. La próxima consulta volverá a solicitar datos a las fuentes; si alguna falla, se indicará.")
     request = st.session_state.get("last_analysis_request")
     if request is not None:
@@ -208,6 +217,8 @@ with analysis_tab:
                         games=player_board["games"],
                         roster_fetch=cached_player_roster,
                         gamelog_fetch=cached_player_gamelog,
+                        prop_odds_fetch=cached_prop_offers if safe_odds_key() else None,
+                        prop_api_key=safe_odds_key(),
                     )
         links = picks_links(request.sports) if not player_question else []
         published = []
