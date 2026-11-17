@@ -64,21 +64,29 @@
 const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d'),stage=document.getElementById('stage');
 const intro=document.getElementById('intro'),ui=document.getElementById('brain-ui'),flight=document.getElementById('flight-label');
 const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;document.body.classList.toggle('reduced',reduced);
-let W=1000,H=760,state='intro',angle=-.18,tilt=.12,paused=reduced,drag=false,lastX=0,lastY=0,start=0,zoom=1,breathing=1,target=null,ready=false;
+let W=1000,H=760,state='intro',angle=-.18,tilt=.12,paused=reduced,drag=false,lastX=0,lastY=0,start=0,zoom=1,breathing=1,flightBlend=0,flightX=0,flightY=0,target=null,ready=false;
 const nodes=[...document.querySelectorAll('.neuron')];
 const anchors=[[-.64,-.65,.60],[.64,-.64,.60],[-.88,.05,.18],[.88,.06,.18],[-.50,.74,.48],[.50,.74,.48]];
 function send(type,extra={}){window.parent.postMessage({isStreamlitMessage:true,type,...extra},'*')}
 function size(){W=stage.clientWidth;H=stage.clientHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);send('streamlit:setFrameHeight',{height:H})}addEventListener('resize',size);
 function showBrain(){state='brain';intro.classList.add('hidden');intro.inert=true;ui.style.opacity=1;ui.inert=false;nodes[0].focus({preventScroll:true})}
-document.getElementById('enter').onclick=()=>{intro.classList.add('leaving');intro.inert=true;if(reduced){showBrain();return}state='entry';start=performance.now();flight.textContent='CONECTANDO';flight.style.opacity=1};
-function openSection(button){if(state!=='brain')return;target=button.dataset.page;state='dive';start=performance.now();ui.style.opacity=0;ui.inert=true;flight.textContent=button.innerText;flight.style.opacity=1;if(reduced)finish()}
-function finish(){state='done';send('streamlit:setComponentValue',{value:{page:target,nonce:Date.now()},dataType:'json'});flight.textContent='ABRIENDO '+target.toUpperCase();if(window.parent===window){flight.textContent=target.toUpperCase()+' · CONEXIÓN LISTA';setTimeout(()=>{zoom=1;showBrain();flight.style.opacity=0},900)}}
+document.getElementById('enter').onclick=()=>{intro.classList.add('leaving');intro.inert=true;if(reduced){showBrain();return}state='entry';start=performance.now();flight.textContent='';flight.style.opacity=0};
+function openSection(button){
+  if(state!=='brain')return;
+  const index=nodes.indexOf(button),focus=project(anchors[index]);
+  flightX=focus[0]-W/2;flightY=focus[1]-H*.48;flightBlend=0;
+  target=button.dataset.page;state='dive';start=performance.now();
+  ui.style.opacity=0;ui.inert=true;
+  flight.textContent=button.innerText;flight.style.opacity=1;
+  if(reduced)finish();
+}
+function finish(){state='done';send('streamlit:setComponentValue',{value:{page:target,nonce:Date.now()},dataType:'json'});flight.textContent=target.toUpperCase();if(window.parent===window){setTimeout(()=>{zoom=1;flightBlend=0;showBrain();flight.style.opacity=0},900)}}
 nodes.forEach(b=>b.onclick=()=>openSection(b));
 function updatePause(){document.getElementById('rotate').textContent=paused?'Reanudar giro':'Pausar giro';document.getElementById('rotate').setAttribute('aria-pressed',String(paused))}updatePause();
 document.getElementById('rotate').onclick=()=>{paused=!paused;updatePause()};document.getElementById('reset').onclick=()=>{angle=-.18;tilt=.12};
 canvas.onpointerdown=e=>{if(state!=='brain')return;drag=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)};canvas.onpointermove=e=>{if(!drag)return;angle+=(e.clientX-lastX)*.005;tilt=Math.max(-.5,Math.min(.5,tilt+(e.clientY-lastY)*.003));lastX=e.clientX;lastY=e.clientY};canvas.onpointerup=canvas.onpointercancel=()=>drag=false;
 addEventListener('keydown',e=>{if(state!=='brain')return;if(e.key==='ArrowLeft'){angle-=.09;e.preventDefault()}if(e.key==='ArrowRight'){angle+=.09;e.preventDefault()}});
-function project(p){let[x,y,z]=p;let a=x*Math.cos(angle)+z*Math.sin(angle),b=-x*Math.sin(angle)+z*Math.cos(angle);let c=y*Math.cos(tilt)-b*Math.sin(tilt),d=y*Math.sin(tilt)+b*Math.cos(tilt);let scale=Math.min(W*.255,H*.32)*zoom*breathing,depth=4.8/(4.8-d);return[W/2+a*scale*depth,H*.48+c*scale*depth,d]}
+function project(p){let[x,y,z]=p;let a=x*Math.cos(angle)+z*Math.sin(angle),b=-x*Math.sin(angle)+z*Math.cos(angle);let c=y*Math.cos(tilt)-b*Math.sin(tilt),d=y*Math.sin(tilt)+b*Math.cos(tilt);let scale=Math.min(W*.255,H*.32)*zoom*breathing,depth=4.8/(4.8-d);return[W/2+a*scale*depth-flightX*flightBlend*zoom,H*.48+c*scale*depth-flightY*flightBlend*zoom,d]}
 // Two folded hemispheres share one rotating 3D coordinate system with the nodes.
 function brainPoint(side,lat,lon){const ring=Math.sin(lat),fold=1+.035*Math.sin(lon*9+lat*5)*Math.sin(lat*7);return[side*(.12+.76*ring*(1+Math.cos(lon))*.5)*fold,-1.04*Math.cos(lat)*fold,.82*ring*Math.sin(lon)*fold]}
 const paths=[];for(const side of [-1,1]){for(let j=1;j<19;j++){let line=[];for(let k=0;k<=96;k++)line.push(brainPoint(side,j*Math.PI/19,k*Math.PI*2/96));paths.push(line)}for(let k=0;k<24;k++){let line=[];for(let j=0;j<=60;j++)line.push(brainPoint(side,j*Math.PI/60,k*Math.PI*2/24));paths.push(line)}}
@@ -131,7 +139,7 @@ function drawBrain(t=0){
     ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(near[0],near[1]);ctx.stroke();
   });
 }
-let last=performance.now(),lastPaint=-Infinity;function frame(t){if(t-lastPaint<25){requestAnimationFrame(frame);return}lastPaint=t;const dt=Math.min(t-last,40);last=t;ctx.clearRect(0,0,W,H);if(state==='intro'){if(!reduced)angle+=dt*.00004;ctx.globalAlpha=.5;drawBrain(t);ctx.globalAlpha=1}else if(state==='entry'){let p=Math.min((t-start)/1700,1);ctx.strokeStyle='#ff6678';ctx.lineWidth=1;ctx.shadowColor='#ff5365';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(W/2,H+30);ctx.bezierCurveTo(W*.37,H*.72,W*.62,H*.38,W/2,H*(.8-.48*p));ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<8;i++){let r=((p*2+i/8)%1)*Math.max(W,H);ctx.strokeStyle=`rgba(255,83,101,${.20*(1-r/Math.max(W,H))})`;ctx.beginPath();ctx.ellipse(W/2,H*.38,r*.72,r*.42,0,0,Math.PI*2);ctx.stroke()}if(p===1){flight.style.opacity=0;showBrain()}}else if(state==='brain'||state==='dive'||state==='done'){if(!paused&&!drag&&state==='brain')angle+=dt*.00010;if(state==='dive'){let p=Math.min((t-start)/850,1);zoom=1+Math.pow(p,3)*9;ctx.globalAlpha=1-p*.85;drawBrain(t);ctx.globalAlpha=1;if(p===1)finish()}else drawBrain(t)}requestAnimationFrame(frame)}
+let last=performance.now(),lastPaint=-Infinity;function frame(t){if(t-lastPaint<25){requestAnimationFrame(frame);return}lastPaint=t;const dt=Math.min(t-last,40);last=t;ctx.clearRect(0,0,W,H);if(state==='intro'){if(!reduced)angle+=dt*.00004;ctx.globalAlpha=.5;drawBrain(t);ctx.globalAlpha=1}else if(state==='entry'){let p=Math.min((t-start)/1700,1);ctx.strokeStyle='#ff6678';ctx.lineWidth=1;ctx.shadowColor='#ff5365';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(W/2,H+30);ctx.bezierCurveTo(W*.37,H*.72,W*.62,H*.38,W/2,H*(.8-.48*p));ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<8;i++){let r=((p*2+i/8)%1)*Math.max(W,H);ctx.strokeStyle=`rgba(255,83,101,${.20*(1-r/Math.max(W,H))})`;ctx.beginPath();ctx.ellipse(W/2,H*.38,r*.72,r*.42,0,0,Math.PI*2);ctx.stroke()}if(p===1){flight.style.opacity=0;showBrain()}}else if(state==='brain'||state==='dive'||state==='done'){if(!paused&&!drag&&state==='brain')angle+=dt*.00010;if(state==='dive'){let p=Math.min((t-start)/1100,1);let ease=1-Math.pow(1-p,3);flightBlend=ease;zoom=1+Math.pow(ease,2)*20;ctx.globalAlpha=1-p*.68;drawBrain(t);ctx.globalAlpha=1;ctx.fillStyle='rgba(255,28,70,'+(p*p*.53)+')';ctx.fillRect(0,0,W,H);if(p===1)finish()}else drawBrain(t)}requestAnimationFrame(frame)}
 addEventListener('message',e=>{if(e.source!==window.parent||e.data?.type!=='streamlit:render')return;if(!ready){ready=true;if(e.data.args?.skip_intro)showBrain()}size()});
 send('streamlit:componentReady',{apiVersion:1});size();requestAnimationFrame(frame);
 </script></body></html>

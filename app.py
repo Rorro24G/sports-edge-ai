@@ -81,17 +81,13 @@ def safe_odds_key():
 
 if section == "picks":
     render_morning_snapshot()
-    st.divider()
-    st.subheader("Ficha de picks · elige un partido")
-    st.caption(
-        "Escribe la liga, el equipo o un enfrentamiento. "
-        "Consulta selecciones de referencia, momios y contexto del partido."
-    )
+    st.markdown("## Explorar picks")
+    st.caption("Encuentros de ESPN, proyecciones y momios publicados por Covers.")
     with st.form("sports_query"):
         prompt = st.text_input(
             "¿Qué partido, jugador o mercado quieres analizar?",
-            value="Dame los partidos de NBA, NFL y NHL hoy",
-            placeholder="Over de 24.5 puntos de Luka Doncic NBA hoy",
+            value="",
+            placeholder="NBA hoy · Knicks vs Raptors · Over de 24.5 puntos",
         )
         submitted = st.form_submit_button("Analizar partido", use_container_width=True)
     if submitted:
@@ -110,8 +106,13 @@ if section == "picks":
         cached_player_roster.clear()
         cached_player_gamelog.clear()
         cached_prop_offers.clear()
-        st.info("Se vació la caché de Picks. La próxima consulta volverá a solicitar datos a las fuentes; si alguna falla, se indicará.")
+        st.toast("Datos actualizados")
     request = st.session_state.get("last_analysis_request")
+    if request is None:
+        # A live board appears without making the user submit the default query.
+        request = interpret_request("NBA NFL NHL hoy")
+        st.session_state["last_analysis_request"] = request
+        st.session_state["last_analysis_text"] = "NBA NFL NHL hoy"
     if request is not None:
         st.caption("Fecha: " + request.target_date.strftime("%d/%m/%Y")
                    + " · Ligas: " + ", ".join(request.sports) + " · CDMX")
@@ -139,27 +140,54 @@ if section == "picks":
                     )
         links = picks_links(request.sports) if not player_question else []
         published = []
-        for league, link in links:
+        covers_errors = []
+        for league, _link in links:
             try:
                 covers = cached_covers(league, request.target_date)
-            except (CoversSourceError, ValueError) as exc:
-                st.warning(f"{league}: no fue posible actualizar los datos. Intenta nuevamente.")
+            except (CoversSourceError, ValueError):
+                covers_errors.append(league)
                 continue
             published.extend(covers["events"])
-            st.caption(f"{league}: Actualizado {covers['checked_at_utc']} (UTC); "
-                       f"fecha editorial {covers['page_date']}")
+
+        # ESPN supplies the complete calendar; Covers enriches a verified
+        # match with actual published moneyline and score projections.
+        boards = {}
+        if not player_question:
+            for league in request.sports:
+                if league not in ("NBA", "NFL", "NHL"):
+                    continue
+                try:
+                    boards[league] = cached_scoreboard(
+                        league, request.target_date
+                    )["games"]
+                except (CalendarSourceError, KeyError, ValueError):
+                    boards[league] = []
+            from src.picks_feed import live_picks_catalog, pick_catalog_rows
+            published = live_picks_catalog(published, boards, request.target_date)
         from src.match_report import relevant_matches
         ranked, specific_request = relevant_matches(
             published, st.session_state.get("last_analysis_text", "")
         )
+        if not player_question and ranked:
+            st.markdown("### Partidos y momios")
+            st.dataframe(
+                pick_catalog_rows(ranked), use_container_width=True,
+                hide_index=True,
+            )
+            st.caption("ML = moneyline americano publicado por Covers. «—» indica "
+                       "que esa cuota no está verificada; no se sustituyen porcentajes.")
+        if covers_errors and not player_question:
+            st.caption("Covers temporalmente no disponible: " + ", ".join(covers_errors))
         if player_question:
             pass  # La consulta de jugador ya se respondió con evidencia ESPN.
         elif ranked:
             options = [
                 f"{game['liga']} · {game['partido']} · {game['hora_cdmx']} CDMX"
+                + (f" · ML {game['momio_visitante']} / {game['momio_local']}"
+                   if game.get('momio_visitante') and game.get('momio_local') else "")
                 for game in ranked
             ]
-            chosen = st.selectbox("Partido a analizar", options, key="selected_match")
+            chosen = st.selectbox("Seleccionar partido", options, key="selected_match")
             game = ranked[options.index(chosen)]
             st.markdown("### " + game["partido"] + " · " + game["liga"])
             st.caption("Fecha " + game["fecha_cdmx"] + " · "
@@ -172,22 +200,26 @@ if section == "picks":
                          str(game["proyeccion_local"])
                          if game["proyeccion_local"] is not None else "No disponible")
             from src.pick_evidence_ui import render_covers_evidence
-            render_covers_evidence(game)
+            if game.get("origen") == "Covers":
+                render_covers_evidence(game)
+                if game.get("fuente"):
+                    st.link_button("Consultar Covers", game["fuente"])
+            else:
+                st.caption("Partido ESPN: Covers no tiene una proyección y "
+                           "moneyline verificables para este juego.")
             from src.market_summary import game_market_probabilities
             market_p = game_market_probabilities(game)
-            st.markdown("**Probabilidad implícita del moneyline (solo si hay momio real)**")
+            st.markdown("**Umbral implícito de los momios**")
             if all(value is None for value in market_p.values()):
-                st.caption("Sin moneyline verificable para ambos equipos; "
-                           "no es posible calcular un umbral real de equilibrio. "
-                           "Las proyecciones porcentuales no son momios.")
+                st.caption("Covers no publicó moneylines verificables para este partido.")
             else:
                 p1, p2 = st.columns(2)
                 if market_p["visitante"] is not None:
                     p1.metric("Visitante · umbral de equilibrio", f"{market_p['visitante']:.2f}%")
                 if market_p["local"] is not None:
                     p2.metric("Local · umbral de equilibrio", f"{market_p['local']:.2f}%")
-                st.caption("Calculado exclusivamente a partir del precio americano, con "
-                           "posible margen del operador. NO es nuestra probabilidad de acierto.")
+                st.caption("Calculado del precio publicado, con margen comercial. "
+                           "No es una probabilidad predictiva.")
             api_key = safe_odds_key()
             if api_key:
                 with st.expander("Momios adicionales verificados de otras casas", expanded=False):
@@ -205,13 +237,9 @@ if section == "picks":
                         else:
                             st.caption("No hubo cuotas externas coincidentes con liga, "
                                        "equipos, fecha y hora de este encuentro.")
-            st.markdown("**Dinero apostado, boletos y actividad de Las Vegas**")
-            st.info(
-                "Los porcentajes de consenso proceden de concursos "
-                "gratuitos, no de dólares efectivamente apostados en casas de Las Vegas. "
-                "No hay datos de dinero ni boletos reales verificados para este juego; "
-                "no se inferirán a partir del consenso."
-            )
+            with st.expander("Consenso y contexto del mercado"):
+                st.caption("El consenso de Covers refleja participaciones de concursos, "
+                           "no el dinero apostado en casas.")
             st.markdown("**Jugadores, bajas, lesiones y contexto de ESPN**")
             try:
                 espn_board = cached_scoreboard(game["liga"], request.target_date)
@@ -272,21 +300,13 @@ if section == "picks":
                             st.caption("Titulares enlazados a ESPN; su contenido no se considera una lesión ni una alineación confirmada.")
                         else:
                             st.caption("ESPN no aportó artículos específicos en el resumen de este encuentro.")
-            st.caption(
-                "Las rachas completas de 5/10/15 partidos, estados médicos específicos "
-                "y noticias de entrenadores requieren fuentes adicionales verificadas."
-            )
-            st.markdown("**Validación de Picks de Sports Edge AI**")
-            st.caption("La selección de referencia anterior es únicamente una lectura del marcador "
-                       "proyectado. Para validarla se requiere backtesting, "
-                       "calibración y momios comparables de la misma fecha y mercado.")
-            st.warning("PICKS PROPIOS PENDIENTES DE VALIDACIÓN. No se atribuye probabilidad, "
-                       "EV, rentabilidad ni tamaño de apuesta a esta proyección externa.")
+            st.caption("Selecciones y precios de Covers son referencias externas; "
+                       "Sports Edge AI todavía no tiene un modelo propio calibrado.")
         else:
             if published and specific_request:
                 st.warning(
                     "Los equipos solicitados no coinciden con los partidos publicados "
-                    "para esta fecha. No mostraremos otro encuentro como si fuera el pedido."
+                    "para esta fecha. Revisa el nombre o cambia la fecha."
                 )
                 st.dataframe(
                     [{"Liga": row["liga"], "Partido publicado": row["partido"],
@@ -294,10 +314,7 @@ if section == "picks":
                     use_container_width=True, hide_index=True
                 )
             else:
-                st.warning(
-                    "No se encontraron proyecciones extraíbles para esa fecha y ligas. "
-                    "Esto no significa que no haya partidos. Consulta las fuentes originales."
-                )
+                st.caption("No hay partidos verificables para esa fecha y ligas.")
         if not player_question and ("ATP" in request.sports or "WTA" in request.sports):
             st.info("Los conectores de tenis ATP/WTA siguen pendientes de validación.")
 
