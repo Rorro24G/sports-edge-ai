@@ -36,6 +36,14 @@ jobs:
                                 headers={"User-Agent":"SportsEdgeAI-personal/1.0"}),
                                 timeout=15))
                   print("RAW_KEYS", list(raw), flush=True)
+                  for item in (raw.get("events") or [])[:3]:
+                      competition = (item.get("competitions") or [{}])[0]
+                      print("STATUS_DIAG", item.get("id"),
+                            "event_status", item.get("status"),
+                            "competition_status", competition.get("status"),
+                            "scores", [(t.get("team", {}).get("id"), t.get("score"))
+                                       for t in competition.get("competitors", [])],
+                            flush=True)
                   print("RAW_FIRST_EVENT", json.dumps((raw.get("events") or [None])[0],
                         ensure_ascii=False)[:9000], flush=True)
               form = recent_team_form(result["games"])
