@@ -4,13 +4,11 @@ Las proyecciones numéricas de Covers permiten identificar el resultado que
 favorece su marcador, pero no prueban una probabilidad de ganar ni un valor EV.
 """
 from __future__ import annotations
-from datetime import date, datetime
+from datetime import datetime
 from math import isfinite
 from zoneinfo import ZoneInfo
 
 LOCAL = ZoneInfo("America/Mexico_City")
-TEAM_MEXICO_URL = "https://www.teammexico.mx/"
-SCOUT_PICKS_URL = "https://scoutpicks.app/dashboard/"
 
 
 def _score(value: object) -> float | None:
@@ -52,17 +50,23 @@ def covers_projection(game: dict, *, now: datetime | None = None) -> dict | None
     winner_is_away = left > right
     side = "visitante" if winner_is_away else "local"
     projected_team = away if winner_is_away else home
+    from .market_summary import implied_percent
+    price = game.get("momio_visitante") if winner_is_away else game.get("momio_local")
+    quoted_price = str(price).strip() if implied_percent(price) is not None else None
     return {
         "liga": game["liga"],
         "partido": game["partido"],
         "fecha_cdmx": game["fecha_cdmx"],
         "hora_cdmx": game["hora_cdmx"],
         "equipo_proyectado": projected_team,
+        "seleccion_de_referencia": projected_team + " ML",
+        "momio_covers": quoted_price,
+        "umbral_equilibrio_precio": implied_percent(quoted_price),
         "lado_proyectado": side,
         "marcador_proyectado": f"{left:g} - {right:g}",
         "margen_proyectado": round(abs(left - right), 2),
         "total_proyectado": round(left + right, 2),
-        "tipo": "REFERENCIA_DE_PROYECCION_EXTERNA",
+        "tipo": "PROYECCION_COVERS_NO_VALIDADA",
         "fuente": game.get("fuente") or "",
         "vigente_para_analisis_prepartido": is_future,
         "probabilidad_propia": None,
@@ -70,7 +74,7 @@ def covers_projection(game: dict, *, now: datetime | None = None) -> dict | None
         "pick_validado": False,
         "stake_recomendado": None,
         "motivo_bloqueo": (
-            "Sin modelo propio calibrado, momio contrastado y ventaja validada"
+            "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
         ),
     }
 
