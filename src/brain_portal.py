@@ -42,20 +42,25 @@ def apply_theme():
     :root{--neon:#ff5365;--neon-light:#ff8a96}
     .stApp,[data-testid="stHeader"]{background:#050506!important;color:#f4f0f2!important}
     .block-container{max-width:1260px;padding-top:1.3rem;padding-bottom:2rem}
-    h1,h2,h3,h4{color:#ff6375!important;letter-spacing:-.025em}
+    h1,h2,h3,h4{color:#ff4667!important;letter-spacing:-.025em;text-shadow:0 0 7px #ffe8ec,0 0 21px #ff3059dd,0 0 44px #ff30598c;animation:heading-glow 3.4s ease-in-out infinite}
     p,label,.stMarkdown{color:#f1ecee}a{color:#ff8a96!important}
-    .section-brand{font-weight:900;letter-spacing:.14em;color:#ff6375;font-size:15px;padding:10px 0;text-align:center}
+    .section-brand{font-weight:900;letter-spacing:.14em;color:#ff4e6d;font-size:15px;padding:10px 0;text-align:center;text-shadow:0 0 8px #ffeaef,0 0 22px #ff3059,0 0 48px #ff305995;animation:section-neon 3.4s ease-in-out infinite}
     .section-brand span{font-weight:400;color:#d2b7bd;letter-spacing:.04em}
     [data-testid="stMetric"]{background:#120a0d;border:1px solid #54252f;border-radius:12px;padding:1rem}
     [data-testid="stMetricValue"]{color:#fff}
     [data-testid="stForm"], [data-testid="stExpander"]{background:#0d080b;border-color:#49212b!important;border-radius:12px}
     [data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#100b0d;color:#fff;caret-color:#ff6375}
-    button[kind="primary"],div.stFormSubmitButton>button{background:#ff6375!important;color:#160609!important;border:0!important;border-radius:10px!important}
-    button[kind="secondary"]{border-color:#66303b!important;background:#11090d!important;color:#ff8a96!important}
+    button[kind="primary"],div.stFormSubmitButton>button{background:#ff6375!important;color:#160609!important;border:0!important;border-radius:10px!important;box-shadow:0 0 13px #ff536544;animation:button-breathe 3.9s ease-in-out infinite;transition:transform .2s ease,box-shadow .2s ease}
+    button[kind="secondary"]{border-color:#66303b!important;background:#11090d!important;color:#ff8a96!important;transition:transform .2s ease,box-shadow .2s ease}
+    button[kind="primary"]:hover,div.stFormSubmitButton>button:hover,button[kind="secondary"]:hover{transform:translateY(-2px);box-shadow:0 0 20px #ff53658c}
     [data-testid="stDataFrame"]{border:1px solid #42232a;border-radius:10px}
     .odds-price{color:#76f5a6;font-variant-numeric:tabular-nums;font-weight:800}
     @keyframes section-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes heading-glow{0%,100%{text-shadow:0 0 7px #ffe8ec,0 0 21px #ff3059dd,0 0 44px #ff30598c}50%{text-shadow:0 0 13px #fff,0 0 35px #ff3059,0 0 70px #ff3059dd}}
+    @keyframes section-neon{0%,100%{transform:translateY(0);text-shadow:0 0 8px #ffeaef,0 0 22px #ff3059,0 0 48px #ff305995}50%{transform:translateY(-4px);text-shadow:0 0 15px #fff,0 0 42px #ff3059,0 0 82px #ff3059dd}}
+    @keyframes button-breathe{0%,100%{box-shadow:0 0 15px #ff536566;transform:scale(1)}50%{box-shadow:0 0 29px #ff5365c2;transform:scale(1.025)}}
     .block-container{animation:section-arrive .45s ease-out}
-    @media(prefers-reduced-motion:reduce){.block-container{animation:none}}
+    @media(prefers-reduced-motion:reduce){.block-container,h1,h2,h3,h4,.section-brand,button[kind="primary"],div.stFormSubmitButton>button{animation:none!important}
+      button[kind="primary"],div.stFormSubmitButton>button,button[kind="secondary"]{transition:none!important}}
     @media(max-width:640px){.section-brand{font-size:11px;letter-spacing:.05em}.section-brand span{display:block;font-size:10px}}
     </style>''', unsafe_allow_html=True)
