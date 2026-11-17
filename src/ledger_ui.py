@@ -2,6 +2,7 @@
 from __future__ import annotations
 import hmac
 import os
+import re
 import streamlit as st
 
 from .ledger_text import parse_bet_message
@@ -139,7 +140,12 @@ def render() -> None:
         output = io.StringIO()
         writer = csv.DictWriter(output, fieldnames=list(rows[0]))
         writer.writeheader()
-        writer.writerows(rows)
+        def safe_csv_cell(value):
+            if isinstance(value, str) and re.match(r"^\\s*[=+@-]", value):
+                return "'" + value
+            return value
+        writer.writerows([{key: safe_csv_cell(value) for key, value in row.items()}
+                          for row in rows])
         st.download_button("Descargar tabla CSV para Excel",
                            output.getvalue().encode("utf-8-sig"),
                            file_name="historial-picks.csv", mime="text/csv")
