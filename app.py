@@ -19,6 +19,9 @@ from src.pick_context import match_espn_event, fetch_summary, ContextSourceError
 from src.odds_api import OddsAPIError
 from src.web_data import find_games, load_fixture
 from src.web_query import interpret_request
+from src.team_form import fetch_team_schedule
+from src.simulator_research_ui import render as render_real_simulator
+from src.simulation_view import render_results as show_simulated_scenario
 from src.player_props import fetch_roster, fetch_gamelog, parse_player_question
 from src.player_props_ui import render_player_research
 from src.brain_dashboard import render_brain_header, render_morning_snapshot
@@ -140,6 +143,10 @@ def cached_player_roster(team_id):
 @st.cache_data(ttl=600, show_spinner=False)
 def cached_player_gamelog(player_id, target):
     return fetch_gamelog(player_id, target)
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def cached_team_schedule(sport, team_id, target):
+    return fetch_team_schedule(sport, team_id, target)
 
 def safe_odds_key():
     try:
@@ -387,68 +394,67 @@ with assistant_tab:
     )
 
 with simulator_tab:
-    st.subheader("Laboratorio Monte Carlo")
-    st.caption(
-        "Puedes explorar 10,000 resultados hipotéticos de NBA o NFL. "
-        "NO son predicciones reales: los parámetros deben ajustarse con datos previos al partido y validarse."
+    render_real_simulator(
+        board_fetch=cached_scoreboard,
+        team_fetch=cached_team_schedule,
     )
-    with st.form("simulator"):
-        c1, c2 = st.columns(2)
-        with c1:
-            sport = st.selectbox("Deporte", ["NFL", "NBA"])
-            away_mean = st.number_input(
-                "Puntos esperados visitante (hipotético)",
-                min_value=0.0, max_value=200.0,
-                value=22.0 if sport == "NFL" else 110.0, step=0.5
-            )
-            away_sd = st.number_input(
-                "Desviación visitante", min_value=0.1,
-                max_value=60.0, value=9.0 if sport == "NFL" else 12.0, step=0.5
-            )
-        with c2:
-            home_mean = st.number_input(
-                "Puntos esperados local (hipotético)",
-                min_value=0.0, max_value=200.0,
-                value=24.0 if sport == "NFL" else 114.0, step=0.5
-            )
-            home_sd = st.number_input(
-                "Desviación local", min_value=0.1,
-                max_value=60.0, value=9.0 if sport == "NFL" else 12.0, step=0.5
-            )
-            line = st.number_input(
-                "Línea de puntos total (hipotética)",
-                min_value=0.0, max_value=400.0,
-                value=45.5 if sport == "NFL" else 223.5, step=0.5
-            )
-        correlation = st.slider(
-            "Correlación de marcadores (hipótesis)",
-            min_value=-0.9, max_value=0.9, value=0.0, step=0.05
+    st.divider()
+    with st.expander("Laboratorio manual · parámetros hipotéticos", expanded=False):
+        st.caption(
+            "Para experimentar puedes introducir medias y desviaciones manuales. "
+            "Estas cifras NO son datos ESPN ni proyecciones verificadas."
         )
-        run_sim = st.form_submit_button("Simular 10,000 veces", use_container_width=True)
-    if run_sim:
-        try:
-            result = simulate_totals(GameScenario(
-                sport=sport, away_mean=away_mean, home_mean=home_mean,
-                away_sd=away_sd, home_sd=home_sd,
-                score_correlation=correlation, total_line=line,
-            ))
-        except ValueError as exc:
-            st.error(str(exc))
-        else:
-            k1, k2, k3 = st.columns(3)
-            k1.metric("Over simulado", f"{result.over_probability:.1%}")
-            k2.metric("Under simulado", f"{result.under_probability:.1%}")
-            k3.metric("Push simulado", f"{result.push_probability:.1%}")
-            st.progress(result.over_probability)
-            st.caption(
-                f"Marcador total medio hipotético: {result.simulated_mean_total:.1f}. "
-                f"Margen Monte Carlo 95% (solo muestreo): ±{result.over_mc_margin_95:.1%}. "
-                "Este margen NO mide la incertidumbre del pronóstico ni prueba ventaja frente al mercado."
+        with st.form("simulator"):
+            c1, c2 = st.columns(2)
+            with c1:
+                sport = st.selectbox("Deporte", ["NFL", "NBA"])
+                away_mean = st.number_input(
+                    "Puntos esperados visitante (hipotético)",
+                    min_value=0.0, max_value=200.0,
+                    value=22.0 if sport == "NFL" else 110.0, step=0.5
+                )
+                away_sd = st.number_input(
+                    "Desviación visitante", min_value=0.1,
+                    max_value=60.0, value=9.0 if sport == "NFL" else 12.0, step=0.5
+                )
+            with c2:
+                home_mean = st.number_input(
+                    "Puntos esperados local (hipotético)",
+                    min_value=0.0, max_value=200.0,
+                    value=24.0 if sport == "NFL" else 114.0, step=0.5
+                )
+                home_sd = st.number_input(
+                    "Desviación local", min_value=0.1,
+                    max_value=60.0, value=9.0 if sport == "NFL" else 12.0, step=0.5
+                )
+                line = st.number_input(
+                    "Línea de puntos total (hipotética)",
+                    min_value=0.0, max_value=400.0,
+                    value=45.5 if sport == "NFL" else 223.5, step=0.5
+                )
+            correlation = st.slider(
+                "Correlación de marcadores (hipótesis)",
+                min_value=-0.9, max_value=0.9, value=0.0, step=0.05
             )
-            st.error(
-                "ESCENARIO NO VALIDADO · No es un pick ni una señal para apostar. "
-                "Faltan parámetros entrenados con datos reales, pruebas fuera de muestra y cuotas verificadas."
+            run_sim = st.form_submit_button(
+                "Simular 10.000 escenarios manuales", use_container_width=True
             )
+        if run_sim:
+            try:
+                scenario = GameScenario(
+                    sport=sport, away_mean=away_mean, home_mean=home_mean,
+                    away_sd=away_sd, home_sd=home_sd,
+                    score_correlation=correlation, total_line=line,
+                )
+                result = simulate_totals(scenario)
+            except ValueError as exc:
+                st.error(str(exc))
+            else:
+                show_simulated_scenario(
+                    scenario, result,
+                    source_note="Medias y desviaciones introducidas manualmente; "
+                                "NO son datos reales de equipos",
+                )
 
 with calendar_tab:
     st.subheader("Calendario actualizado por fecha")
