@@ -160,7 +160,14 @@ def resolve_player(query: str, players: list[dict]) -> dict | None:
                and re.search(r"(?<!\w)" +
                              re.escape(normalized(p["name"]).split()[-1]) + r"(?!\w)",
                              normalized_query)]
-    return surname[0] if len(surname) == 1 else None
+    if len(surname) != 1:
+        return None
+    token = normalized(surname[0]["name"]).split()[-1]
+    # "James" también es nombre de pila en otros jugadores; ante
+    # cualquier ambigüedad no se asignan estadísticas al equivocado.
+    mentions = [person for person in unique.values()
+                if token in normalized(person["name"]).split()]
+    return surname[0] if len(mentions) == 1 else None
 
 
 def resolve_player_in_games(query: str, games: list[dict], *,
