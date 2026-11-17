@@ -6,6 +6,8 @@ from zoneinfo import ZoneInfo
 import streamlit as st
 
 from .brain_dashboard import load_today_snapshot
+from .content_feed import live_parlay_report
+from .parlay_research import candidate_legs
 from .parlay_research import build_reference_parlays, parlay_review_prompt
 
 from .parlay_chat import ask_about_parlay, ParlayChatError
@@ -17,6 +19,11 @@ def _secret(name: str) -> str:
     except (FileNotFoundError, OSError, KeyError):
         value = ""
     return str(value or os.getenv(name, ""))
+
+
+@st.cache_data(ttl=600, show_spinner=False)
+def cached_live_report(day):
+    return live_parlay_report(day)
 
 
 def render() -> None:
@@ -38,21 +45,29 @@ def render() -> None:
         st.caption("Con una selección se trata de una apuesta simple, no de un parlay.")
     st.caption(
         "Las propuestas siguientes son BORRADORES para discutir, no picks propios "
-        "validados, y las cuotas publicadas en Covers pueden proceder de varias casas."
+        "validados. Los momios de referencia pueden proceder de varias casas."
     )
     now = datetime.now(ZoneInfo("America/Mexico_City"))
+    if st.button("Buscar parlays de hoy", key="refresh_parlays"):
+        cached_live_report.clear()
+        st.session_state["parlay_live_requested"] = True
     report = load_today_snapshot(now.date())
+    if report is None or st.session_state.get("parlay_live_requested"):
+        with st.spinner("Buscando partidos y selecciones de hoy..."):
+            report = cached_live_report(now.date())
+    if report:
+        st.caption("Datos consultados: " + report.get("generated_at_utc", "hora no disponible") + " UTC · actualiza antes de decidir.")
     proposals = []
     if report:
         proposals = build_reference_parlays(
             report, count=count, legs_per_parlay=requested_legs,
             more_than_ten=allow_more, now=now,
         )
-    st.markdown("**Combinadas de referencia · Covers + calendario confirmado por ESPN**")
+    st.markdown("**Combinadas de referencia**")
     if not proposals:
         st.info(
-            "No hay suficientes partidos futuros con proyección, moneyline en Covers "
-            "y equipos contrastados en ESPN para crear propuestas ahora. "
+            "No hay suficientes partidos futuros con proyección, momios y calendario "
+            "confirmados para crear propuestas ahora. "
             "No usaremos datos de ayer ni completaremos con partidos inventados."
         )
     else:
@@ -67,11 +82,9 @@ def render() -> None:
                         "Liga": leg["liga"], "Partido": leg["evento"],
                         "Hora CDMX": leg["hora_cdmx"],
                         "Selección ML": leg["seleccion"],
-                        "Momio Covers": leg["momio_covers"],
-                        "Fuente": leg["fuente"],
+                        "Momio de referencia": leg["momio_covers"],
                     } for leg in proposal["selecciones"]
-                ], hide_index=True, use_container_width=True,
-                    column_config={"Fuente": st.column_config.LinkColumn("Fuente Covers")})
+                ], hide_index=True, use_container_width=True)
                 st.caption("Producto matemático de momios publicados: " +
                            proposal["cuota_decimal_teorica"] +
                            " decimal. NO es una cuota combinada ofrecida por una casa "
@@ -83,6 +96,18 @@ def render() -> None:
                              key="discutir_parlay_" + str(i)):
                     st.session_state["parlay_chat_question"] = parlay_review_prompt(proposal)
                     st.rerun()
+    if report:
+        groups = candidate_legs(report, now=now)
+        with st.expander("Cobertura de partidos y selecciones", expanded=not bool(proposals)):
+            for league, section in report.get("leagues", {}).items():
+                events = section.get("events", [])
+                st.write(f"{league}: {len(events)} partidos encontrados · {len(groups.get(league, []))} selecciones prepartido completas.")
+                if section.get("errors"):
+                    st.warning(league + ": consulta incompleta; pulsa Buscar parlays de hoy para reintentar.")
+                if events:
+                    st.dataframe([{"Partido": e["partido"], "Hora CDMX": e["hora_cdmx"],
+                                   "Estado": (e.get("espn") or {}).get("estado") or e.get("estado", "Por confirmar")}
+                                  for e in events], hide_index=True, use_container_width=True)
     st.caption("Pedir más de diez selecciones es posible únicamente al activar "
                "la opción correspondiente; si no existen partidos suficientes "
                "se mostrará una propuesta más corta, nunca apuestas ficticias.")
@@ -136,3 +161,4 @@ def render() -> None:
         history.append({"role": "assistant", "content": answer})
         del history[:-12]
         st.rerun()
+

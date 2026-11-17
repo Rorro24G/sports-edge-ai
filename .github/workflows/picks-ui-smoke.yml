@@ -30,3 +30,6 @@ jobs:
         run: PYTHONPATH=. python scripts/smoke_simulator_ui.py
       - name: Comprobar entrada de apuesta y bank en Streamlit
         run: PYTHONPATH=. python scripts/smoke_ledger_ui.py
+
+      - name: Comprobar noticias y carga de parlays sin informe diario
+        run: PYTHONPATH=. python scripts/smoke_content_ui.py

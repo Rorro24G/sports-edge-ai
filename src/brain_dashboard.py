@@ -284,31 +284,34 @@ def render_morning_snapshot() -> None:
         cols[index].metric(league, count, help="Partidos verificados en el informe del día")
     cols[3].metric("Picks propios validados", 0, help="Sin modelo entrenado/calibrado")
     st.caption("Informe generado " + report["generated_at_utc"] +
-               " UTC · Fuentes: Covers y ESPN · Precios sujetos a cambios.")
-    st.markdown("#### Selecciones de referencia de Covers para hoy")
+               " UTC · Precios sujetos a cambios.")
+    st.markdown("#### Selecciones de referencia para hoy")
     selected = morning_covers_picks(report)
     if selected:
         st.caption("Hasta 3 por liga, ordenadas por diferencia de marcador proyectada. "
                    "No es una clasificación por probabilidad de acertar ni por ventaja de apuesta. "
-                   "Los momios son los de Covers cuando se generó el informe, "
+                   "Los momios son los capturados cuando se generó el informe, "
                    "no cotizaciones en vivo.")
-        st.dataframe(selected, use_container_width=True, hide_index=True,
-                     column_config={
-                         "Fuente": st.column_config.LinkColumn("Origen Covers"),
-                     })
+        public_rows = [{("Selección ML" if k == "Referencia ML (Covers)" else k): v
+                        for k, v in row.items() if k != "Fuente"} for row in selected]
+        st.dataframe(public_rows, use_container_width=True, hide_index=True)
     else:
         st.info("No hay selecciones de referencia prepartido con moneyline publicado "
                 "y verificable para hoy. Puedes consultar el partido en Picks "
-                "o esperar nuevas publicaciones de Covers.")
-    st.warning("Estos son ganadores favorecidos por los marcadores proyectados de Covers, "
+                "o actualizar más tarde.")
+    st.warning("Estos son ganadores favorecidos por los marcadores proyectados, "
                "NO picks validados de Sports Edge AI ni apuestas con rentabilidad demostrada.")
     render_reference_backtest()
     with st.expander("Abrir partidos y referencias del informe matutino", expanded=True):
         if rows:
-            st.dataframe(rows, use_container_width=True, hide_index=True)
+            public_rows = [{("Equipo favorecido" if k == "Ganador según marcador Covers" else k):
+                            (v.replace(" · Covers", "") if isinstance(v, str) else v)
+                            for k, v in row.items() if k != "Referencia externa"} for row in rows]
+            st.dataframe(public_rows, use_container_width=True, hide_index=True)
         else:
             st.info("No se encontraron encuentros para hoy; comprueba las fuentes antes de concluir.")
     for league in LEAGUES:
         errs = groups.get(league, {}).get("errors") or []
         if errs:
             st.warning(league + ": hay fuentes que fallaron; no debe asumirse cobertura completa.")
+
