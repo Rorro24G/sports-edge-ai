@@ -20,6 +20,7 @@ from .odds_api import OddsAPIError
 from .pick_context import ContextSourceError, fetch_summary, match_espn_event
 from .market_summary import game_market_probabilities
 from .match_report import verified_market_rows
+from .pick_reference import covers_projection
 
 LOCAL = ZoneInfo("America/Mexico_City")
 LEAGUES = ("NBA", "NFL", "NHL")
@@ -85,6 +86,7 @@ def build_report(day: date, *, covers_fetch=fetch_public_picks,
                 "totales_publicados": g.get("totales_publicados"),
                 "porcentajes_covers": g.get("probabilidades_publicadas"),
                 "momios_casas": verified_market_rows(g, odds),
+                "referencia_covers": covers_projection(g),
                 "espn": None, "pick_propio": None,
                 "estado_pick": "SIN_MODELO_VALIDADO",
             }
@@ -137,8 +139,11 @@ def render_markdown(report: dict) -> str:
                       "Cobertura: " + ", ".join(
                           k + "=" + v for k, v in section["coverage"].items()), ""])
         for event in section["events"]:
-            lines.append("- " + event["partido"] + " (" + event["hora_cdmx"] + " CDMX): "
-                         + "sin pick propio validado")
+            reference = event.get("referencia_covers") or {}
+            pick = ("; marcador externo favorece " + reference["equipo_proyectado"]
+                    if reference.get("vigente_para_analisis_prepartido") else "")
+            lines.append("- " + event["partido"] + " (" + event["hora_cdmx"] + " CDMX)"
+                         + pick + "; sin pick propio validado")
         if not section["events"]:
             lines.append("- No se encontraron eventos verificables para esa fecha")
         for error in section["errors"]:
