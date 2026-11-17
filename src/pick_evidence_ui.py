@@ -45,7 +45,7 @@ def render_covers_evidence(game: dict) -> None:
                        "o está en el pasado. No constituye una selección para apostar ahora.")
         price = signal["momio_covers"] or "No publicado"
         st.markdown("**Selección de referencia: " + signal["seleccion_de_referencia"] +
-                    " · Momio de referencia: " + price + "**")
+                    " · Momio de referencia: :green[" + price + "]**")
         if not signal["vigente_para_analisis_prepartido"]:
             st.warning("Partido ya iniciado o pasado: esta selección es histórica, no una propuesta actual.")
         c1, c2, c3 = st.columns(3)

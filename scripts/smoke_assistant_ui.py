@@ -5,7 +5,9 @@ from unittest.mock import patch as content_patch
 content_patch("src.news_ui.cached_news", return_value={"articles": [], "checked_at_utc": "offline fixture"}).start()
 content_patch("src.parlay_ui.cached_live_report", return_value={"leagues": {}, "generated_at_utc": "offline fixture"}).start()
 
-app = AppTest.from_file("../app.py", default_timeout=45).run()
+app = AppTest.from_file("../app.py", default_timeout=45)
+app.session_state["brain_section"] = "asistente"
+app = app.run()
 assert not app.exception, [str(x.message) for x in app.exception]
 inputs = [item for item in app.text_input if item.label == "Escribe tu pregunta"]
 assert len(inputs) == 1, "Falta caja del asistente"

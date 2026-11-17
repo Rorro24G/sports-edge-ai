@@ -33,3 +33,7 @@ jobs:
 
       - name: Comprobar noticias y carga de parlays sin informe diario
         run: PYTHONPATH=. python scripts/smoke_content_ui.py
+      - name: Comprobar navegación del cerebro
+        run: PYTHONPATH=. python scripts/smoke_portal_ui.py
+      - name: Comprobar transiciones y seis conexiones
+        run: node scripts/check_portal_protocol.cjs
