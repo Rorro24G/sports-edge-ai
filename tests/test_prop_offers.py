@@ -116,3 +116,30 @@ class PropMarketTests(TestCase):
             dict(PLAYER, team_id="99"), [GAME], DAY))
         self.assertIsNone(matching_player_game(PLAYER, [
             dict(GAME, local_date=date(2026, 11, 18))], DAY))
+
+
+    def test_started_or_unconfirmed_start_never_returns_quotes(self):
+        for start in (None, "invalid", "2026-11-17T17:00:00Z", "2026-11-17T16:59:00Z"):
+            with self.subTest(start=start):
+                self.assertEqual(extract_exact_prop_offers(
+                    dict(QUOTE, commence_time=start), player_name="Luka Doncic",
+                    stat="PTS", direction="over", line=24.5, now=NOW), [])
+
+    def test_quote_preserves_event_and_capture_time(self):
+        quote = extract_exact_prop_offers(
+            QUOTE, player_name="Luka Doncic", stat="PTS", direction="over",
+            line=24.5, now=NOW)[0]
+        self.assertEqual(quote["evento_proveedor"], EVENT["id"])
+        self.assertEqual(quote["consultado_utc"], NOW.isoformat())
+        self.assertEqual(quote["inicio_utc"], "2026-11-18T04:00:00+00:00")
+
+    def test_missing_team_id_cannot_match_missing_game_team_id(self):
+        self.assertIsNone(matching_player_game(
+            dict(PLAYER, team_id=""), [dict(GAME, home_team_id="")], DAY))
+
+    def test_no_injury_report_does_not_confirm_availability(self):
+        review = player_prop_review(
+            dict(PLAYER, injuries=[], status="Active"), HISTORY,
+            PlayerQuestion("PTS", "over", 24.5), game=GAME,
+        )
+        self.assertTrue(any("no confirma disponibilidad" in x for x in review["risk_flags"]))
