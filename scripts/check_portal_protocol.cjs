@@ -8,7 +8,7 @@ const pages=['picks','parlays','noticias','simulaciones','historial','calendario
 for(const keyframe of ['brand-breathe','node-drift','neuron-heartbeat','neuron-aura','label-float']){
  assert(html.includes('@keyframes '+keyframe),'missing animation '+keyframe);
 }
-assert(html.includes('@media(prefers-reduced-motion:reduce)'),'motion-reduction CSS missing');
+assert(html.includes('.reduced #stage .brand'),'motion-reduction CSS missing');
 assert(code.includes('breathing=reduced?1'),'motion-reduction JS missing');
 assert(code.includes('if(!reduced&&i%5===0'),'travelling wire highlights missing');
 assert(code.includes('thinkingPoint(p,t,i,j)'),'real line deformation missing');
@@ -16,7 +16,7 @@ assert(html.includes('MOVIMIENTO ON'),'motion control must be visible');
 assert(html.includes('rgba(5,5,6,.24)'),'intro must reveal moving brain');
 assert(code.includes('ctx.globalAlpha=1;drawBrain(t)'),'intro canvas must be visible');
 assert(code.includes("state==='intro'"),'ambient brain on entry screen missing');
-assert(code.includes("angle+=dt*.00010"),'visible idle spin missing');
+assert(code.includes("angle+=dt*.00018"),'visible idle spin missing');
 assert(code.includes('flightBlend=ease'),'node-directed transition missing');
 assert(html.includes('neuron-heartbeat 1.75s'),'always-on node beat missing');
 
