@@ -99,9 +99,9 @@ with (
     assert not app.exception, [str(e.message) for e in app.exception]
     visible = "\n".join(str(x.value) for x in app.markdown)
     assert "Toronto @ Philadelphia" in visible, "No se renderizo el partido"
-    assert "Pick de referencia" in visible, "Falta sección de picks de Covers"
+    assert "Momios publicados por Covers" in visible, "Faltan momios con fuente Covers"
     assert "Lakers" not in visible, "No debe colarse un equipo ajeno a la ficha"
-    assert "Mercados disponibles" in visible, "Falta panel de mercados de Covers"
+    assert any(b.label.startswith("🧠 Analizar este partido") for b in app.button), "Falta análisis propio"
     assert "Noticias" in visible or "noticias" in visible, "Falta panel de contexto"
     app.text_input[0].set_value("Analiza Dallas contra Phoenix 13 de noviembre de 2026")
     app = [b for b in app.button if b.label == "Analizar partido"][0].click().run()
