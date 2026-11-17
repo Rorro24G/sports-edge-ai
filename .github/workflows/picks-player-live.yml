@@ -1,0 +1,45 @@
+name: Picks - comprobar historial NBA real
+on:
+  push:
+    branches: [feature/picks-player-props-espn-no-key-nov17]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-player-gamelog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probar plantilla NBA y estadisticas reales del jugador en ESPN
+        run: |
+          python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          from src.player_props import fetch_roster, fetch_gamelog, parse_gamelog
+          roster = fetch_roster("13")
+          print("ROSTER_TOTAL", len(roster["athletes"]), flush=True)
+          names = [x for x in roster["athletes"] if x["name"] == "Luka Doncic"]
+          print("LUKA_EN_PLANTILLA", bool(names), flush=True)
+          if not names:
+              raise SystemExit("ESPN no presenta al jugador en plantilla del equipo 13")
+          today = datetime.now(ZoneInfo("America/Mexico_City")).date()
+          log = fetch_gamelog(names[0]["id"], today)
+          payload = log["payload"]
+          print("LOG_FIELDS", list(payload)[:18], flush=True)
+          print("LABELS", payload.get("labels"), flush=True)
+          seasons = payload.get("seasonTypes") or []
+          print("SEASON_TYPES", [(x.get("id"), x.get("displayName"),
+                                [list(c) for c in x.get("categories", [])[:2]])
+                               for x in seasons[:3]], flush=True)
+          rows = parse_gamelog(payload, "PTS", today)
+          print("LUKA_GAMES_PRIOR", len(rows), flush=True)
+          if not rows:
+              raise SystemExit("Sin juegos previos verificables: comprobar el esquema ESPN")
+          print("ESPN_PLAYER_PROPS_LIVE_OK", flush=True)
+          PY
