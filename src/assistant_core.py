@@ -410,9 +410,11 @@ def answer_query(
             )
             urls.extend([item.get("espn_url"), item.get("market_source")])
         lines.append(
-            "El ganador lo decide SEAI, no Covers. "
-            "Modelo estadístico inicial NO calibrado ni validado fuera de muestra; "
-            "estimaciones experimentales, sin apuestas ni importe recomendado."
+            "El ganador lo decide SEAI con varias comprobaciones: historial, "
+            "últimos cinco partidos, valores extremos, localía y sensibilidad. "
+            "Si aparecen señales contradictorias, descarta el juego. "
+            "Modelo NO calibrado ni validado fuera de muestra; "
+            "sin apuestas ni importe recomendado."
         )
         return {"reply": "\n".join(lines),
                 "sources": _trusted_sources([x for x in urls if x]), "context": context}
@@ -476,7 +478,10 @@ def answer_query(
                 " ML. Estimación exploratoria " +
                 f"{own['probability_experimental']:.1%}" +
                 " basada en " + str(own["away_games"]) +
-                "/" + str(own["home_games"]) + " resultados ESPN previos."
+                "/" + str(own["home_games"]) + " resultados ESPN previos. " +
+                "Veredictos internos: " + str(len(own.get("evidence", {}))) +
+                " contrastes; estabilidad " + f"{own.get('stability',0):.0%}" +
+                " frente a cambios de muestra (no es tasa de acierto)."
             )
         elif own["status"] == "PASAR":
             lines.append("Decisión Sports Edge AI: PASAR. " + own["reason"] + ".")
