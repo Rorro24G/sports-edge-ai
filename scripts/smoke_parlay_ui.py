@@ -29,7 +29,7 @@ for league in ("NBA", "NHL", "NFL"):
         } for i, match in enumerate(names)],
     }
 
-with patch("src.brain_dashboard.load_today_snapshot", return_value=report):
+with patch("src.brain_dashboard.load_today_snapshot", return_value=report), patch("src.parlay_ui.load_today_snapshot", return_value=report):
     app = AppTest.from_file("../app.py", default_timeout=45).run()
     assert not app.exception, [str(x.message) for x in app.exception]
     visible = "\n".join(str(x.value) for x in app.markdown)
