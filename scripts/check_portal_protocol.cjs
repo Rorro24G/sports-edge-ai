@@ -3,6 +3,15 @@ const fs=require('fs'),vm=require('vm'),assert=require('assert');
 const html=fs.readFileSync('web/brain_portal/index.html','utf8');
 const code=html.split('<script>')[1].split('</script>')[0];
 const pages=['picks','parlays','noticias','simulaciones','historial','calendario'];
+
+// Regression checks: looping neon effects must preserve the six navigation targets.
+for(const keyframe of ['brand-breathe','node-drift','neuron-heartbeat','neuron-aura','label-float']){
+ assert(html.includes('@keyframes '+keyframe),'missing animation '+keyframe);
+}
+assert(html.includes('@media(prefers-reduced-motion:reduce)'),'motion-reduction CSS missing');
+assert(code.includes('breathing=reduced?1'),'motion-reduction JS missing');
+assert(code.includes('if(!reduced&&i%7===0'),'travelling wire highlights missing');
+
 function run(reduced,page){
  const messages=[],listeners={};let callback;
  const element=()=>({style:{},classList:{add(){},toggle(){}},setAttribute(){},focus(){},inert:false,clientWidth:1000,clientHeight:760});
