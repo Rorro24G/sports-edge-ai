@@ -31,6 +31,8 @@ _ML_ROW = re.compile(
     r"[ou]\d+(?:\.\d+)?\s+[+-]\d{3,4}\s+([+-]\d{3,4})(?!\d)",
     re.I,
 )
+# Column order differs: NHL shows ML immediately after score, NBA/NFL at the end.
+_ML_FIRST_ROW = re.compile(r"^([A-Z]{2,4})\s+\1\s+(\d+(?:\.\d+)?)\s+([+-]\d{3,4})(?=\s|$)", re.I)
 _ABBR_ROW = re.compile(r"([A-Z]{2,4})\s+\1", re.I)
 _PRICE_ONLY = re.compile(r"[+-]\d{3,4}")
 _SCORE_ONLY = re.compile(r"\d+(?:\.\d+)?")
@@ -153,8 +155,13 @@ def parse_public_picks(html: str, league: str, target: date) -> dict:
         section_at = next((i for i, value in enumerate(block)
                            if "Prediction & Game Odds" in value), -1)
         table = block[section_at + 1:] if section_at >= 0 else []
+        # Only the score/ML table can supply a moneyline; never reuse a
+        # total, spread or an unlabelled percentage as a match-winner price.
+        heading = " ".join(table[:8]).lower()
+        ml_first = league == "NHL" and "ml" in heading and "total" in heading
         for i, source_line in enumerate(table):
-            matched_line = _ML_ROW.search(source_line)
+            matched_line = (_ML_FIRST_ROW.search(source_line) if ml_first
+                            else _ML_ROW.search(source_line))
             if matched_line:
                 ml_rows.append((float(matched_line.group(2)),
                                 matched_line.group(3)))
@@ -178,9 +185,11 @@ def parse_public_picks(html: str, league: str, target: date) -> dict:
                 entry for entry in table[i + 2:next_row]
                 if _PRICE_ONLY.fullmatch(entry)
             ]
-            if len(candidate_prices) == 1:
+            if len(candidate_prices) == 1 or (ml_first and candidate_prices):
+                # NHL's first standalone price is the ML column; NBA's
+                # separate-cells table must have exactly one standalone ML.
                 ml_rows.append((float(score_cell.group(0)),
-                                candidate_prices[0]))
+                                candidate_prices[0] if ml_first else candidate_prices[0]))
         away_ml = home_ml = None
         if (score is not None and len(ml_rows) == 2
                 and abs(ml_rows[0][0] - predicted_away) < 0.1
