@@ -1,5 +1,5 @@
 """Tests offline del asistente natural sin inventar mercados ni apuestas."""
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from unittest import TestCase
 from zoneinfo import ZoneInfo
 
@@ -78,11 +78,27 @@ def snapshot():
     return {"date_cdmx": "2026-11-17", "leagues": sections}
 
 
+def recent_team_results(sport, team_id, target):
+    if sport != "NBA":
+        return {"games": []}
+    stronger = str(team_id) == "9"
+    rows = []
+    for i in range(10):
+        day = target - timedelta(days=i+1)
+        rows.append({
+            "event_id": str(i+1010), "date": day.isoformat(),
+            "points_for": 124+(i%3) if stronger else 97+(i%3),
+            "points_against": 101+(i%2) if stronger else 120+(i%2),
+        })
+    return {"games": rows, "source_url": "https://www.espn.com/nba/team/schedule"}
+
+
 def assistant(text, *, context=None, report=None):
     return answer_query(
         text, context=context, now=NOW, board_fetch=board,
         covers_fetch=covers, roster_fetch=roster,
-        gamelog_fetch=log, report_loader=lambda _: report,
+        gamelog_fetch=log, team_fetch=recent_team_results,
+        report_loader=lambda _: report,
     )
 
 
@@ -103,8 +119,10 @@ class AssistantTests(TestCase):
     def test_moneyline_matchup_without_guessing_wrong_game(self):
         r = assistant("Analiza Lakers contra Warriors NBA hoy")
         self.assertIn("Golden State @ L.A. Lakers", r["reply"])
-        self.assertIn("-145", r["reply"])
-        self.assertIn("NO un pick propio", r["reply"])
+        self.assertIn("SELECCIÓN SPORTS EDGE AI", r["reply"])
+        self.assertIn("Golden State Warriors", r["reply"])
+        self.assertIn("+125", r["reply"])
+        self.assertNotIn("Favorece a Los Angeles Lakers", r["reply"])
         later = assistant("¿Y el total de ese partido?", context=r["context"])
         self.assertIn("o219.5 -110", later["reply"])
         other = assistant("Dame Miami vs Toronto NBA hoy")
@@ -113,9 +131,10 @@ class AssistantTests(TestCase):
 
     def test_picks_from_today_not_old_report(self):
         r = assistant("Picks NBA hoy", report=snapshot())
-        self.assertIn("Referencias prepartido de Covers", r["reply"])
-        self.assertIn("Precio", r["reply"].replace("Precios", "Precio"))
-        self.assertIn("NO por probabilidad", r["reply"])
+        self.assertIn("Selecciones experimentales del cerebro Sports Edge AI", r["reply"])
+        self.assertIn("Golden State Warriors", r["reply"])
+        self.assertIn("NO calibrado", r["reply"])
+        self.assertNotIn("Referencias prepartido de Covers", r["reply"])
         self.assertTrue(r["sources"])
         empty = assistant("Picks NHL mañana", report=snapshot())
         self.assertNotIn("Referencias prepartido", empty["reply"])
