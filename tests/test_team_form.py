@@ -28,6 +28,8 @@ class TeamFormTests(TestCase):
     def test_season_identity_and_url_validation(self):
         self.assertEqual(season_year("NBA", TARGET), 2027)
         self.assertEqual(season_year("NFL", TARGET), 2026)
+        self.assertEqual(season_year("NHL", TARGET), 2027)
+        self.assertIn("/hockey/nhl/", schedule_url("NHL", "13", TARGET))
         self.assertEqual(season_year("NFL", date(2027, 1, 10)), 2026)
         self.assertIn("season=2027", schedule_url("NBA", "13", TARGET))
         with self.assertRaises(ValueError):
