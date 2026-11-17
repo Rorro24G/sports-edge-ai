@@ -24,5 +24,7 @@ jobs:
         run: PYTHONPATH=. python scripts/smoke_picks_ui.py
       - name: Comprobar borradores Parlays de Covers y discusión
         run: PYTHONPATH=. python scripts/smoke_parlay_ui.py
+      - name: Probar asistente natural sin API
+        run: PYTHONPATH=. python scripts/smoke_assistant_ui.py
       - name: Comprobar entrada de apuesta y bank en Streamlit
         run: PYTHONPATH=. python scripts/smoke_ledger_ui.py
