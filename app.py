@@ -219,25 +219,23 @@ with analysis_tab:
                     p2.metric("Local · umbral de equilibrio", f"{market_p['local']:.2f}%")
                 st.caption("Calculado exclusivamente a partir del precio americano, con "
                            "posible margen del operador. NO es nuestra probabilidad de acierto.")
-            st.markdown("**Momios por casa de apuestas (fuente independiente)**")
-            api_key = safe_odds_key()
-            if not api_key:
-                st.info("Sin proveedor de cuotas en tiempo real configurado. Los momios visibles arriba son exclusivamente los que Covers publicó; para comparar casas falta ODDS_API_KEY en los secretos privados de Streamlit.")
-            else:
-                from src.match_report import verified_market_rows
-                try:
-                    market_rows = cached_odds(api_key, (game["liga"],), request.target_date)
-                except (OddsAPIError, ValueError) as exc:
-                    st.warning("No se pudieron actualizar momios externos: " + str(exc))
+            with st.expander("Comparación opcional de casas (necesita proveedor externo)", expanded=False):
+                api_key = safe_odds_key()
+                if not api_key:
+                    st.info("Sin proveedor de cuotas en tiempo real configurado. Los momios visibles arriba son exclusivamente los que Covers publicó; para comparar casas falta ODDS_API_KEY en los secretos privados de Streamlit.")
                 else:
-                    confirmed = verified_market_rows(game, market_rows)
-                    if confirmed:
-                        st.dataframe(confirmed, use_container_width=True, hide_index=True)
-                        st.caption("Momios americanos de The Odds API; consulta con caché máxima de cinco minutos. Comprueba hora de actualización y casa antes de usarlos. No son probabilidades estimadas por nuestra IA.")
+                    from src.match_report import verified_market_rows
+                    try:
+                        market_rows = cached_odds(api_key, (game["liga"],), request.target_date)
+                    except (OddsAPIError, ValueError) as exc:
+                        st.warning("No se pudieron actualizar momios externos: " + str(exc))
                     else:
-                        st.info("No hay momios externos que coincidan inequívocamente con ambos equipos, liga y hora de este partido. No se mostrarán cuotas de otro encuentro.")
-            from src.pick_evidence_ui import render_extra_sources
-            render_extra_sources()
+                        confirmed = verified_market_rows(game, market_rows)
+                        if confirmed:
+                            st.dataframe(confirmed, use_container_width=True, hide_index=True)
+                            st.caption("Momios americanos de The Odds API; consulta con caché máxima de cinco minutos. Comprueba hora de actualización y casa antes de usarlos. No son probabilidades estimadas por nuestra IA.")
+                        else:
+                            st.info("No hay momios externos que coincidan inequívocamente con ambos equipos, liga y hora de este partido. No se mostrarán cuotas de otro encuentro.")
             st.link_button("Ver análisis original en Covers", game["fuente"])
             st.markdown("**Dinero apostado, boletos y actividad de Las Vegas**")
             st.info(
