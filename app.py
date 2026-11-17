@@ -19,6 +19,8 @@ from src.pick_context import match_espn_event, fetch_summary, ContextSourceError
 from src.odds_api import OddsAPIError
 from src.web_data import find_games, load_fixture
 from src.web_query import interpret_request
+from src.player_props import fetch_roster, fetch_gamelog, parse_player_question
+from src.player_props_ui import render_player_research
 from src.brain_dashboard import render_brain_header, render_morning_snapshot
 
 st.set_page_config(
@@ -130,6 +132,14 @@ def cached_pick_summary(league, event_id):
 def cached_odds(key, sports, target):
     return odds_for_day(key, sports, target)
 
+@st.cache_data(ttl=21600, show_spinner=False)
+def cached_player_roster(team_id):
+    return fetch_roster(team_id)
+
+@st.cache_data(ttl=600, show_spinner=False)
+def cached_player_gamelog(player_id, target):
+    return fetch_gamelog(player_id, target)
+
 def safe_odds_key():
     try:
         return st.secrets.get("ODDS_API_KEY", "")
@@ -146,9 +156,9 @@ with analysis_tab:
     )
     with st.form("sports_query"):
         prompt = st.text_input(
-            "¿Qué partido quieres analizar?",
+            "¿Qué partido, jugador o mercado quieres analizar?",
             value="Dame los partidos de NBA, NFL y NHL hoy",
-            placeholder="Analiza Toronto contra Philadelphia hoy",
+            placeholder="Over de 24.5 puntos de Luka Doncic NBA hoy",
         )
         submitted = st.form_submit_button("Analizar partido", use_container_width=True)
     if submitted:
@@ -164,12 +174,34 @@ with analysis_tab:
         cached_scoreboard.clear()
         cached_pick_summary.clear()
         cached_odds.clear()
+        cached_player_roster.clear()
+        cached_player_gamelog.clear()
         st.info("Se vació la caché de Picks. La próxima consulta volverá a solicitar datos a las fuentes; si alguna falla, se indicará.")
     request = st.session_state.get("last_analysis_request")
     if request is not None:
         st.caption("Fecha: " + request.target_date.strftime("%d/%m/%Y")
                    + " · Ligas: " + ", ".join(request.sports) + " · CDMX")
-        links = picks_links(request.sports)
+        latest_question = st.session_state.get("last_analysis_text", "")
+        player_question = parse_player_question(latest_question)
+        if player_question:
+            if "NBA" not in request.sports:
+                st.warning("Las consultas de puntos/rebotes/asistencias por jugador "
+                           "están conectadas primero para NBA. Esa liga no está "
+                           "incluida en tu consulta.")
+            else:
+                try:
+                    player_board = cached_scoreboard("NBA", request.target_date)
+                except CalendarSourceError:
+                    st.warning("ESPN no entregó los equipos NBA de esta fecha. "
+                               "No es posible verificar el jugador con seguridad.")
+                else:
+                    render_player_research(
+                        latest_question, request.target_date,
+                        games=player_board["games"],
+                        roster_fetch=cached_player_roster,
+                        gamelog_fetch=cached_player_gamelog,
+                    )
+        links = picks_links(request.sports) if not player_question else []
         published = []
         for league, link in links:
             try:
@@ -185,7 +217,9 @@ with analysis_tab:
         ranked, specific_request = relevant_matches(
             published, st.session_state.get("last_analysis_text", "")
         )
-        if ranked:
+        if player_question:
+            pass  # La consulta de jugador ya se respondió con evidencia ESPN.
+        elif ranked:
             options = [
                 f"{game['liga']} · {game['partido']} · {game['hora_cdmx']} CDMX"
                 for game in ranked
@@ -219,23 +253,23 @@ with analysis_tab:
                     p2.metric("Local · umbral de equilibrio", f"{market_p['local']:.2f}%")
                 st.caption("Calculado exclusivamente a partir del precio americano, con "
                            "posible margen del operador. NO es nuestra probabilidad de acierto.")
-            with st.expander("Comparación opcional de casas (necesita proveedor externo)", expanded=False):
-                api_key = safe_odds_key()
-                if not api_key:
-                    st.info("Sin proveedor de cuotas en tiempo real configurado. Los momios visibles arriba son exclusivamente los que Covers publicó; para comparar casas falta ODDS_API_KEY en los secretos privados de Streamlit.")
-                else:
+            api_key = safe_odds_key()
+            if api_key:
+                with st.expander("Momios adicionales verificados de otras casas", expanded=False):
                     from src.match_report import verified_market_rows
                     try:
-                        market_rows = cached_odds(api_key, (game["liga"],), request.target_date)
+                        external_rows = cached_odds(api_key, (game["liga"],), request.target_date)
                     except (OddsAPIError, ValueError) as exc:
-                        st.warning("No se pudieron actualizar momios externos: " + str(exc))
+                        st.warning("No se pudieron actualizar los momios externos: " + str(exc))
                     else:
-                        confirmed = verified_market_rows(game, market_rows)
+                        confirmed = verified_market_rows(game, external_rows)
                         if confirmed:
                             st.dataframe(confirmed, use_container_width=True, hide_index=True)
-                            st.caption("Momios americanos de The Odds API; consulta con caché máxima de cinco minutos. Comprueba hora de actualización y casa antes de usarlos. No son probabilidades estimadas por nuestra IA.")
+                            st.caption("Fuente: proveedor de momios, actualizado "
+                                       "periódicamente. No es una probabilidad propia.")
                         else:
-                            st.info("No hay momios externos que coincidan inequívocamente con ambos equipos, liga y hora de este partido. No se mostrarán cuotas de otro encuentro.")
+                            st.caption("No hubo cuotas externas coincidentes con liga, "
+                                       "equipos, fecha y hora de este encuentro.")
             st.link_button("Ver análisis original en Covers", game["fuente"])
             st.markdown("**Dinero apostado, boletos y actividad de Las Vegas**")
             st.info(
@@ -338,7 +372,7 @@ with analysis_tab:
                 )
             for league, link in links:
                 st.link_button("Picks de " + league + " en Covers", link)
-        if "ATP" in request.sports or "WTA" in request.sports:
+        if not player_question and ("ATP" in request.sports or "WTA" in request.sports):
             st.info("Los conectores de tenis ATP/WTA siguen pendientes de validación.")
 
 with simulator_tab:
@@ -465,7 +499,7 @@ with status_tab:
         "- **GitHub:** código y pruebas versionados.\n"
         "- **Calendario:** consulta bajo demanda a ESPN de NBA, NFL y NHL; la fuente puede fallar.\n"
         "- **ATP/WTA:** proveedor de calendario por conectar.\n"
-        "- **Momios:** The Odds API (moneyline, spread y totales), requiere ODDS_API_KEY.\n"
+        "- **Momios:** precios publicados por Covers; otras casas solo se muestran cuando están disponibles.\n"
         "- **Covers:** lector HTML de proyecciones/mercados públicos NBA/NFL/NHL, con enlaces a la fuente; puede fallar por cambios o bloqueos.\n"
         "- **TEAM MÉXICO:** sin acceso autorizado a cuotas en tiempo real.\n"
         "- **Modelos predictivos:** entrenamiento y calibración pendientes.\n"
