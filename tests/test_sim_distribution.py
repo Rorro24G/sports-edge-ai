@@ -2,7 +2,7 @@
 from unittest import TestCase
 
 from src.simulations import GameScenario, simulate_totals
-from src.simulation_view import _scene
+from src.simulation_view import _scene, _distribution_meter
 
 
 class SimulationDistributionTests(TestCase):
@@ -19,6 +19,19 @@ class SimulationDistributionTests(TestCase):
         self.assertLessEqual(a.simulated_median_total, a.simulated_p90_total)
         self.assertEqual(a.over_count + a.under_count + a.push_count, 10000)
         self.assertEqual(a.status, "ESCENARIO_NO_VALIDADO")
+
+    def test_visual_meters_use_actual_simulation_outcomes(self):
+        scenario = GameScenario(
+            "NBA", 110, 115, 11, 10, 0.0, 223.5,
+            simulations=10000, seed=42,
+        )
+        result = simulate_totals(scenario)
+        html = _distribution_meter(result)
+        self.assertIn("TOTAL · OVER", html)
+        self.assertIn("LOCAL GANA · SIMULADO", html)
+        self.assertIn(f"{result.home_win_probability*100:.1f}%", html)
+        self.assertIn("sim-fill-shine", html)
+        self.assertNotIn("<script>", html)
 
     def test_nba_court_and_nfl_field_are_original_and_labeled(self):
         nfl = _scene("NFL", 'Visitante <script>', "Local", 22, 24)
