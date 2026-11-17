@@ -263,55 +263,36 @@ def render_brain_header() -> None:
 
 
 def render_morning_snapshot() -> None:
-    """Show the 6am snapshot or visibly explain why no snapshot is available."""
+    """One compact radar; current ESPN/Covers requests appear below."""
     import streamlit as st
 
     today = datetime.now(MEXICO).date()
     report = load_today_snapshot(today)
     st.markdown("#### Radar del día")
     if not report:
-        st.info(
-            "El informe automático de las 6:00 a. m. todavía no está disponible "
-            "en esta versión o para la fecha de hoy. Puedes consultar Picks "
-            "abajo: se buscarán datos actualizados bajo demanda."
-        )
+        # No stale or missing report banners. The live catalog below works
+        # independently of the morning GitHub Action.
         return
+
     rows = morning_rows(report)
-    groups = report["leagues"]
-    cols = st.columns(4)
+    cols = st.columns(3)
     for index, league in enumerate(LEAGUES):
-        count = sum(row["Liga"] == league for row in rows)
-        cols[index].metric(league, count, help="Partidos verificados en el informe del día")
-    cols[3].metric("Picks propios validados", 0, help="Sin modelo entrenado/calibrado")
-    st.caption("Informe generado " + report["generated_at_utc"] +
-               " UTC · Precios sujetos a cambios.")
-    st.markdown("#### Selecciones de referencia para hoy")
+        cols[index].metric(league, sum(row["Liga"] == league for row in rows))
+
     selected = morning_covers_picks(report)
     if selected:
-        st.caption("Hasta 3 por liga, ordenadas por diferencia de marcador proyectada. "
-                   "No es una clasificación por probabilidad de acertar ni por ventaja de apuesta. "
-                   "Los momios son los capturados cuando se generó el informe, "
-                   "no cotizaciones en vivo.")
-        public_rows = [{("Selección ML" if k == "Referencia ML (Covers)" else k): v
-                        for k, v in row.items() if k != "Fuente"} for row in selected]
-        st.dataframe(public_rows, use_container_width=True, hide_index=True)
-    else:
-        st.info("No hay selecciones de referencia prepartido con moneyline publicado "
-                "y verificable para hoy. Puedes consultar el partido en Picks "
-                "o actualizar más tarde.")
-    st.warning("Estos son ganadores favorecidos por los marcadores proyectados, "
-               "NO picks validados de Sports Edge AI ni apuestas con rentabilidad demostrada.")
-    render_reference_backtest()
-    with st.expander("Abrir partidos y referencias del informe matutino", expanded=True):
+        st.caption("Proyecciones y precios de Covers guardados en el informe matutino.")
+        display = [
+            {("Selección ML" if k == "Referencia ML (Covers)" else k): v
+             for k, v in item.items() if k != "Fuente"}
+            for item in selected
+        ]
+        st.dataframe(display, hide_index=True, use_container_width=True)
+    with st.expander("Informe matutino y resultados anteriores", expanded=False):
+        st.caption("Corte: " + report["generated_at_utc"]
+                   + " UTC · cuotas históricas del momento de captura")
+        if not selected:
+            st.caption("El corte matutino no registró referencias prepartido con ML.")
         if rows:
-            public_rows = [{("Equipo favorecido" if k == "Ganador según marcador Covers" else k):
-                            (v.replace(" · Covers", "") if isinstance(v, str) else v)
-                            for k, v in row.items() if k != "Referencia externa"} for row in rows]
-            st.dataframe(public_rows, use_container_width=True, hide_index=True)
-        else:
-            st.info("No se encontraron encuentros para hoy; comprueba las fuentes antes de concluir.")
-    for league in LEAGUES:
-        errs = groups.get(league, {}).get("errors") or []
-        if errs:
-            st.warning(league + ": hay fuentes que fallaron; no debe asumirse cobertura completa.")
-
+            st.dataframe(rows, use_container_width=True, hide_index=True)
+        render_reference_backtest()

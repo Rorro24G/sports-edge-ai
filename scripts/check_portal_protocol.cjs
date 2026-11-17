@@ -14,6 +14,7 @@ assert(code.includes('if(!reduced&&i%5===0'),'travelling wire highlights missing
 assert(code.includes('thinkingPoint(p,t,i,j)'),'real line deformation missing');
 assert(code.includes("state==='intro'"),'ambient brain on entry screen missing');
 assert(code.includes("angle+=dt*.00010"),'visible idle spin missing');
+assert(code.includes('flightBlend=ease'),'node-directed transition missing');
 assert(html.includes('neuron-heartbeat 1.75s'),'always-on node beat missing');
 
 function run(reduced,page){
@@ -33,7 +34,7 @@ function run(reduced,page){
  listeners.message({source:parent,data:{type:'streamlit:render',args:{}}});
  elements.enter.onclick();if(!reduced)callback(1800);
  assert.equal(elements['brain-ui'].inert,false);
- nodes[pages.indexOf(page)].onclick();if(!reduced)callback(2700);
+ nodes[pages.indexOf(page)].onclick();if(!reduced)callback(3100);
  const selected=messages.find(m=>m.type==='streamlit:setComponentValue');
  assert.equal(selected.value.page,page);assert.equal(selected.dataType,'json');
  assert.equal(selected.isStreamlitMessage,true);
