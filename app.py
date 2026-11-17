@@ -137,9 +137,11 @@ with analysis_tab:
             published.extend(covers["events"])
             st.caption(f"{league}: Covers consultado {covers['checked_at_utc']} (UTC); "
                        f"fecha editorial {covers['page_date']}")
-        if published:
-            from src.match_report import rank_matches
-            ranked = rank_matches(published, st.session_state.get("last_analysis_text", ""))
+        from src.match_report import relevant_matches
+        ranked, specific_request = relevant_matches(
+            published, st.session_state.get("last_analysis_text", "")
+        )
+        if ranked:
             options = [
                 f"{game['liga']} · {game['partido']} · {game['hora_cdmx']} CDMX"
                 for game in ranked
@@ -280,10 +282,21 @@ with analysis_tab:
                 "No se asignará ventaja ni tamaño de apuesta inventado."
             )
         else:
-            st.warning(
-                "No se encontraron proyecciones extraíbles para esa fecha y ligas. "
-                "Esto no significa que no haya partidos. Consulta las fuentes originales."
-            )
+            if published and specific_request:
+                st.warning(
+                    "Los equipos solicitados no coinciden con los partidos publicados "
+                    "para esta fecha. No mostraremos otro encuentro como si fuera el pedido."
+                )
+                st.dataframe(
+                    [{"Liga": row["liga"], "Partido publicado": row["partido"],
+                      "Hora CDMX": row["hora_cdmx"]} for row in published],
+                    use_container_width=True, hide_index=True
+                )
+            else:
+                st.warning(
+                    "No se encontraron proyecciones extraíbles para esa fecha y ligas. "
+                    "Esto no significa que no haya partidos. Consulta las fuentes originales."
+                )
             for league, link in links:
                 st.link_button("Picks de " + league + " en Covers", link)
         if "ATP" in request.sports or "WTA" in request.sports:
