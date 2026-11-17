@@ -168,7 +168,7 @@ with analysis_tab:
     st.subheader("Ficha de picks · elige un partido")
     st.caption(
         "Escribe la liga, el equipo o un enfrentamiento. "
-        "La información de Covers es externa; Sports Edge AI no presume tener un pick propio."
+        "Consulta selecciones de referencia, momios y contexto del partido."
     )
     with st.form("sports_query"):
         prompt = st.text_input(
@@ -226,11 +226,10 @@ with analysis_tab:
             try:
                 covers = cached_covers(league, request.target_date)
             except (CoversSourceError, ValueError) as exc:
-                st.warning(f"{league}: Covers no respondió con datos utilizables ({exc}).")
-                st.link_button("Consultar " + league + " en Covers", link)
+                st.warning(f"{league}: no fue posible actualizar los datos. Intenta nuevamente.")
                 continue
             published.extend(covers["events"])
-            st.caption(f"{league}: Covers consultado {covers['checked_at_utc']} (UTC); "
+            st.caption(f"{league}: Actualizado {covers['checked_at_utc']} (UTC); "
                        f"fecha editorial {covers['page_date']}")
         from src.match_report import relevant_matches
         ranked, specific_request = relevant_matches(
@@ -247,12 +246,12 @@ with analysis_tab:
             game = ranked[options.index(chosen)]
             st.markdown("### " + game["partido"] + " · " + game["liga"])
             st.caption("Fecha " + game["fecha_cdmx"] + " · "
-                       + game["hora_cdmx"] + " CDMX · Covers (información de terceros)")
+                       + game["hora_cdmx"] + " CDMX")
             left, right = st.columns(2)
-            left.metric("Proyección visitante · Covers",
+            left.metric("Proyección visitante",
                         str(game["proyeccion_visitante"])
                         if game["proyeccion_visitante"] is not None else "No disponible")
-            right.metric("Proyección local · Covers",
+            right.metric("Proyección local",
                          str(game["proyeccion_local"])
                          if game["proyeccion_local"] is not None else "No disponible")
             from src.pick_evidence_ui import render_covers_evidence
@@ -263,7 +262,7 @@ with analysis_tab:
             if all(value is None for value in market_p.values()):
                 st.caption("Sin moneyline verificable para ambos equipos; "
                            "no es posible calcular un umbral real de equilibrio. "
-                           "Las proyecciones porcentuales de Covers no son momios.")
+                           "Las proyecciones porcentuales no son momios.")
             else:
                 p1, p2 = st.columns(2)
                 if market_p["visitante"] is not None:
@@ -289,20 +288,13 @@ with analysis_tab:
                         else:
                             st.caption("No hubo cuotas externas coincidentes con liga, "
                                        "equipos, fecha y hora de este encuentro.")
-            st.link_button("Ver análisis original en Covers", game["fuente"])
             st.markdown("**Dinero apostado, boletos y actividad de Las Vegas**")
             st.info(
-                "Los porcentajes de consenso de Covers proceden de sus concursos "
+                "Los porcentajes de consenso proceden de concursos "
                 "gratuitos, no de dólares efectivamente apostados en casas de Las Vegas. "
                 "No hay datos de dinero ni boletos reales verificados para este juego; "
                 "no se inferirán a partir del consenso."
             )
-            consensus_url = consensus_link(game["liga"])
-            if consensus_url:
-                st.link_button("Ver consenso de " + game["liga"] + " en Covers",
-                               consensus_url)
-            st.link_button("Cómo calcula Covers el consenso",
-                           PUBLIC_MONEY_EXPLANATION)
             st.markdown("**Jugadores, bajas, lesiones y contexto de ESPN**")
             try:
                 espn_board = cached_scoreboard(game["liga"], request.target_date)
@@ -369,7 +361,7 @@ with analysis_tab:
             )
             st.markdown("**Validación de Picks de Sports Edge AI**")
             st.caption("La selección de referencia anterior es únicamente una lectura del marcador "
-                       "proyectado por Covers. Para promoverla a pick propio se requiere backtesting, "
+                       "proyectado. Para validarla se requiere backtesting, "
                        "calibración y momios comparables de la misma fecha y mercado.")
             st.warning("PICKS PROPIOS PENDIENTES DE VALIDACIÓN. No se atribuye probabilidad, "
                        "EV, rentabilidad ni tamaño de apuesta a esta proyección externa.")
@@ -389,8 +381,6 @@ with analysis_tab:
                     "No se encontraron proyecciones extraíbles para esa fecha y ligas. "
                     "Esto no significa que no haya partidos. Consulta las fuentes originales."
                 )
-            for league, link in links:
-                st.link_button("Picks de " + league + " en Covers", link)
         if not player_question and ("ATP" in request.sports or "WTA" in request.sports):
             st.info("Los conectores de tenis ATP/WTA siguen pendientes de validación.")
 
@@ -508,20 +498,9 @@ with calendar_tab:
     st.caption("ATP/WTA: calendario por conectar. La ausencia de datos no equivale a partido cancelado.")
 
 with context_tab:
-    st.subheader("Momentum y señales periodísticas")
-    st.caption("Diseño del módulo de contexto; la ingesta automática todavía no está conectada.")
-    st.markdown(
-        "**Rendimiento reciente:** últimos juegos, volumen de uso, minutos, "
-        "acarreos, recepciones, ritmo, descansos y cambios de rol.\n\n"
-        "**Contexto:** lesiones, alineaciones, declaraciones de coaches, "
-        "cambios tácticos y noticias en fuentes originales.\n\n"
-        "**Redes sociales y pronosticadores:** publicaciones públicas de X y otras "
-        "fuentes, con fecha y autor. Las afirmaciones no verificadas se mostrarán como rumores."
-    )
-    st.info(
-        "Estas señales solo modificarán probabilidades cuando exista evidencia estadística "
-        "de que mejoran los pronósticos. No se copiarán los supuestos porcentajes de acierto de terceros."
-    )
+    from src.news_ui import render as render_news
+    render_news()
+
 
 with status_tab:
     st.subheader("Conexiones y seguridad")
@@ -551,3 +530,4 @@ with parlays_tab:
 with ledger_tab:
     from src.ledger_ui import render
     render()
+
