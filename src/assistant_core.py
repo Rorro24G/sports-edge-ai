@@ -12,6 +12,8 @@ from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 from .web_query import interpret_request, normalized
+from .prop_review import matching_player_game, player_prop_review
+from .odds_api import OddsAPIError
 from .player_props import (
     PlayerSourceError, parse_player_question, resolve_player_in_games,
     fetch_roster, fetch_gamelog, parse_gamelog, summarize_prop,
@@ -87,6 +89,7 @@ def answer_query(
     board_fetch=fetch_scoreboard, covers_fetch=fetch_public_picks,
     roster_fetch=fetch_roster, gamelog_fetch=fetch_gamelog,
     report_loader=load_today_snapshot, backtest_loader=load_backtest,
+    prop_odds_fetch=None, prop_api_key: str = "",
 ) -> dict:
     """Returns a text answer with traceable sources and conversation context."""
     context = dict(context or {})
@@ -244,6 +247,8 @@ def answer_query(
             player = {
                 "id": context["player_id"], "name": context["player_name"],
                 "team_id": context.get("player_team_id") or "",
+                "injuries": context.get("player_injuries") or [],
+                "status": context.get("player_status") or None,
             }
         else:
             player = resolve_player_in_games(
@@ -268,6 +273,19 @@ def answer_query(
                              " en esta estadística.", "sources": [
                                  "https://www.espn.com/nba/player/gamelog/_/id/" + player["id"]
                              ], "context": context}
+        matchup = matching_player_game(player, board["games"], target)
+        offers = []
+        if (prop_api_key and prop_odds_fetch and matchup
+                and parsed.line is not None and parsed.direction):
+            try:
+                offers = prop_odds_fetch(
+                    prop_api_key, matchup, target, player["name"],
+                    parsed.stat, parsed.direction, parsed.line,
+                )
+            except (OddsAPIError, ValueError, TypeError, OSError):
+                offers = []
+        review = player_prop_review(player, rows, parsed,
+                                    game=matchup, offers=offers, now=clock)
         stats = summarize_prop(rows, parsed)
         label = _PROP_LABEL[parsed.stat]
         response = (
@@ -289,6 +307,20 @@ def answer_query(
         else:
             response += ("\n\nPara evaluar un Over/Under necesito que indiques "
                          "la línea: «over 24.5 puntos» o «under 8.5 rebotes».")
+        if matchup:
+            response += (
+                "\n\nPartido ESPN: " + matchup["away"] + " @ " + matchup["home"]
+                + " · " + str(matchup.get("local_time") or "hora no confirmada")
+                + " CDMX."
+            )
+        if offers:
+            price = offers[0]
+            response += ("\n\nPrecio publicado para exactamente esta línea: " +
+                         price["casa"] + " " + str(price["momio_americano"]) +
+                         " (actualizado " + price["actualizado_utc"] + " UTC). "
+                         "Sujeto a cambios; confirma en la casa.")
+        response += ("\n\nFactores a revisar:\n" +
+                     "\n".join("• " + flag for flag in review["risk_flags"]))
         response += (
             "\n\nEsto es historial, NO probabilidad predictiva ni pick validado. "
             "ESPN no confirmó una cuota de apuesta para ese prop. "
@@ -297,6 +329,8 @@ def answer_query(
         context.update({
             "player_id": player["id"], "player_name": player["name"],
             "player_team_id": player.get("team_id", ""),
+            "player_injuries": player.get("injuries") or [],
+            "player_status": player.get("status"),
             "player_stat": parsed.stat,
             "sport": "NBA",
         })
@@ -305,6 +339,7 @@ def answer_query(
             "sources": _trusted_sources([
                 "https://www.espn.com/nba/player/gamelog/_/id/" + player["id"],
                 board.get("url", ""),
+                "https://www.covers.com/sport/basketball/nba/player-props",
             ]),
             "context": context,
         }

@@ -7,7 +7,8 @@ from .assistant_core import answer_query
 from .brain_dashboard import load_today_snapshot
 
 
-def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch) -> None:
+def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
+           prop_odds_fetch=None, prop_api_key: str = "") -> None:
     st.subheader("Asistente · pregunta por partidos y jugadores")
     st.caption(
         "Respuestas basadas en datos verificables de ESPN y Covers. "
@@ -54,6 +55,8 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch) -> None:
                     board_fetch=board_fetch, covers_fetch=covers_fetch,
                     roster_fetch=roster_fetch, gamelog_fetch=gamelog_fetch,
                     report_loader=load_today_snapshot,
+                    prop_odds_fetch=prop_odds_fetch,
+                    prop_api_key=prop_api_key,
                 )
             except (ValueError, TypeError, KeyError, IndexError) as exc:
                 answer = {"reply": "No pude interpretar la consulta. Indica liga, "
