@@ -11,6 +11,8 @@ from pathlib import Path
 import re
 from zoneinfo import ZoneInfo
 
+from .pick_reference import covers_projection
+
 MEXICO = ZoneInfo("America/Mexico_City")
 LATEST = Path(__file__).resolve().parents[1] / "data" / "picks_diario.json"
 LEAGUES = ("NBA", "NFL", "NHL")
@@ -56,8 +58,17 @@ def morning_rows(report: dict) -> list[dict]:
             display = "Sin moneyline verificable"
             if covered and isinstance(ml, list) and len(ml) == 2 and all(ml):
                 display = str(ml[0]) + " / " + str(ml[1]) + " · Covers"
+            signal = covers_projection({
+                "liga": league, "partido": name,
+                "fecha_cdmx": report["date_cdmx"], "hora_cdmx": clock,
+                "proyeccion_visitante": (event.get("proyeccion_covers") or [None, None])[0],
+                "proyeccion_local": (event.get("proyeccion_covers") or [None, None])[1],
+            }) if covered else None
             results.append({
                 "Liga": league, "Partido": name, "Hora CDMX": clock,
+                "Ganador según marcador Covers": (
+                    signal["equipo_proyectado"] if signal and
+                    signal["vigente_para_analisis_prepartido"] else "Sin referencia prepartido"),
                 "Referencia externa": "Covers + ESPN" if event.get("espn") else (
                     "Covers" if covered else "ESPN"),
                 "Moneyline": display, "Pick propio": "Sin modelo validado",
