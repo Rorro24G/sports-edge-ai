@@ -78,3 +78,39 @@ class AdvancedAssistantTests(TestCase):
         self.assertNotIn("BetMGM", result["reply"])
         self.assertIn("Sin cotización", result["reply"])
         self.assertNotIn("ODDS_API_KEY", result["reply"])
+
+
+    def test_injury_followup_refreshes_roster_and_retains_market(self):
+        first = answer_query(
+            "Over de 24.5 puntos de Luka Doncic NBA hoy", now=NOW,
+            board_fetch=board, roster_fetch=roster, gamelog_fetch=log,
+        )
+        calls = []
+        def updated(team):
+            calls.append(team)
+            result = roster(team)
+            for player in result["athletes"]:
+                player["status"] = "Out"
+                player["injuries"] = [{"status": "Out"}]
+            return result
+        second = answer_query(
+            "¿Y las lesiones?", context=first["context"], now=NOW,
+            board_fetch=board, roster_fetch=updated, gamelog_fetch=log,
+        )
+        self.assertIn("13", calls)
+        self.assertIn("Over 24.5 puntos", second["reply"])
+        self.assertIn("Estado de plantilla ESPN: Out", second["reply"])
+        self.assertIn("2026-11-17T13:00:00Z", second["reply"])
+
+    def test_failed_refresh_does_not_reuse_old_availability(self):
+        first = answer_query(
+            "Over de 24.5 puntos de Luka Doncic NBA hoy", now=NOW,
+            board_fetch=board, roster_fetch=roster, gamelog_fetch=log,
+        )
+        second = answer_query(
+            "¿Y los riesgos?", context=first["context"], now=NOW,
+            board_fetch=board, roster_fetch=lambda _: {"athletes": []},
+            gamelog_fetch=lambda *a: self.fail("No usar historial sin identificar jugador"),
+        )
+        self.assertIn("No pude identificar", second["reply"])
+        self.assertNotIn("Questionable", second["reply"])
