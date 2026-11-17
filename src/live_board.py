@@ -56,6 +56,8 @@ def normalize_scoreboard(payload: dict, sport: str, day: date) -> list[dict]:
                 "local_date": local.date(),
                 "local_time": local.strftime("%H:%M"),
                 "status": state.upper(),
+                "away_score": away.get("score"),
+                "home_score": home.get("score"),
                 "source_url": game_link or "https://www.espn.com/",
                 "event_id": str(event.get("id", "")),
                 "market_status": "SIN_CUOTAS_VERIFICADAS",
