@@ -42,9 +42,9 @@ def apply_theme():
     :root{--neon:#ff5365;--neon-light:#ff8a96}
     .stApp,[data-testid="stHeader"]{background:#050506!important;color:#f4f0f2!important}
     .block-container{max-width:1260px;padding-top:1.3rem;padding-bottom:2rem}
-    h1,h2,h3,h4{color:#ff7184!important;letter-spacing:-.025em;text-shadow:0 0 7px #ff53657f,0 0 22px #ff53653d;animation:heading-glow 5.8s ease-in-out infinite}
+    h1,h2,h3,h4{color:#ff4667!important;letter-spacing:-.025em;text-shadow:0 0 7px #ffe8ec,0 0 21px #ff3059dd,0 0 44px #ff30598c;animation:heading-glow 3.4s ease-in-out infinite}
     p,label,.stMarkdown{color:#f1ecee}a{color:#ff8a96!important}
-    .section-brand{font-weight:900;letter-spacing:.14em;color:#ff7e90;font-size:15px;padding:10px 0;text-align:center;text-shadow:0 0 10px #ff5365b0,0 0 32px #ff53654d;animation:section-neon 5s ease-in-out infinite}
+    .section-brand{font-weight:900;letter-spacing:.14em;color:#ff4e6d;font-size:15px;padding:10px 0;text-align:center;text-shadow:0 0 8px #ffeaef,0 0 22px #ff3059,0 0 48px #ff305995;animation:section-neon 3.4s ease-in-out infinite}
     .section-brand span{font-weight:400;color:#d2b7bd;letter-spacing:.04em}
     [data-testid="stMetric"]{background:#120a0d;border:1px solid #54252f;border-radius:12px;padding:1rem}
     [data-testid="stMetricValue"]{color:#fff}
@@ -56,9 +56,9 @@ def apply_theme():
     [data-testid="stDataFrame"]{border:1px solid #42232a;border-radius:10px}
     .odds-price{color:#76f5a6;font-variant-numeric:tabular-nums;font-weight:800}
     @keyframes section-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes heading-glow{0%,100%{text-shadow:0 0 7px #ff53657f,0 0 22px #ff53653d}50%{text-shadow:0 0 12px #ff8195d1,0 0 32px #ff53657e}}
-    @keyframes section-neon{0%,100%{transform:translateY(0);text-shadow:0 0 10px #ff5365b0,0 0 32px #ff53654d}50%{transform:translateY(-2px);text-shadow:0 0 14px #ffb4bd,0 0 42px #ff536592}}
-    @keyframes button-breathe{0%,100%{box-shadow:0 0 13px #ff536544}50%{box-shadow:0 0 23px #ff53658c}}
+    @keyframes heading-glow{0%,100%{text-shadow:0 0 7px #ffe8ec,0 0 21px #ff3059dd,0 0 44px #ff30598c}50%{text-shadow:0 0 13px #fff,0 0 35px #ff3059,0 0 70px #ff3059dd}}
+    @keyframes section-neon{0%,100%{transform:translateY(0);text-shadow:0 0 8px #ffeaef,0 0 22px #ff3059,0 0 48px #ff305995}50%{transform:translateY(-4px);text-shadow:0 0 15px #fff,0 0 42px #ff3059,0 0 82px #ff3059dd}}
+    @keyframes button-breathe{0%,100%{box-shadow:0 0 15px #ff536566;transform:scale(1)}50%{box-shadow:0 0 29px #ff5365c2;transform:scale(1.025)}}
     .block-container{animation:section-arrive .45s ease-out}
     @media(prefers-reduced-motion:reduce){.block-container,h1,h2,h3,h4,.section-brand,button[kind="primary"],div.stFormSubmitButton>button{animation:none!important}
       button[kind="primary"],div.stFormSubmitButton>button,button[kind="secondary"]{transition:none!important}}
