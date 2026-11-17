@@ -47,6 +47,9 @@ with (
 ):
     app = AppTest.from_file("../app.py", default_timeout=40).run()
     assert not app.exception, [str(e.message) for e in app.exception]
+    initial_text = "\n".join(str(x.value) for x in app.markdown)
+    assert "EL CEREBRO" in initial_text, "No apareció la portada neuronal nueva"
+    assert "Radar del día" in initial_text, "No apareció el radar diario"
     inputs = list(app.text_input)
     assert inputs, "No aparece el campo para preguntar por un partido"
     inputs[0].set_value("Analiza Toronto contra Philadelphia 13 de noviembre de 2026")
