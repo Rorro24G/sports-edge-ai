@@ -32,9 +32,7 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch) -> None:
             st.write(item["text"])
             if item.get("sources") and item["role"] == "assistant":
                 for index, url in enumerate(item["sources"][:4]):
-                    st.link_button("Fuente " + str(index + 1), url,
-                                   key="assistant_source_" + str(index) + "_" +
-                                   str(history.index(item)))
+                    st.link_button("Fuente " + str(index + 1), url)
 
     with st.form("sports_assistant_question_form", clear_on_submit=True):
         question = st.text_input(
