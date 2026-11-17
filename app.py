@@ -402,6 +402,8 @@ with assistant_tab:
         covers_fetch=cached_covers,
         roster_fetch=cached_player_roster,
         gamelog_fetch=cached_player_gamelog,
+        prop_odds_fetch=cached_prop_offers if safe_odds_key() else None,
+        prop_api_key=safe_odds_key(),
     )
 
 with simulator_tab:
