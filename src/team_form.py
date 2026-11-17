@@ -262,12 +262,17 @@ def scenario_from_history(sport: str, away_games: list[dict], home_games: list[d
         "total_line": float(total_line),
         "simulations": 10_000,
         "seed": 42,
+        "away_scored": tuple(float(r["points_for"]) for r in away),
+        "away_allowed": tuple(float(r["points_against"]) for r in away),
+        "home_scored": tuple(float(r["points_for"]) for r in home),
+        "home_allowed": tuple(float(r["points_against"]) for r in home),
         "away_count": len(away),
         "home_count": len(home),
         "rest_away": rest_away,
         "rest_home": rest_home,
         "status": "HISTORICO_ESPN_PREPARTIDO_NO_CALIBRADO",
-        "method": ". ".join(notes) + ". Correlación asumida cero, no medida.",
+        "method": ". ".join(notes) + ". Se remuestrean marcadores ESPN anteriores y "
+                  "se agrega variación residual; correlación asumida cero, no medida.",
     }
 
 
