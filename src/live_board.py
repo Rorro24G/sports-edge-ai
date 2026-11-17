@@ -53,6 +53,8 @@ def normalize_scoreboard(payload: dict, sport: str, day: date) -> list[dict]:
                 "sport": sport,
                 "away": away_name,
                 "home": home_name,
+                "away_team_id": str(away.get("team", {}).get("id", "")),
+                "home_team_id": str(home.get("team", {}).get("id", "")),
                 "local_date": local.date(),
                 "local_time": local.strftime("%H:%M"),
                 "status": state.upper(),
