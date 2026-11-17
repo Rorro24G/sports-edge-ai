@@ -457,16 +457,8 @@ with status_tab:
     st.caption("Sin operaciones reales. Historial de predicciones y tamaño de apuesta disponibles tras validación.")
 
 with parlays_tab:
-    st.subheader("Parlays · última etapa del proyecto")
-    st.caption(
-        "Primero deben funcionar las fichas por partido, las simulaciones "
-        "y el calendario. Después evaluaremos combinaciones."
-    )
-    st.warning(
-        "Todavía no hay parlays recomendados. Faltan probabilidades propias "
-        "validadas, momios comprobados y estimación de dependencia entre selecciones. "
-        "No multiplicaremos probabilidades independientes sin verificar esa condición."
-    )
+    from src.parlay_ui import render as render_parlay
+    render_parlay()
 
 
 with ledger_tab:
