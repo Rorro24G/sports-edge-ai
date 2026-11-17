@@ -59,7 +59,7 @@ def parse_player_question(text: str) -> PlayerQuestion | None:
     num = r"(\d{1,3}(?:[.,]\d{1,2})?)"
     expression = r"(?:puntos?|points?|pts|rebotes?|rebounds?|reb|asistencias?|assists?|ast|triples?|3pm|3pt|3-pointers?)"
     patterns = [
-        r"\b(?:over|under|mas de|menos de|supera|superara|por encima de|por debajo de)\s+" + num,
+        r"\b(?:over|under|mas de|menos de|supera|superara|por encima de|por debajo de)\s+(?:de\s+)?" + num,
         r"\b" + expression + r"\s*(?:de\s*)?" + num,
         r"\b" + num + r"\s+" + expression + r"\b",
     ]
