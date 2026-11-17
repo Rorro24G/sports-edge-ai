@@ -60,5 +60,5 @@ with (
     visible = "\n".join(str(x.value) for x in app.markdown)
     assert "sim-stadium" in visible, "No aparece el campo NFL"
     assert "VISUALIZACIÓN ILUSTRATIVA" in visible
-    assert "NO ES PICK VALIDADO" in "\n".join(str(x.message) for x in app.warning)
+    assert "NO ES PICK VALIDADO" in "\n".join(str(x.value) for x in app.warning)
     print("STREAMLIT_ESPN_SIMULATOR_UI_OK")
