@@ -1,5 +1,9 @@
 """Streamlit smoke: conversational question + follow-up, no paid API."""
 from streamlit.testing.v1 import AppTest
+from unittest.mock import patch as content_patch
+# Keep unrelated content services independent of the network in UI tests.
+content_patch("src.news_ui.cached_news", return_value={"articles": [], "checked_at_utc": "offline fixture"}).start()
+content_patch("src.parlay_ui.cached_live_report", return_value={"leagues": {}, "generated_at_utc": "offline fixture"}).start()
 
 app = AppTest.from_file("../app.py", default_timeout=45).run()
 assert not app.exception, [str(x.message) for x in app.exception]
@@ -24,3 +28,4 @@ assert "Mi historial" in second[-1]["text"]
 assert "No tengo acceso a tu saldo" in second[-1]["text"]
 assert len(second) == 4, "El bot debe recordar ambas interacciones"
 print("STREAMLIT_NATURAL_ASSISTANT_UI_OK")
+

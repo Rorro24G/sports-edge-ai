@@ -22,22 +22,22 @@ def market_rows(game: dict) -> list[dict]:
                 continue
             is_percentage = "%" in value
             if label.startswith("Moneyline"):
-                kind = "Momio americano citado por Covers"
+                kind = "Momio americano publicado"
             elif label == "Porcentajes publicados":
                 kind = "Porcentaje sin asignar a un mercado"
             elif is_percentage:
                 kind = "Proyección porcentual, NO momio"
             else:
-                kind = "Línea y precio citados por Covers"
+                kind = "Línea y precio publicados"
             items.append({"Mercado": label, "Dato": value, "Interpretación": kind})
     return items
 
 
 def render_covers_evidence(game: dict) -> None:
-    st.markdown("**Pick de referencia de Covers (no validado)**")
+    st.markdown("**Pick de referencia (pendiente de validación)**")
     signal = covers_projection(game)
     if signal is None:
-        st.info("Covers no publicó un marcador proyectado suficiente para identificar "
+        st.info("No hay un marcador proyectado suficiente para identificar "
                 "un equipo favorito en este encuentro. No generaremos una selección artificial.")
     else:
         if not signal["vigente_para_analisis_prepartido"]:
@@ -45,33 +45,34 @@ def render_covers_evidence(game: dict) -> None:
                        "o está en el pasado. No constituye una selección para apostar ahora.")
         price = signal["momio_covers"] or "No publicado"
         st.markdown("**Selección de referencia: " + signal["seleccion_de_referencia"] +
-                    " · Momio Covers: " + price + "**")
+                    " · Momio de referencia: " + price + "**")
         if not signal["vigente_para_analisis_prepartido"]:
             st.warning("Partido ya iniciado o pasado: esta selección es histórica, no una propuesta actual.")
         c1, c2, c3 = st.columns(3)
-        c1.metric("Equipo favorecido por Covers", signal["equipo_proyectado"])
+        c1.metric("Equipo favorecido", signal["equipo_proyectado"])
         c2.metric("Margen de puntos proyectado", f"{signal['margen_proyectado']:.2f}")
         c3.metric("Total proyectado (puntos)", f"{signal['total_proyectado']:.2f}")
-        st.caption("Referencia calculada del marcador proyectado por Covers: "
+        st.caption("Referencia calculada del marcador proyectado: "
                    f"{signal['marcador_proyectado']} (visitante - local). "
-                   "No equivale a un pick editorial de Covers, "
+                   "No equivale a una recomendación validada, "
                    "ni a una probabilidad de victoria calibrada.")
-        st.caption("El moneyline indicado procede de Covers, NO de una consulta "
+        st.caption("El moneyline indicado es una referencia, NO una consulta "
                    "actual a la casa. La referencia procede del marcador matemático, "
                    "no es necesariamente una recomendación editorial.")
         st.warning("SELECCIÓN DE REFERENCIA, NO PICK PROPIO VALIDADO: "
                    "sin backtesting, EV o porcentaje de bank sustentados.")
-    st.markdown("**Mercados y porcentajes que realmente publicó Covers**")
+    st.markdown("**Mercados disponibles**")
     rows = market_rows(game)
     if rows:
         st.dataframe(rows, use_container_width=True, hide_index=True)
     else:
-        st.info("Covers no ofreció cuotas o porcentajes legibles para estos mercados.")
+        st.info("No hay cuotas o porcentajes legibles para estos mercados.")
     if game.get("tipo_mercados") == "proyecciones_porcentuales":
-        st.info("IMPORTANTE: valores como «52%» son porcentajes publicados por Covers, "
+        st.info("IMPORTANTE: valores como «52%» son porcentajes publicados, "
                 "no cuotas americanas ni porcentajes de dinero apostado. "
                 "No pueden usarse para calcular el importe de una apuesta.")
     if not game.get("momio_visitante") or not game.get("momio_local"):
         st.caption("Moneyline incompleto: se deja vacío hasta obtener precios verificables "
                    "de ambos equipos. No se copiarán números de otro mercado.")
+
 

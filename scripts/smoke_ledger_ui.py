@@ -2,6 +2,10 @@
 import tempfile
 from pathlib import Path
 from streamlit.testing.v1 import AppTest
+from unittest.mock import patch as content_patch
+# Keep unrelated content services independent of the network in UI tests.
+content_patch("src.news_ui.cached_news", return_value={"articles": [], "checked_at_utc": "offline fixture"}).start()
+content_patch("src.parlay_ui.cached_live_report", return_value={"leagues": {}, "generated_at_utc": "offline fixture"}).start()
 from src.ledger_store import read_ledger
 
 with tempfile.TemporaryDirectory() as folder:
@@ -36,3 +40,4 @@ with tempfile.TemporaryDirectory() as folder:
     assert len(read_ledger(path)["bets"]) == 1
     assert read_ledger(path)["bets"][0]["stake"] == "100.00"
     print("STREAMLIT_LEDGER_UI_OK")
+
