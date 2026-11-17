@@ -1,9 +1,9 @@
 """ESPN historical-team form must never use target-date or future results."""
-from datetime import date
+from datetime import date, timedelta
 from unittest import TestCase
 
 from src.team_form import (
-    completed_team_games, recent_team_form, scenario_from_forms,
+    completed_team_games, recent_team_form, scenario_from_forms, scenario_from_history,
     season_year, schedule_url,
 )
 
@@ -85,6 +85,40 @@ class TeamFormTests(TestCase):
         self.assertEqual(params["status"], "ESCENARIO_DE_DESCRIPCION_HISTORICA_NO_VALIDADO")
         with self.assertRaises(ValueError):
             scenario_from_forms("NHL", away, home, total_line=5.5)
+
+
+    def test_history_simulation_filters_future_results_and_uses_venue(self):
+        before = TARGET
+        rows = []
+        for i in range(10):
+            rows.append({
+                "event_id": str(800+i), "date": (before-timedelta(days=i+1)).isoformat(),
+                "points_for": 108+i%4, "points_against": 102+i%2,
+                "home": i%2==0, "result": "W", "opponent": "Other",
+            })
+        # an impossible future event cannot contaminate the simulation
+        future = {"event_id": "9999", "date": (before+timedelta(days=1)).isoformat(),
+                  "points_for": 290, "points_against": 0, "home": True}
+        base = scenario_from_history("NBA", rows, rows, before=before, total_line=220.5)
+        leak = scenario_from_history(
+            "NBA", [future]+rows, [future]+rows,
+            before=before, total_line=220.5,
+        )
+        self.assertEqual(base, leak)
+        self.assertEqual(base["away_count"], 10)
+        self.assertEqual(base["home_count"], 10)
+        self.assertIn("localía", base["method"])
+        self.assertGreater(base["away_sd"], 0)
+        self.assertEqual(base["score_correlation"], 0.0)
+        self.assertEqual(base["status"], "HISTORICO_ESPN_PREPARTIDO_NO_CALIBRADO")
+
+    def test_history_simulation_refuses_insufficient_samples(self):
+        rows = [{
+            "event_id": str(i), "date": (TARGET-timedelta(days=i+1)).isoformat(),
+            "points_for": 100+i, "points_against": 90, "home": False,
+        } for i in range(5)]
+        with self.assertRaisesRegex(ValueError, "seis"):
+            scenario_from_history("NBA", rows, rows, before=TARGET, total_line=220.5)
 
     def test_small_sample_rejected(self):
         self.assertIsNone(recent_team_form([
