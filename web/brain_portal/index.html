@@ -7,7 +7,20 @@
 
 /* Always-on neon: bright, animated, and clearly visible even without hovering. */
 #stage{background:radial-gradient(ellipse at 50% 52%,#39071288 0%,#13040a 43%,#050506 83%)}
-#intro{background:radial-gradient(ellipse at 50% 50%,#050506ef 0%,#050506c9 52%,#05050698 100%)}
+/* Let the moving brain be visible THROUGH the intro instead of hiding it behind opaque paint. */
+#intro{background:radial-gradient(ellipse at 50% 50%,rgba(5,5,6,.24) 0%,rgba(5,5,6,.13) 48%,rgba(5,5,6,.58) 100%);isolation:isolate}
+#intro:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 52%,transparent 25%,#08040888 91%);z-index:-1}
+#intro .brand{filter:drop-shadow(0 0 28px #ff2b55c7)}
+#stage .neuron .label{font-size:clamp(11px,1.1vw,14px);color:#ffe0e7;text-shadow:0 0 9px #fff,0 0 21px #ff2b55,0 0 43px #ff2b55}
+#stage .neuron .dot{width:19px;height:19px;margin:-9.5px}
+@keyframes neon-field-shift{0%,100%{background-position:0% 0%}50%{background-position:100% 100%}}
+#stage{background-image:radial-gradient(circle at 50% 50%,#82112e70 0%,transparent 47%),radial-gradient(circle at 75% 30%,#ff244d26,transparent 40%);background-size:125% 125%;animation:neon-field-shift 9s ease-in-out infinite}
+#stage:after{content:"";position:absolute;inset:-30%;pointer-events:none;z-index:1;opacity:.27;background:conic-gradient(from 0deg at 50% 50%,transparent 4%,#ff285814 20%,transparent 36%,#ff366722 54%,transparent 69%);animation:neural-halo-spin 16s linear infinite}
+#intro,#brain-ui{z-index:2}
+#stage .neuron .dot{filter:drop-shadow(0 0 10px #ff365e)}
+#motion-toggle{position:absolute;right:22px;bottom:10px;z-index:20;pointer-events:auto;background:#17090eb0;color:#ffb7c4;border:1px solid #ff496a7a;border-radius:99px;padding:5px 11px;font-size:9px;letter-spacing:.09em;box-shadow:0 0 12px #ff365a3d}
+#motion-toggle:hover,#motion-toggle:focus-visible{background:#3c0c1b;color:#fff}
+@keyframes neural-halo-spin{to{transform:rotate(360deg)}}
 #stage .brand{color:#ff405d;text-shadow:0 0 5px #ffe4e8,0 0 16px #ff244d,0 0 38px #ff244ddd,0 0 88px #ff244d8c;animation:brand-breathe 3.6s ease-in-out infinite}
 #stage .brand span{color:#ffb8c4;text-shadow:0 0 12px #fff3f5,0 0 36px #ff3b62,0 0 70px #ff30548a;animation:ai-glow 3.6s ease-in-out infinite}
 #stage .logo{color:#ff4e6a;text-shadow:0 0 5px #ffecf0,0 0 16px #ff244d,0 0 40px #ff244da5;animation:letter-glow 2.7s ease-in-out infinite}
@@ -43,10 +56,14 @@
 @keyframes neuron-aura{0%{transform:scale(.65);opacity:.9}75%{opacity:.6}100%{transform:scale(2.35);opacity:0}}
 @keyframes label-float{0%,100%{transform:translateX(-50%) translateY(0);opacity:.89}50%{transform:translateX(-50%) translateY(-5px);opacity:1}}
 @media(max-width:600px){#stage .neuron .label{font-size:10px}#stage .brand{font-size:clamp(46px,13vw,62px)}}
-@media(prefers-reduced-motion:reduce){
-  #stage .brand,#stage .brand span,#stage .logo,#stage .eyebrow,#stage .enter-label,#stage #enter,#stage #enter:before,#stage #enter:after,#stage .neuron,#stage .neuron .dot,#stage .neuron .dot:before,#stage .neuron .dot:after,#stage .neuron .label{animation:none!important}
-  #stage .controls button{transition:none!important}
-}
+/* OS preference is respected initially; users may opt in to movement here. */
+.reduced #stage .brand,.reduced #stage .brand span,.reduced #stage .logo,
+.reduced #stage .eyebrow,.reduced #stage .enter-label,.reduced #stage #enter,
+.reduced #stage #enter:before,.reduced #stage #enter:after,.reduced #stage .neuron,
+.reduced #stage .neuron .dot,.reduced #stage .neuron .dot:before,
+.reduced #stage .neuron .dot:after,.reduced #stage .neuron .label,
+.reduced #stage:after,.reduced #stage{animation:none!important}
+.reduced #stage .controls button{transition:none!important}
 </style></head>
 <body><main id="stage">
 <canvas id="scene" aria-label="Cerebro tridimensional de líneas rojas. Usa los seis botones para abrir una sección."></canvas>
@@ -58,12 +75,25 @@
 <button class="neuron" data-page="simulaciones"><span class="label">SIMULACIONES</span><span class="dot"></span></button>
 <button class="neuron" data-page="historial"><span class="label">HISTORIAL</span><span class="dot"></span></button>
 <button class="neuron" data-page="calendario"><span class="label">CALENDARIO</span><span class="dot"></span></button>
-</div><div class="controls"><button id="rotate" aria-pressed="false">Pausar giro</button><button id="reset">Centrar cerebro</button></div><div class="hint">ARRASTRA PARA EXPLORAR · ELIGE UN PUNTO PARA ENTRAR</div></section><div id="flight-label" role="status" aria-live="polite"></div>
+</div><div class="controls"><button id="rotate" aria-pressed="false">Pausar giro</button><button id="reset">Centrar cerebro</button></div><div class="hint">ARRASTRA PARA EXPLORAR · ELIGE UN PUNTO PARA ENTRAR</div></section><button id="motion-toggle" aria-pressed="true" aria-label="Activar o pausar las animaciones">MOVIMIENTO ON</button><div id="flight-label" role="status" aria-live="polite"></div>
 </main>
 <script>
 const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d'),stage=document.getElementById('stage');
 const intro=document.getElementById('intro'),ui=document.getElementById('brain-ui'),flight=document.getElementById('flight-label');
-const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;document.body.classList.toggle('reduced',reduced);
+const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let reduced=prefersReduced;
+function syncMotion(){
+  document.body.classList.toggle('reduced',reduced);
+  const toggle=document.getElementById('motion-toggle');
+  toggle.textContent=reduced?'ACTIVAR MOVIMIENTO':'MOVIMIENTO ON';
+  toggle.setAttribute('aria-pressed',String(!reduced));
+}
+syncMotion();
+document.getElementById('motion-toggle').onclick=()=>{
+  reduced=!reduced;
+  paused=reduced;
+  syncMotion();updatePause();
+};
 let W=1000,H=760,state='intro',angle=-.18,tilt=.12,paused=reduced,drag=false,lastX=0,lastY=0,start=0,zoom=1,breathing=1,flightBlend=0,flightX=0,flightY=0,target=null,ready=false;
 const nodes=[...document.querySelectorAll('.neuron')];
 const anchors=[[-.64,-.65,.60],[.64,-.64,.60],[-.88,.05,.18],[.88,.06,.18],[-.50,.74,.48],[.50,.74,.48]];
@@ -139,7 +169,7 @@ function drawBrain(t=0){
     ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(near[0],near[1]);ctx.stroke();
   });
 }
-let last=performance.now(),lastPaint=-Infinity;function frame(t){if(t-lastPaint<25){requestAnimationFrame(frame);return}lastPaint=t;const dt=Math.min(t-last,40);last=t;ctx.clearRect(0,0,W,H);if(state==='intro'){if(!reduced)angle+=dt*.00004;ctx.globalAlpha=.5;drawBrain(t);ctx.globalAlpha=1}else if(state==='entry'){let p=Math.min((t-start)/1700,1);ctx.strokeStyle='#ff6678';ctx.lineWidth=1;ctx.shadowColor='#ff5365';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(W/2,H+30);ctx.bezierCurveTo(W*.37,H*.72,W*.62,H*.38,W/2,H*(.8-.48*p));ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<8;i++){let r=((p*2+i/8)%1)*Math.max(W,H);ctx.strokeStyle=`rgba(255,83,101,${.20*(1-r/Math.max(W,H))})`;ctx.beginPath();ctx.ellipse(W/2,H*.38,r*.72,r*.42,0,0,Math.PI*2);ctx.stroke()}if(p===1){flight.style.opacity=0;showBrain()}}else if(state==='brain'||state==='dive'||state==='done'){if(!paused&&!drag&&state==='brain')angle+=dt*.00010;if(state==='dive'){let p=Math.min((t-start)/1100,1);let ease=1-Math.pow(1-p,3);flightBlend=ease;zoom=1+Math.pow(ease,2)*20;ctx.globalAlpha=1-p*.68;drawBrain(t);ctx.globalAlpha=1;ctx.fillStyle='rgba(255,28,70,'+(p*p*.53)+')';ctx.fillRect(0,0,W,H);if(p===1)finish()}else drawBrain(t)}requestAnimationFrame(frame)}
+let last=performance.now(),lastPaint=-Infinity;function frame(t){if(t-lastPaint<25){requestAnimationFrame(frame);return}lastPaint=t;const dt=Math.min(t-last,40);last=t;ctx.clearRect(0,0,W,H);if(state==='intro'){if(!reduced)angle+=dt*.00011;ctx.globalAlpha=1;drawBrain(t);ctx.globalAlpha=1}else if(state==='entry'){let p=Math.min((t-start)/1700,1);ctx.strokeStyle='#ff6678';ctx.lineWidth=1;ctx.shadowColor='#ff5365';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(W/2,H+30);ctx.bezierCurveTo(W*.37,H*.72,W*.62,H*.38,W/2,H*(.8-.48*p));ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<8;i++){let r=((p*2+i/8)%1)*Math.max(W,H);ctx.strokeStyle=`rgba(255,83,101,${.20*(1-r/Math.max(W,H))})`;ctx.beginPath();ctx.ellipse(W/2,H*.38,r*.72,r*.42,0,0,Math.PI*2);ctx.stroke()}if(p===1){flight.style.opacity=0;showBrain()}}else if(state==='brain'||state==='dive'||state==='done'){if(!paused&&!drag&&state==='brain')angle+=dt*.00018;if(state==='dive'){let p=Math.min((t-start)/1100,1);let ease=1-Math.pow(1-p,3);flightBlend=ease;zoom=1+Math.pow(ease,2)*20;ctx.globalAlpha=1-p*.68;drawBrain(t);ctx.globalAlpha=1;ctx.fillStyle='rgba(255,28,70,'+(p*p*.53)+')';ctx.fillRect(0,0,W,H);if(p===1)finish()}else drawBrain(t)}requestAnimationFrame(frame)}
 addEventListener('message',e=>{if(e.source!==window.parent||e.data?.type!=='streamlit:render')return;if(!ready){ready=true;if(e.data.args?.skip_intro)showBrain()}size()});
 send('streamlit:componentReady',{apiVersion:1});size();requestAnimationFrame(frame);
 </script></body></html>
