@@ -63,6 +63,7 @@ with (
     assert simulation["result"].simulations == 10_000
     assert simulation["away_form"]["partidos"] == 10
     assert simulation["result"].histogram
+    assert simulation["result"].simulation_method == "BOOTSTRAP_ESPN_RECIENTE"
     visible = "\n".join(str(x.value) for x in app.markdown)
     assert "sim-stadium" not in visible, "HTML crudo expuesto en lugar de la visualización"
     assert "Laboratorio de simulaciones" in visible
