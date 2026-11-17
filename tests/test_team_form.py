@@ -47,6 +47,13 @@ class TeamFormTests(TestCase):
         self.assertTrue(rows[0]["home"])
         self.assertEqual(rows[0]["result"], "W")
 
+    def test_espn_team_schedule_nested_status(self):
+        example = event("17", "2026-11-14T02:00:00Z", 127, 105)
+        example["competitions"][0]["status"] = example.pop("status")
+        result = completed_team_games({"events": [example]}, "NBA", "13", TARGET)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["points_for"], 127.0)
+
     def test_invalid_scores_or_wrong_team_are_ignored(self):
         payload = {"events": [
             event("1", "2026-11-12T02:00:00Z", "DNP", "105"),
