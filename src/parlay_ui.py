@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import streamlit as st
+import pandas as pd
 
 from .brain_dashboard import load_today_snapshot
 from .content_feed import live_parlay_report
@@ -77,14 +78,14 @@ def render() -> None:
                 str(proposal["num_selecciones"]) + " selecciones",
                 expanded=(i == 0),
             ):
-                st.dataframe([
+                st.dataframe(pd.DataFrame([
                     {
                         "Liga": leg["liga"], "Partido": leg["evento"],
                         "Hora CDMX": leg["hora_cdmx"],
                         "Selección ML": leg["seleccion"],
                         "Momio de referencia": leg["momio_covers"],
                     } for leg in proposal["selecciones"]
-                ], hide_index=True, use_container_width=True)
+                ]).style.set_properties(subset=["Momio de referencia"], **{"color": "#76f5a6", "font-weight": "bold"}), hide_index=True, use_container_width=True)
                 st.caption("Producto matemático de momios publicados: " +
                            proposal["cuota_decimal_teorica"] +
                            " decimal. NO es una cuota combinada ofrecida por una casa "
