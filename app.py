@@ -202,15 +202,8 @@ with analysis_tab:
             right.metric("Proyección local · Covers",
                          str(game["proyeccion_local"])
                          if game["proyeccion_local"] is not None else "No disponible")
-            st.markdown("**Mercados publicados por Covers**")
-            st.write({
-                "Moneyline visitante": game.get("momio_visitante") or "Sin momio verificable",
-                "Moneyline local": game.get("momio_local") or "Sin momio verificable",
-                "Over/under": game["totales_publicados"] or "Sin datos extraíbles",
-                "Hándicaps": game["spreads_publicados"] or "Sin datos extraíbles",
-                "Porcentajes de Covers": game["probabilidades_publicadas"] or "No publicados en esta ficha",
-                "Tipo de cifras": game["tipo_mercados"],
-            })
+            from src.pick_evidence_ui import render_covers_evidence
+            render_covers_evidence(game)
             from src.market_summary import game_market_probabilities
             market_p = game_market_probabilities(game)
             st.markdown("**Probabilidad implícita de los momios publicados por Covers**")
@@ -241,6 +234,8 @@ with analysis_tab:
                         st.caption("Momios americanos de The Odds API; consulta con caché máxima de cinco minutos. Comprueba hora de actualización y casa antes de usarlos. No son probabilidades estimadas por nuestra IA.")
                     else:
                         st.info("No hay momios externos que coincidan inequívocamente con ambos equipos, liga y hora de este partido. No se mostrarán cuotas de otro encuentro.")
+            from src.pick_evidence_ui import render_extra_sources
+            render_extra_sources()
             st.link_button("Ver análisis original en Covers", game["fuente"])
             st.markdown("**Dinero apostado, boletos y actividad de Las Vegas**")
             st.info(
@@ -319,12 +314,12 @@ with analysis_tab:
                 "Las rachas completas de 5/10/15 partidos, estados médicos específicos "
                 "y noticias de entrenadores requieren fuentes adicionales verificadas."
             )
-            st.markdown("**Picks de Sports Edge AI**")
-            st.warning(
-                "Aún no hay picks propios respaldados por probabilidades calibradas, "
-                "momios contrastados ni simulaciones ajustadas a datos reales. "
-                "No se asignará ventaja ni tamaño de apuesta inventado."
-            )
+            st.markdown("**Validación de Picks de Sports Edge AI**")
+            st.caption("La selección de referencia anterior es únicamente una lectura del marcador "
+                       "proyectado por Covers. Para promoverla a pick propio se requiere backtesting, "
+                       "calibración y momios comparables de la misma fecha y mercado.")
+            st.warning("PICKS PROPIOS PENDIENTES DE VALIDACIÓN. No se atribuye probabilidad, "
+                       "EV, rentabilidad ni tamaño de apuesta a esta proyección externa.")
         else:
             if published and specific_request:
                 st.warning(
