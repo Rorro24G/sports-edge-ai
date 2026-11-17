@@ -51,6 +51,8 @@ def candidate_legs(report: dict, *, now: datetime | None = None) -> dict[str, li
             espn = event.get("espn")
             if not isinstance(espn, dict) or not espn.get("evento"):
                 continue
+            if espn.get("estado") and espn["estado"] not in ("PRE", "SCHEDULED"):
+                continue
             scores = event.get("proyeccion_covers")
             quotes = event.get("momios_covers")
             if not isinstance(scores, list) or len(scores) != 2:
@@ -177,3 +179,4 @@ def parlay_review_prompt(proposal: dict) -> str:
                  "por qué convendría excluir alguna selección? "
                  "No inventes probabilidades ni ganancias.")
     return "\n".join(lines)
+
