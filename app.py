@@ -19,6 +19,7 @@ from src.pick_context import match_espn_event, fetch_summary, ContextSourceError
 from src.odds_api import OddsAPIError
 from src.web_data import find_games, load_fixture
 from src.web_query import interpret_request
+from src.brain_dashboard import render_brain_header, render_morning_snapshot
 
 st.set_page_config(
     page_title="Sports Edge AI | Cerebro",
@@ -46,6 +47,45 @@ st.markdown(
     [data-testid="stForm"] {border:1px solid #315a49; background:#0d2521; border-radius:16px}
     div.stButton > button[kind="primary"], div.stFormSubmitButton > button {background:#38ca85 !important;color:#05221a!important;border-radius:12px!important; font-weight:800!important;border:0!important}
     a {color:#89e4af!important}
+
+    .brain-command {background:radial-gradient(ellipse at 87% 44%,#174b43 0%,#0a2020 48%,#071416 85%);
+        position:relative;display:flex;min-height:340px;padding:clamp(24px,5vw,56px);
+        align-items:center;overflow:hidden;border:1px solid #2d7063;border-radius:24px;
+        box-shadow:0 18px 70px #00000038;margin:0 0 1.25rem}
+    .brain-command:before {content:"";position:absolute;inset:0;
+        background:linear-gradient(90deg,#51ffbc0b 1px,transparent 1px),
+        linear-gradient(0deg,#51ffbc0b 1px,transparent 1px);
+        background-size:33px 33px;mask-image:linear-gradient(90deg,transparent 12%,#000 100%);pointer-events:none}
+    .brain-copy {position:relative;z-index:2;width:60%;max-width:690px}
+    .brain-eyebrow {display:flex;align-items:center;gap:10px;color:#a9f5d4;
+        font-size:.7rem;font-weight:800;letter-spacing:.17em;margin-bottom:1.6rem}
+    .brain-live {width:9px;height:9px;border-radius:50%;background:#69ffc1;
+        box-shadow:0 0 0 5px #69ffc126,0 0 17px #2ff79c}
+    .brain-heading {font-size:clamp(2.15rem,4.2vw,4.4rem);letter-spacing:-.065em;
+        line-height:1.08;font-weight:900;color:#f6fff9;margin-bottom:1.1rem}
+    .brain-heading span {color:#6af9b2}
+    .brain-description {max-width:510px;font-size:clamp(.9rem,1.2vw,1.08rem);
+        line-height:1.65;color:#c2dcd4}
+    .brain-chips {margin-top:1.6rem;display:flex;flex-wrap:wrap;gap:8px}
+    .brain-chips span {padding:8px 11px;background:#1245386c;border:1px solid #387d60;
+        font-size:.65rem;letter-spacing:.12em;font-weight:800;border-radius:99px;color:#b3f6d6}
+    .brain-art {position:absolute;right:1%;width:41%;height:340px;display:grid;place-items:center}
+    .brain-art svg {position:relative;z-index:2;width:100%;height:100%;
+        filter:drop-shadow(0 0 15px #52ffc447);animation:brain-breathe 5s ease-in-out infinite}
+    .brain-orbit {position:absolute;width:72%;aspect-ratio:1;border:1px solid #63eac42f;
+        border-radius:50%;transform:rotateX(64deg);animation:orbit-shift 9s ease-in-out infinite}
+    .orbit-two {width:93%;animation-delay:-4s}
+    @keyframes brain-breathe {0%,100%{transform:scale(.97)}50%{transform:scale(1.025)}}
+    @keyframes orbit-shift {0%,100%{opacity:.3;transform:rotate(0deg) rotateX(64deg)}
+        50%{opacity:.8;transform:rotate(35deg) rotateX(64deg)}}
+    @media(max-width:720px) {
+        .brain-command {min-height:420px;align-items:flex-start}
+        .brain-copy {width:100%}
+        .brain-art {width:84%;height:240px;right:-18%;top:190px;opacity:.50}
+        .brain-chips {margin-top:1.1rem}
+    }
+    @media(prefers-reduced-motion:reduce) {.brain-art svg,.brain-orbit {animation:none}}
+
     .hero {position:relative; overflow:hidden; isolation:isolate}
     .hero:before {content:"";position:absolute;right:-8%;top:-90px;width:390px;height:390px;
         border-radius:50%;border:1px solid rgba(124,230,167,.27);
@@ -67,21 +107,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.markdown(
-    """<section class="hero">
-       <div class="eyebrow">SPORTS EDGE AI · CEREBRO DEPORTIVO</div>
-       <div class="hero-title">Tu centro de análisis.</div>
-       <p class="hero-sub">Pregunta por cualquier fecha y deporte. Consulta información trazable, simulaciones y riesgos en un solo lugar.</p>
-    </section>""",
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    '<span class="status green">✓ Consulta de calendarios por fecha</span>'
-    '<span class="status amber">◷ Momios de Covers consultados bajo demanda</span>'
-    '<span class="status red">● Picks propios no validados</span>',
-    unsafe_allow_html=True,
-)
+render_brain_header()
 
 analysis_tab, simulator_tab, calendar_tab, context_tab, status_tab, parlays_tab, ledger_tab = st.tabs(
     ["🎯 Picks por partido", "🎲 Simulaciones 10,000",
@@ -111,6 +137,8 @@ def safe_odds_key():
         return ""
 
 with analysis_tab:
+    render_morning_snapshot()
+    st.divider()
     st.subheader("Ficha de picks · elige un partido")
     st.caption(
         "Escribe la liga, el equipo o un enfrentamiento. "
