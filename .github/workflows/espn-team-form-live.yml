@@ -20,6 +20,9 @@ jobs:
           from datetime import datetime
           from zoneinfo import ZoneInfo
           from src.team_form import fetch_team_schedule, recent_team_form
+          import json
+          from urllib.request import urlopen, Request
+
           from src.live_board import fetch_scoreboard
           day = datetime.now(ZoneInfo("America/Mexico_City")).date()
           for league, fallback in [("NBA", "13"), ("NFL", "2")]:
@@ -28,6 +31,13 @@ jobs:
                     "source", result["source_url"],
                     "played", len(result["games"]), flush=True)
               print("SAMPLE", result["games"][:2], flush=True)
+              if not result["games"]:
+                  raw = json.load(urlopen(Request(result["source_url"],
+                                headers={"User-Agent":"SportsEdgeAI-personal/1.0"}),
+                                timeout=15))
+                  print("RAW_KEYS", list(raw), flush=True)
+                  print("RAW_FIRST_EVENT", json.dumps((raw.get("events") or [None])[0],
+                        ensure_ascii=False)[:9000], flush=True)
               form = recent_team_form(result["games"])
               if form is None:
                   raise SystemExit("Insufficient confirmed recent ESPN results for " + league)
