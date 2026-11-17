@@ -1,0 +1,35 @@
+name: Keep Streamlit deployment branch up to date
+on:
+  push:
+    branches: [webdemo]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: streamlit-branch-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout deployment branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/web-mvp-2026-11-12
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Merge the approved webdemo version into the deployed branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin webdemo
+          # Refuse to overwrite divergent work or conceal conflicts.
+          git merge --no-edit --no-ff origin/webdemo
+          git push origin HEAD:feature/web-mvp-2026-11-12
+          echo "Streamlit source branch now contains the latest webdemo changes"
