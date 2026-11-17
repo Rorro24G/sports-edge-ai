@@ -67,9 +67,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-analysis_tab, simulator_tab, calendar_tab, context_tab, status_tab, parlays_tab = st.tabs(
+analysis_tab, simulator_tab, calendar_tab, context_tab, status_tab, parlays_tab, ledger_tab = st.tabs(
     ["🎯 Picks por partido", "🎲 Simulaciones 10,000",
-     "📅 Calendario", "🗞 Jugadores y noticias", "⚙️ Estado", "🧩 Parlays (último paso)"]
+     "📅 Calendario", "🗞 Jugadores y noticias", "⚙️ Estado", "🧩 Parlays", "📊 Mi historial"]
 )
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -451,3 +451,8 @@ with parlays_tab:
         "validadas, momios comprobados y estimación de dependencia entre selecciones. "
         "No multiplicaremos probabilidades independientes sin verificar esa condición."
     )
+
+
+with ledger_tab:
+    from src.ledger_ui import render
+    render()
