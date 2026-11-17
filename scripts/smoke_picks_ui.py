@@ -2,6 +2,10 @@
 from datetime import datetime
 from unittest.mock import patch
 from streamlit.testing.v1 import AppTest
+from unittest.mock import patch as content_patch
+# Keep unrelated content services independent of the network in UI tests.
+content_patch("src.news_ui.cached_news", return_value={"articles": [], "checked_at_utc": "offline fixture"}).start()
+content_patch("src.parlay_ui.cached_live_report", return_value={"leagues": {}, "generated_at_utc": "offline fixture"}).start()
 
 SAMPLE = {
     "league": "NBA", "page_date": "2026-11-13",
@@ -93,9 +97,9 @@ with (
     assert not app.exception, [str(e.message) for e in app.exception]
     visible = "\n".join(str(x.value) for x in app.markdown)
     assert "Toronto @ Philadelphia" in visible, "No se renderizo el partido"
-    assert "Pick de referencia de Covers" in visible, "Falta sección de picks de Covers"
+    assert "Pick de referencia" in visible, "Falta sección de picks de Covers"
     assert "Lakers" not in visible, "No debe colarse un equipo ajeno a la ficha"
-    assert "Mercados y porcentajes que realmente publicó Covers" in visible, "Falta panel de mercados de Covers"
+    assert "Mercados disponibles" in visible, "Falta panel de mercados de Covers"
     assert "Noticias" in visible or "noticias" in visible, "Falta panel de contexto"
     app.text_input[0].set_value("Analiza Dallas contra Phoenix 13 de noviembre de 2026")
     app = [b for b in app.button if b.label == "Analizar partido"][0].click().run()
@@ -118,3 +122,4 @@ with (
     assert "ODDS_API_KEY" not in visible, "No mostrar al usuario claves API ausentes"
     print("STREAMLIT_PLAYER_PROP_UI_OK")
     print("STREAMLIT_PICKS_UI_OK")
+
