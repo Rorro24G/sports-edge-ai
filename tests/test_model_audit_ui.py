@@ -94,7 +94,16 @@ class AuditQualityTests(TestCase):
 
     def test_historical_bundle_and_calibration_are_version_and_date_bound(self):
         train = dict(REPORT)
-        test = dict(REPORT, period={"start": "2026-10-28", "end": "2026-11-17"})
+        test = dict(
+            REPORT, period={"start": "2026-10-28", "end": "2026-11-17"},
+            evaluated_count=101, candidate_count=58, correct_candidates=46,
+            candidate_accuracy_observed=46/58, brier_all_evaluated=.21343,
+            calibration_bins=[
+                {"range": f"{i*20}-{(i+1)*20}%", "n": (21 if i == 0 else 20),
+                 "avg_predicted_home": .3, "actual_home_frequency": .3}
+                for i in range(5)
+            ]
+        )
         bundle = {
             "model": VERSION,
             "reports": [train, test],
@@ -105,8 +114,8 @@ class AuditQualityTests(TestCase):
                 "fit_uses_holdout": False, "train_count": 160,
                 "holdout_count": 101, "train_period": train["period"],
                 "holdout_period": test["period"],
-                "raw_holdout": {"brier": .19013},
-                "calibrated_holdout": {"brier": .19},
+                "raw_holdout": {"brier": .21343},
+                "calibrated_holdout": {"brier": .211057},
             },
         }
         with TemporaryDirectory() as temp:
