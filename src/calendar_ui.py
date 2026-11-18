@@ -5,8 +5,6 @@ from datetime import datetime
 from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
-import streamlit as st
-
 from .live_board import CalendarSourceError
 
 MX = ZoneInfo("America/Mexico_City")
@@ -34,6 +32,7 @@ def _status_label(status: str) -> str:
 
 
 def _game_card(game: dict) -> None:
+    import streamlit as st
     with st.container(border=True):
         st.caption(game["sport"] + "   /   " + _status_label(game["status"]))
         st.markdown(
@@ -55,6 +54,7 @@ def _game_card(game: dict) -> None:
 
 
 def render(*, board_fetch, clear_cache=None) -> None:
+    import streamlit as st
     st.markdown("### Agenda deportiva")
     st.caption(
         "Selecciona una fecha y revisa cada encuentro como una ficha. "
