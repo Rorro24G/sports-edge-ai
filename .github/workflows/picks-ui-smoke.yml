@@ -77,3 +77,47 @@ jobs:
           path: audit-output/
           retention-days: 14
           if-no-files-found: warn
+
+  audit-real-nfl:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Medir NFL 2025 con histórico ESPN cronológico
+        run: |
+          PYTHONPATH=. python -m scripts.backtest_seai \
+            --sport NFL --start 2025-10-13 --end 2025-11-19 \
+            --max-games 100 --output audit-output/seai-nfl-2025.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-real-nfl-audit
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
+
+  audit-real-nhl:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Medir NHL 2025 con histórico ESPN cronológico
+        run: |
+          PYTHONPATH=. python -m scripts.backtest_seai \
+            --sport NHL --start 2025-11-02 --end 2025-11-25 \
+            --max-games 160 --output audit-output/seai-nhl-2025.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-real-nhl-audit
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
