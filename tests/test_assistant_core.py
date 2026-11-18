@@ -139,6 +139,24 @@ class AssistantTests(TestCase):
         empty = assistant("Picks NHL mañana", report=snapshot())
         self.assertNotIn("Referencias prepartido", empty["reply"])
 
+    def test_bot_reports_own_model_audits_instead_of_covers(self):
+        result = assistant("¿Cuántos picks propios acertó el cerebro en NBA?")
+        self.assertIn("modelo propio Sports Edge AI", result["reply"])
+        self.assertIn("NBA 2025", result["reply"])
+        self.assertIn("NBA 2026", result["reply"])
+        self.assertIn("75/93", result["reply"])
+        self.assertIn("46/58", result["reply"])
+        self.assertIn("Brier", result["reply"])
+        self.assertIn("NO está calibrado", result["reply"])
+        self.assertTrue(result["sources"])
+        self.assertTrue(all(
+            url.startswith("https://github.com/Rorro24G/sports-edge-ai/actions/runs/")
+            for url in result["sources"]
+        ))
+        other = assistant("¿Qué tan confiable es tu modelo NFL?")
+        self.assertIn("NFL 2026", other["reply"])
+        self.assertNotIn("NBA 2026", other["reply"])
+
     def test_parlay_borradores_and_no_probs(self):
         r = assistant("Dame 3 parlays de 2 selecciones hoy", report=snapshot())
         self.assertIn("Alternativa 1", r["reply"])
