@@ -1,6 +1,7 @@
-"""Render audited historical evidence, never as a validated betting promise."""
+"""Display honest, source-traceable historical ESPN audits of the SAME model version."""
 from __future__ import annotations
 
+from datetime import date
 import json
 from pathlib import Path
 
@@ -9,87 +10,146 @@ from .independent_picks import VERSION
 AUDIT_PATH = Path(__file__).resolve().parents[1] / "data" / "seai_model_audit.json"
 
 
-def load_model_audit(path: Path = AUDIT_PATH) -> dict | None:
-    """Accept only reproducible ESPN reports for the EXACT deployed version."""
+def _verified(report: object) -> bool:
+    """Reject stale versions, missing provenance, contradictions and invented outcomes."""
+    if not isinstance(report, dict):
+        return False
+    if report.get("version") != VERSION:
+        return False
+    if report.get("source") != "ESPN scoreboard + ESPN team schedules":
+        return False
+    if report.get("model_validated") is not False or report.get("model_calibrated") is not False:
+        return False
+    if report.get("data_complete") is not True:
+        return False
+    if report.get("sport") not in ("NBA", "NFL", "NHL"):
+        return False
     try:
-        if not path.is_file() or path.stat().st_size > 50_000:
-            return None
-        report = json.loads(path.read_text(encoding="utf-8"))
-        if not isinstance(report, dict):
-            return None
-        if report.get("version") != VERSION:
-            return None
-        if report.get("source") != "ESPN scoreboard + ESPN team schedules":
-            return None
-        if report.get("model_validated") is not False or report.get("model_calibrated") is not False:
-            return None
-        if report.get("data_complete") is not True:
-            return None
-        n = report.get("evaluated_count")
-        k = report.get("candidate_count")
-        w = report.get("correct_candidates")
+        n, k, w = (report[x] for x in ("evaluated_count",
+                                      "candidate_count", "correct_candidates"))
         if any(type(x) is not int for x in (n, k, w)):
-            return None
-        if not (n >= 1 and 0 <= w <= k <= n):
-            return None
-        if k and abs(report["candidate_accuracy_observed"] - w/k) > 0.001:
-            return None
-        if not (isinstance(report.get("calibration_bins"), list)
-                and len(report["calibration_bins"]) == 5):
-            return None
-        return report
-    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError, ZeroDivisionError):
+            return False
+        if not 1 <= n and k <= n:
+            return False
+        if not (0 <= w <= k <= n):
+            return False
+        if k and abs(float(report["candidate_accuracy_observed"]) - w/k) > .001:
+            return False
+        if report.get("validation_status") not in (
+                "AUDITORIA_DESCRIPTIVA", "MUESTRA_INSUFICIENTE"):
+            return False
+        period = report["period"]
+        start = date.fromisoformat(period["start"])
+        end = date.fromisoformat(period["end"])
+        if not start <= end:
+            return False
+        bins = report.get("calibration_bins")
+        if not isinstance(bins, list) or len(bins) != 5:
+            return False
+        if sum(bucket["n"] for bucket in bins) != n:
+            return False
+        if any(type(bucket["n"]) is not int or bucket["n"] < 0 for bucket in bins):
+            return False
+        brier = float(report["brier_all_evaluated"])
+        if not 0 <= brier <= 1:
+            return False
+        if "candidate_accuracy_wilson_95" in report and k:
+            lo, hi = report["candidate_accuracy_wilson_95"]
+            if not 0 <= lo <= hi <= 1:
+                return False
+        return True
+    except (KeyError, TypeError, ValueError, IndexError, ZeroDivisionError):
+        return False
+
+
+def _read(path: Path) -> object:
+    if not path.is_file() or path.stat().st_size > 150_000:
         return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        return None
+
+
+def load_model_audit(path: Path = AUDIT_PATH) -> dict | None:
+    """Single-report reader retained for stable testing/integration."""
+    raw = _read(path)
+    return raw if _verified(raw) else None
+
+
+def load_model_audits(path: Path = AUDIT_PATH) -> list[dict]:
+    raw = _read(path)
+    if not isinstance(raw, dict):
+        return []
+    if raw.get("model") != VERSION or not isinstance(raw.get("reports"), list):
+        return []
+    reports = raw["reports"]
+    if not 1 <= len(reports) <= 12 or not all(_verified(x) for x in reports):
+        return []
+    keys = [(x["sport"], x["period"]["start"], x["period"]["end"]) for x in reports]
+    if len(set(keys)) != len(keys):
+        return []
+    return sorted(reports, key=lambda x: (x["sport"], x["period"]["start"]))
 
 
 def render_model_audit(path: Path = AUDIT_PATH) -> None:
     import streamlit as st
 
-    report = load_model_audit(path)
-    if not report:
+    reports = load_model_audits(path)
+    if not reports:
+        single = load_model_audit(path)
+        if single:
+            reports = [single]
+    if not reports:
         return
-    span = report["period"]
-    label = report.get("sport", "NBA")
-    with st.expander("Auditoría real del cerebro · histórico ESPN", expanded=False):
-        st.caption(f"{label} · {span['start']} a {span['end']} · "
-                   "prueba retrospectiva con cortes anteriores a cada juego")
-        left, center, right = st.columns(3)
-        left.metric("Partidos evaluados", str(report["evaluated_count"]))
-        center.metric("Picks experimentales", str(report["candidate_count"]))
-        right.metric(
-            "Acierto observado",
-            f"{report['candidate_accuracy_observed']:.1%}"
-            if report["candidate_count"] else "—"
-        )
-        st.caption(str(report["correct_candidates"]) + " aciertos entre " +
-                   str(report["candidate_count"]) +
-                   " selecciones. Los demás juegos se descartaron.")
-        if report.get("candidate_accuracy_wilson_95"):
-            lo, hi = report["candidate_accuracy_wilson_95"]
-            st.caption("Intervalo Wilson 95% de la tasa observada: "
-                       f"{lo:.1%} a {hi:.1%}. No predice resultados futuros.")
-        a, b, c = st.columns(3)
-        a.metric("Brier del modelo", f"{report['brier_all_evaluated']:.3f}")
-        b.metric("Brier base 50/50", "0.250")
-        home_ref = report.get("home_only_accuracy_on_candidates")
-        c.metric("Solo elegir local · mismos juegos",
-                 f"{home_ref:.1%}" if home_ref is not None else "—")
-        st.markdown("**Calibración observada por grupos**")
-        bins = report.get("calibration_bins", [])
+    with st.expander("Pruebas reales del cerebro · ESPN", expanded=False):
+        st.caption("Evaluación retrospectiva sin usar resultados futuros para "
+                   "cada predicción. Misma versión del motor; temporadas separadas.")
+        recent = {}
+        for report in reports:
+            recent[report["sport"]] = report
+        cols = st.columns(3)
+        for col, sport in zip(cols, ("NBA", "NFL", "NHL")):
+            if sport not in recent:
+                continue
+            r = recent[sport]
+            col.metric(sport + " · acierto histórico",
+                       f"{r['candidate_accuracy_observed']:.1%}" if r["candidate_count"] else "—")
+            col.caption(str(r["correct_candidates"]) + "/" +
+                        str(r["candidate_count"]) + " candidatos · " +
+                        r["period"]["end"][:4])
+        st.markdown("**Resultados por temporada, sin mezclar muestras**")
         st.dataframe([
             {
-                "Estimación local": bucket["range"],
-                "Juegos": bucket["n"],
-                "Prob. estimada": (f"{bucket['avg_predicted_home']:.1%}"
-                                  if bucket["avg_predicted_home"] is not None else "—"),
-                "Acierto real local": (f"{bucket['actual_home_frequency']:.1%}"
-                                       if bucket["actual_home_frequency"] is not None else "—"),
+                "Liga": r["sport"],
+                "Año": r["period"]["end"][:4],
+                "Evaluados": r["evaluated_count"],
+                "Selecciones": r["candidate_count"],
+                "Aciertos": r["correct_candidates"],
+                "Acierto observado": (f"{r['candidate_accuracy_observed']:.1%}"
+                                      if r["candidate_count"] else "—"),
+                "Brier": f"{r['brier_all_evaluated']:.3f}",
+                "Calidad de muestra": (
+                    "Limitada" if r["validation_status"] == "MUESTRA_INSUFICIENTE"
+                    else "Auditoría descriptiva"
+                ),
             }
-            for bucket in bins
+            for r in sorted(reports, key=lambda r: (r["sport"], r["period"]["start"]))
         ], use_container_width=True, hide_index=True)
-        st.caption("Hay diferencias entre probabilidades estimadas y resultados reales: "
-                   "el modelo todavía NO está calibrado. No se calcularon ganancias "
-                   "ni rentabilidad por faltar cuotas históricas sincronizadas.")
-        url = report.get("audit_run_url", "")
-        if url.startswith("https://github.com/Rorro24G/sports-edge-ai/actions/runs/"):
-            st.link_button("Ver prueba y archivos auditables", url)
+        st.caption("Brier menor es mejor; la referencia constante 50/50 equivale "
+                   "a 0.250. No es comparación con el favorito de una casa. "
+                   "No disponemos aquí de cuotas históricas alineadas para medir EV/ROI.")
+        if any(r["brier_all_evaluated"] >= .25 for r in reports):
+            st.caption("Algunas muestras NO superan la referencia Brier 0.250; "
+                       "esas señales requieren precaución especial.")
+        st.caption("Este motor todavía NO está entrenado/calibrado ni tiene "
+                   "rentabilidad validada. Los intervalos de acierto no son "
+                   "probabilidades de éxito de futuras apuestas.")
+        urls = [
+            r.get("audit_run_url", "") for r in reports
+            if r.get("audit_run_url", "").startswith(
+                "https://github.com/Rorro24G/sports-edge-ai/actions/runs/"
+            )
+        ]
+        if urls:
+            st.link_button("Ver ejecución y auditoría ESPN", urls[-1])
