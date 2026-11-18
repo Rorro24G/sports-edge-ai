@@ -132,6 +132,55 @@ def load_calibration_experiment(path: Path = AUDIT_PATH) -> dict | None:
         return None
 
 
+def load_learned_experiments(path: Path = AUDIT_PATH) -> list[dict]:
+    """Only expose independent ESPN experiments with matching source audits."""
+    root = _read(path)
+    if not isinstance(root, dict) or root.get("model") != VERSION:
+        return []
+    experiment = root.get("learned_challengers")
+    if not isinstance(experiment, dict):
+        return []
+    if (experiment.get("trained_model") != "SEAI-APRENDIZAJE-0.1"
+            or experiment.get("production_enabled") is not False):
+        return []
+    results = experiment.get("results")
+    if not isinstance(results, list) or not 1 <= len(results) <= 3:
+        return []
+    reports = load_model_audits(path)
+    seen = set()
+    for item in results:
+        try:
+            sport = item["sport"]
+            if (sport not in ("NBA", "NHL", "NFL") or sport in seen
+                    or item["base_model"] != VERSION
+                    or item["trained_model"] != experiment["trained_model"]
+                    or item.get("production_enabled") is not False
+                    or item.get("used_covers_to_train") is not False
+                    or item.get("train_uses_holdout") is not False
+                    or item.get("model_validated") is not False
+                    or item["train_period"]["end"] >= item["holdout_period"]["start"]):
+                return []
+            seen.add(sport)
+            early = next((r for r in reports if
+                          r["sport"] == sport and r["period"] == item["train_period"]), None)
+            late = next((r for r in reports if
+                         r["sport"] == sport and r["period"] == item["holdout_period"]), None)
+            if (early is None or late is None
+                    or early["evaluated_count"] != item["train_count"]
+                    or late["evaluated_count"] != item["holdout_count"]):
+                return []
+            baseline = float(item["old_model_holdout"]["brier"])
+            learned = float(item["learned_model_holdout"]["brier"])
+            delta = float(item["brier_delta_learned_minus_old"])
+            if (not 0 <= baseline <= 1 or not 0 <= learned <= 1
+                    or abs(baseline-late["brier_all_evaluated"]) > 0.0002
+                    or abs(learned-baseline-delta) > 0.0002):
+                return []
+        except (KeyError, TypeError, ValueError):
+            return []
+    return sorted(results, key=lambda x:x["sport"])
+
+
 def render_model_audit(path: Path = AUDIT_PATH) -> None:
     import streamlit as st
 
@@ -192,6 +241,25 @@ def render_model_audit(path: Path = AUDIT_PATH) -> None:
                 "El cambio es pequeño; no está activado en Picks ni valida "
                 "retornos de apuestas."
             )
+        learned = load_learned_experiments(path)
+        if learned:
+            st.markdown("**Nuevo cerebro entrenado · solo laboratorio**")
+            st.dataframe([
+                {
+                    "Liga": x["sport"],
+                    "Entrenó con": x["train_period"]["end"][:4],
+                    "Probado en": x["holdout_period"]["end"][:4],
+                    "Brier actual": f"{x['old_model_holdout']['brier']:.4f}",
+                    "Brier aprendido": f"{x['learned_model_holdout']['brier']:.4f}",
+                    "Juicio": ("Mejoró" if x["brier_delta_learned_minus_old"] < 0
+                               else "Empeoró · no promover"),
+                }
+                for x in learned
+            ], hide_index=True, use_container_width=True)
+            st.caption("Aprendió pesos propios de forma, ataque, defensa, descanso "
+                       "y localía con ESPN 2025. Se evaluó sobre 2026 sin "
+                       "reentrenamiento. Las mejoras son pequeñas; NHL empeoró. "
+                       "Sigue completamente DESACTIVADO para los picks publicados.")
         st.caption("Este motor todavía NO está entrenado/calibrado para producción "
                    "ni tiene rentabilidad validada. Los intervalos de acierto no son "
                    "probabilidades de éxito de futuras apuestas.")
