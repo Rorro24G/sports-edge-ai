@@ -144,7 +144,7 @@ def answer_query(
     # Answer about OUR model from recorded ESPN walk-forward audits, not from
     # the Covers reference backtest or any implied market odds.
     asks_model_accuracy = bool(
-        re.search(r"\b(?:aciertos?|acertaron|pegaron|ganaron|resultados?|"
+        re.search(r"\b(?:aciertos?|acerto|acertaron|acertamos|pegaron|ganaron|resultados?|"
                   r"rendimiento|desempeno|brier|calibracion|pruebas?|"
                   r"backtest|efectividad|fiable|confiable)\b", q)
         and re.search(r"\b(?:cerebro|seai|sports edge|modelo|"
