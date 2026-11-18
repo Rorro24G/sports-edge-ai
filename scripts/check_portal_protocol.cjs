@@ -14,6 +14,9 @@ assert(code.includes('if(!reduced&&i%7===0'),'travelling wire highlights missing
 assert(code.includes('.map(project)'),'wire geometry projection missing');
 assert(code.includes('rotCa=Math.cos(angle)'),'angle trigonometry must be reused per frame');
 assert(code.includes('const frameInterval=lowPower?33:18'),'adaptive frame pacing missing');
+assert(code.includes('function drawBrainMass()'),'cerebro volumétrico sin masa no permitido');
+assert(code.includes('drawBrainMass();'),'se debe pintar volumen antes de líneas');
+assert(html.includes('Cerebro tridimensional volumétrico'),'descripción accesible del cerebro falta');
 assert(code.includes('const d=lowPower?1:Math.min(devicePixelRatio||1,1.35)'),
   'pixel budget must be capped for high-DPI devices');
 assert(!code.includes('zoom=1+Math.pow(ease,2)*20'),
