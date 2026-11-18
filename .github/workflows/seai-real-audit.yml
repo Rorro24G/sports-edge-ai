@@ -8,6 +8,8 @@ on:
       - src/pick_judgement.py
       - src/pick_walkforward.py
       - src/model_calibration.py
+      - src/learned_challenger.py
+      - scripts/train_challenger.py
       - scripts/backtest_seai.py
       - scripts/calibrate_seai.py
       - .github/workflows/seai-real-audit.yml
@@ -18,6 +20,8 @@ on:
       - src/pick_judgement.py
       - src/pick_walkforward.py
       - src/model_calibration.py
+      - src/learned_challenger.py
+      - scripts/train_challenger.py
       - scripts/backtest_seai.py
       - scripts/calibrate_seai.py
       - .github/workflows/seai-real-audit.yml
@@ -202,6 +206,70 @@ jobs:
         if: always()
         with:
           name: seai-nba-temporal-calibration
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
+
+  challenger-nba:
+    needs: [audit-real-nba, audit-2026-nba]
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: seai-real-espn-audit
+          path: audit-data/train
+      - uses: actions/download-artifact@v4
+        with:
+          name: seai-real-nba-2026
+          path: audit-data/holdout
+      - name: Aprender ESPN NBA 2025 y comparar en 2026 no visto
+        run: |
+          PYTHONPATH=. python -m scripts.train_challenger \
+            --train audit-data/train/seai-nba-2025.json \
+            --holdout audit-data/holdout/seai-nba-2026.json \
+            --output audit-output/seai-trained-nba.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-trained-challenger-nba
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
+
+  challenger-nhl:
+    needs: [audit-real-nhl, audit-2026-nhl]
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: seai-real-nhl-audit
+          path: audit-data/train
+      - uses: actions/download-artifact@v4
+        with:
+          name: seai-real-nhl-2026
+          path: audit-data/holdout
+      - name: Aprender ESPN NHL 2025 y comparar en 2026 no visto
+        run: |
+          PYTHONPATH=. python -m scripts.train_challenger \
+            --train audit-data/train/seai-nhl-2025.json \
+            --holdout audit-data/holdout/seai-nhl-2026.json \
+            --output audit-output/seai-trained-nhl.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-trained-challenger-nhl
           path: audit-output/
           retention-days: 14
           if-no-files-found: warn
