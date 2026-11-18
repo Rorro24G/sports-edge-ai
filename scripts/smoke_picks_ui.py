@@ -133,7 +133,10 @@ with (
     app = app.checkbox(key="picks_show_covers").check().run()
     assert not app.exception, [str(e.message) for e in app.exception]
     visible = "\n".join(str(x.value) for x in app.markdown)
-    assert "Momios externos publicados para este partido" in visible
+    assert any(
+        "Momios externos publicados para este partido" in x.label
+        for x in app.expander
+    ), "El mercado externo debe aparecer solo tras activar Covers"
     app.text_input[0].set_value("Analiza Dallas contra Phoenix 13 de noviembre de 2026")
     app = [b for b in app.button if b.label == "Analizar partido"][0].click().run()
     assert not app.exception, [str(e.message) for e in app.exception]
