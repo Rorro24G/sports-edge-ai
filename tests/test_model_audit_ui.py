@@ -3,12 +3,13 @@ from __future__ import annotations
 
 from datetime import date, timedelta
 import json
+from copy import deepcopy
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from src.independent_picks import VERSION
-from src.model_audit_ui import load_model_audit
+from src.model_audit_ui import load_model_audit, load_model_audits, load_calibration_experiment
 from src.pick_walkforward import wilson_interval, calibration_bins, walkforward
 
 
@@ -90,6 +91,40 @@ class AuditQualityTests(TestCase):
         self.assertIsNotNone(result["calibration_gap_ece_exploratory"])
         self.assertFalse(result["model_validated"])
         self.assertFalse(result["model_calibrated"])
+
+    def test_historical_bundle_and_calibration_are_version_and_date_bound(self):
+        train = dict(REPORT)
+        test = dict(REPORT, period={"start": "2026-10-28", "end": "2026-11-17"})
+        bundle = {
+            "model": VERSION,
+            "reports": [train, test],
+            "calibration_experiment": {
+                "status": "EXPERIMENTO_CALIBRACION_SIN_ACTIVAR",
+                "sport": "NBA", "base_model": VERSION,
+                "production_enabled": False, "model_validated": False,
+                "fit_uses_holdout": False, "train_count": 160,
+                "holdout_count": 101, "train_period": train["period"],
+                "holdout_period": test["period"],
+                "raw_holdout": {"brier": .19013},
+                "calibrated_holdout": {"brier": .19},
+            },
+        }
+        with TemporaryDirectory() as temp:
+            path = Path(temp)/"bundle.json"
+            def write(doc):
+                path.write_text(json.dumps(doc), encoding="utf-8")
+            write(bundle)
+            reports = load_model_audits(path)
+            self.assertEqual(len(reports), 2)
+            self.assertIsNotNone(load_calibration_experiment(path))
+            changed = deepcopy(bundle)
+            changed["calibration_experiment"]["production_enabled"] = True
+            write(changed)
+            self.assertIsNone(load_calibration_experiment(path))
+            changed = deepcopy(bundle)
+            changed["reports"][0]["version"] = "old-model"
+            write(changed)
+            self.assertEqual(load_model_audits(path), [])
 
     def test_ui_does_not_accept_wrong_version_or_bad_source_or_incomplete_sample(self):
         with TemporaryDirectory() as temp:
