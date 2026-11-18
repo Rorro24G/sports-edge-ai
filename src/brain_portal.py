@@ -6,14 +6,14 @@ import streamlit.components.v1 as components
 SECTIONS = {"picks": "Picks", "parlays": "Parlays", "noticias": "Noticias",
             "simulaciones": "Simulaciones", "historial": "Mi historial", "calendario": "Calendario"}
 # Version the component endpoint to bypass stale browser/static iframe caches.
-portal = components.declare_component("sports_brain_portal_motion_v4", path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"))
+portal = components.declare_component("sports_brain_portal_motion_v5", path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"))
 
 
 def render_navigation():
     section = st.session_state.get("brain_section")
     if section not in (*SECTIONS, "asistente", "estado"):
         value = portal(skip_intro=st.session_state.get("brain_entered", False),
-                       key="brain_portal_motion_v4_" + str(st.session_state.get("brain_visit", 0)), default=None)
+                       key="brain_portal_motion_v5_" + str(st.session_state.get("brain_visit", 0)), default=None)
         if isinstance(value, dict) and value.get("page") in SECTIONS:
             st.session_state["brain_section"] = value["page"]
             st.session_state["brain_entered"] = True
@@ -91,3 +91,4 @@ def apply_theme():
       button[kind="primary"],div.stFormSubmitButton>button,button[kind="secondary"]{transition:none!important}}
     @media(max-width:640px){.section-brand{font-size:11px;letter-spacing:.05em}.section-brand span{display:block;font-size:10px}}
     </style>''', unsafe_allow_html=True)
+
