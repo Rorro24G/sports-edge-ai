@@ -117,6 +117,12 @@ def load_calibration_experiment(path: Path = AUDIT_PATH) -> dict | None:
                      and r["period"] == c["holdout_period"]), None)
         if not test:
             return None
+        training = next((r for r in reports
+                         if r["sport"] == "NBA"
+                         and r["period"] == c["train_period"]), None)
+        if (not training or training["evaluated_count"] != c["train_count"]
+                or test["evaluated_count"] != c["holdout_count"]):
+            return None
         before = float(c["raw_holdout"]["brier"])
         after = float(c["calibrated_holdout"]["brier"])
         if not (0 <= after <= 1 and abs(before - test["brier_all_evaluated"]) <= .0002):
