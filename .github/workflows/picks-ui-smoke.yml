@@ -37,3 +37,43 @@ jobs:
         run: PYTHONPATH=. python scripts/smoke_portal_ui.py
       - name: Comprobar transiciones y seis conexiones
         run: node scripts/check_portal_protocol.cjs
+
+  audit-real-nba:
+    # ESPN endpoints are not guaranteed to be available.
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Auditar NBA 2025 sin resultados futuros ni picks Covers
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=. python -m scripts.backtest_seai \
+            --sport NBA --start 2025-11-10 --end 2025-12-02 \
+            --max-games 160 --output audit-output/seai-nba-2025.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("audit-output/seai-nba-2025.json").read_text())
+          print("ESPN_REAL_AUDIT", "fetched", report["retrieved_fixture_count"],
+                "evaluated", report["evaluated_count"],
+                "candidates", report["candidate_count"],
+                "wins", report["correct_candidates"],
+                "accuracy", report["candidate_accuracy_observed"],
+                "interval", report["candidate_accuracy_wilson_95"],
+                "brier", report["brier_all_evaluated"],
+                "data_complete", report["data_complete"], flush=True)
+          if not report["data_complete"]:
+              raise SystemExit("Proveedor ESPN incompleto: no presentar cobertura total")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-real-espn-audit
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
