@@ -29,7 +29,7 @@ def _verified(report: object) -> bool:
                                       "candidate_count", "correct_candidates"))
         if any(type(x) is not int for x in (n, k, w)):
             return False
-        if not 1 <= n and k <= n:
+        if n < 1 or k > n:
             return False
         if not (0 <= w <= k <= n):
             return False
