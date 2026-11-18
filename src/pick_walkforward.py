@@ -109,6 +109,7 @@ def walkforward(fixtures: list[dict], histories: dict[tuple[str, str], dict],
             "actual_home": actual_home,
             "correct": correct if chosen else None,
             "p_home_experimental": p_home,
+            "p_selected_experimental": signal["probability_experimental"] if chosen else None,
             "brier": round((p_home - float(actual_home)) ** 2, 6),
             "home_only_correct": actual_home,
             "model_margin": signal.get("margin_experimental"),
@@ -122,6 +123,19 @@ def walkforward(fixtures: list[dict], histories: dict[tuple[str, str], dict],
     accuracy = wins / k if k else None
     brier = sum(row["brier"] for row in evaluated) / n if n else None
     home_accuracy = sum(int(row["home_only_correct"]) for row in evaluated) / n if n else None
+    home_candidate_accuracy = (
+        sum(int(row["actual_home"]) for row in candidates) / k if k else None
+    )
+    estimated_candidate_accuracy = (
+        sum(row["p_selected_experimental"] for row in candidates)/k if k else None
+    )
+    bins = calibration_bins(evaluated)
+    ece = (
+        sum(bucket["n"] * abs(bucket["avg_predicted_home"] -
+                              bucket["actual_home_frequency"])
+            for bucket in bins if bucket["n"]) / n
+        if n else None
+    )
     # A constant 50/50 forecast scores Brier=.25 on binary non-tie events.
     enough = n >= minimum_evaluated and k >= minimum_candidates
     league_rows = {}
@@ -153,10 +167,19 @@ def walkforward(fixtures: list[dict], histories: dict[tuple[str, str], dict],
         "candidate_accuracy_observed": round(accuracy, 5) if accuracy is not None else None,
         "candidate_accuracy_wilson_95": wilson_interval(wins, k),
         "home_only_accuracy_evaluated": round(home_accuracy, 5) if home_accuracy is not None else None,
+        "home_only_accuracy_on_candidates": (
+            round(home_candidate_accuracy, 5)
+            if home_candidate_accuracy is not None else None
+        ),
+        "avg_estimated_probability_on_candidates": (
+            round(estimated_candidate_accuracy, 5)
+            if estimated_candidate_accuracy is not None else None
+        ),
         "candidate_coverage": round(coverage, 5) if coverage is not None else None,
         "brier_all_evaluated": round(brier, 6) if brier is not None else None,
         "brier_50_50_reference": 0.25,
-        "calibration_bins": calibration_bins(evaluated),
+        "calibration_bins": bins,
+        "calibration_gap_ece_exploratory": round(ece, 5) if ece is not None else None,
         "leagues": league_rows,
         "minimum_evaluated": minimum_evaluated,
         "minimum_candidates": minimum_candidates,
