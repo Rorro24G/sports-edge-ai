@@ -20,6 +20,8 @@ REPORT = {
     "evaluated_count": 160, "candidate_count": 93,
     "correct_candidates": 75,
     "candidate_accuracy_observed": 75/93,
+    "brier_all_evaluated": 0.19013,
+    "validation_status": "AUDITORIA_DESCRIPTIVA",
     "calibration_bins": [
         {"range": f"{i*20}-{(i+1)*20}%", "n": 32,
          "avg_predicted_home": .2+.15*i,
