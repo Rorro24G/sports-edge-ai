@@ -25,7 +25,7 @@ from src.simulation_view import render_results as show_simulated_scenario
 from src.player_props import fetch_roster, fetch_gamelog, parse_player_question
 from src.player_props_ui import render_player_research
 from src.prop_offers import fetch_player_prop_offers
-from src.brain_dashboard import render_brain_header, render_morning_snapshot
+from src.brain_dashboard import render_brain_header
 from src.independent_picks import build_slate, evaluate_game, add_covers_price
 from src.own_picks_ui import render_own_slate, render_own_result
 from src.model_audit_ui import render_model_audit
@@ -179,8 +179,7 @@ if section == "picks":
                 slate_state = None
         if slate_state and slate_state.get("signature") == signature:
             render_own_slate(slate_state["value"])
-        with st.expander("Pruebas históricas del cerebro", expanded=False):
-            render_model_audit()
+        render_model_audit()
         st.caption("Fecha: " + request.target_date.strftime("%d/%m/%Y")
                    + " · Ligas: " + ", ".join(request.sports) + " · CDMX")
         latest_question = st.session_state.get("last_analysis_text", "")
@@ -233,8 +232,11 @@ if section == "picks":
                     )["games"]
                 except (CalendarSourceError, KeyError, ValueError):
                     boards[league] = []
-            from src.picks_feed import live_picks_catalog, pick_catalog_rows
-            published = live_picks_catalog(published, boards, request.target_date)
+            from src.picks_feed import live_picks_catalog
+            published = [
+                g for g in live_picks_catalog(published, boards, request.target_date)
+                if g.get("origen") == "ESPN" or g.get("espn_event_id")
+            ]
         from src.match_report import relevant_matches
         ranked, specific_request = relevant_matches(
             published, st.session_state.get("last_analysis_text", "")
