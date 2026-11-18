@@ -20,9 +20,15 @@ def _secret(name: str) -> str:
 
 
 def render() -> None:
-    st.subheader("Historial · apuestas registradas por ti")
-    st.caption("Aquí solo se registran selecciones que tú confirmes. "
-               "Un 5% del bank es una referencia configurable, no una obligación ni un pick automático.")
+    st.markdown("### Panel de actividad privada")
+    st.caption("Un espacio exclusivamente tuyo: solo se guardan selecciones "
+               "que confirmes expresamente. No hay apuestas automáticas.")
+    with st.container(border=True):
+        st.markdown("**◈ PRIVACIDAD Y CONTROL**")
+        st.caption("Acceso protegido · registro persistente si se configura · "
+                   "cada resultado requiere confirmación.")
+        st.caption("La referencia de 5% del bank es orientativa, "
+                   "no una recomendación de importe.")
     password = _secret("LEDGER_ACCESS_PASSWORD")
     if not password:
         st.warning("El historial privado está desactivado hasta configurar LEDGER_ACCESS_PASSWORD "
@@ -108,7 +114,8 @@ def render() -> None:
     st.caption(f"Referencia 5% del bank disponible: {k['suggested_stake_5pct']:.2f} "
                f"{ledger['currency']}. La cantidad efectivamente apostada la decides tú.")
 
-    st.markdown("**Registrar lo que decidiste apostar mediante texto**")
+    st.markdown("### Nueva entrada")
+    st.caption("Escribe tu selección; revisa el borrador antes de guardarlo.")
     message = st.text_area("Escribe tu instrucción", key="bet_command",
                            placeholder="Voy a meter NBA, partido: Lakers vs Warriors; "
                                        "pick: Lakers ML; momio: -110; con $100")

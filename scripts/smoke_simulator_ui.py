@@ -66,7 +66,7 @@ with (
     assert simulation["result"].simulation_method == "BOOTSTRAP_ESPN_RECIENTE"
     visible = "\n".join(str(x.value) for x in app.markdown)
     assert "sim-stadium" not in visible, "HTML crudo expuesto en lugar de la visualización"
-    assert "Laboratorio de simulaciones" in visible
+    assert "Configura un escenario real" in visible
     assert any(m.label == "Total medio" for m in app.metric), "Faltan métricas visuales"
     assert any(m.label == "Línea estudiada" for m in app.metric), "Falta línea del escenario"
     assert any(x.label == "Qué datos utilizó el simulador" for x in app.expander)

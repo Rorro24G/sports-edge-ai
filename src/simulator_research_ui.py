@@ -19,11 +19,21 @@ LOCAL = ZoneInfo("America/Mexico_City")
 
 
 def render(*, board_fetch, team_fetch) -> None:
-    st.markdown("## Laboratorio de simulaciones")
+    st.markdown("### Configura un escenario real")
     st.caption(
-        "10,000 escenarios de puntuación a partir de resultados ESPN anteriores "
-        "al partido: ataque, defensa rival, forma reciente, localía y descanso."
+        "10,000 escenarios a partir de los datos anteriores al partido. "
+        "Se consideran ataque, defensa, forma reciente, localía y descanso."
     )
+    flow = st.columns(3)
+    for column, number, label in (
+        (flow[0], "01", "ELIGE LIGA Y FECHA"),
+        (flow[1], "02", "BUSCA EL PARTIDO"),
+        (flow[2], "03", "EXPLORA RESULTADOS"),
+    ):
+        with column:
+            with st.container(border=True):
+                st.caption("PASO " + number)
+                st.markdown("**" + label + "**")
     c1, c2 = st.columns([1, 2])
     with c1:
         league = st.selectbox("Liga del escenario", ["NFL", "NBA"],

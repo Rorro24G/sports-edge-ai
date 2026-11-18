@@ -1,99 +1,86 @@
-"""Six-node wireframe portal connected to real Streamlit sections."""
+"""Six-node brain portal and seamless navigation between live Streamlit sections."""
 from pathlib import Path
 import streamlit as st
 import streamlit.components.v1 as components
 
-SECTIONS = {"picks": "Picks", "parlays": "Parlays", "noticias": "Noticias",
-            "simulaciones": "Simulaciones", "historial": "Mi historial", "calendario": "Calendario"}
-# Version the component endpoint to bypass stale browser/static iframe caches.
-portal = components.declare_component("sports_brain_portal_motion_v6", path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"))
+from .section_design import inject_theme, render_hero
+
+SECTIONS = {
+    "picks": "Picks", "parlays": "Parlays", "noticias": "Noticias",
+    "simulaciones": "Simulaciones", "historial": "Historial",
+    "calendario": "Calendario",
+}
+
+# Portal itself remains versioned; this redesign changes Streamlit page chrome.
+portal = components.declare_component(
+    "sports_brain_portal_motion_v7",
+    path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"),
+)
+
+
+def _navigate(target: str | None) -> None:
+    """A changed transition token restarts the CSS tunnel when switching tabs."""
+    st.session_state["brain_section"] = target
+    st.session_state["brain_entered"] = True
+    st.session_state["brain_transition_seq"] = (
+        st.session_state.get("brain_transition_seq", 0) + 1
+    )
+    if target is None:
+        st.session_state["brain_visit"] = st.session_state.get("brain_visit", 0) + 1
+    st.rerun()
 
 
 def render_navigation():
     section = st.session_state.get("brain_section")
     if section not in (*SECTIONS, "asistente", "estado"):
-        value = portal(skip_intro=st.session_state.get("brain_entered", False),
-                       key="brain_portal_motion_v6_" + str(st.session_state.get("brain_visit", 0)), default=None)
+        value = portal(
+            skip_intro=st.session_state.get("brain_entered", False),
+            key="brain_portal_motion_v7_" + str(st.session_state.get("brain_visit", 0)),
+            default=None,
+        )
         if isinstance(value, dict) and value.get("page") in SECTIONS:
-            st.session_state["brain_section"] = value["page"]
-            st.session_state["brain_entered"] = True
-            st.rerun()
+            _navigate(value["page"])
         with st.expander("Explorar secciones", expanded=False):
             choices = st.columns(3)
             for i, (key, label) in enumerate(SECTIONS.items()):
-                if choices[i % 3].button(label, key="direct_" + key, use_container_width=True):
-                    st.session_state["brain_section"] = key
-                    st.session_state["brain_entered"] = True
-                    st.rerun()
+                if choices[i % 3].button(
+                    label, key="direct_" + key, use_container_width=True
+                ):
+                    _navigate(key)
         st.stop()
-    # The portal flies into its chosen connection; this second layer continues
-    # the transition on the destination Streamlit page after the iframe rerun.
-    st.markdown('<div class="brain-page-entry" aria-hidden="true"></div>',
-                unsafe_allow_html=True)
-    left, middle, right = st.columns([2, 6, 2])
-    if left.button("← Cerebro", key="back_to_brain"):
-        st.session_state["brain_section"] = None
-        st.session_state["brain_visit"] = st.session_state.get("brain_visit", 0) + 1
-        st.rerun()
-    middle.markdown('<div class="section-brand">SPORTS EDGE AI <span>/ ' + SECTIONS.get(section, section.title()) + '</span></div>', unsafe_allow_html=True)
-    if right.button("Asistente", key="open_assistant"):
-        st.session_state["brain_section"] = "asistente"
-        st.rerun()
+
+    seq = st.session_state.get("brain_transition_seq", 0)
+    variant = "a" if seq % 2 == 0 else "b"
+    # The old portal iframe flies toward the selected node; the following
+    # Streamlit overlay finishes that same motion as the page is mounted.
+    st.html(
+        '<div class="brain-page-entry brain-page-entry--' + variant
+        + '" data-transition="' + str(seq) + '" aria-hidden="true"></div>'
+    )
+
+    left, middle, right = st.columns([2.0, 5.5, 2.0], vertical_alignment="center")
+    if left.button("← Cerebro", key="back_to_brain", use_container_width=True):
+        _navigate(None)
+    middle.markdown(
+        '<div class="section-brand">◈ SPORTS EDGE AI'
+        ' <span>/ ' + SECTIONS.get(section, section.title()) + '</span></div>',
+        unsafe_allow_html=True,
+    )
+    if right.button("✦ Asistente", key="open_assistant", use_container_width=True):
+        _navigate("asistente")
+
+    # Direct navigation avoids returning to the six-node portal on every tab.
+    buttons = st.columns(6, gap="small")
+    for i, (key, label) in enumerate(SECTIONS.items()):
+        if buttons[i].button(
+            label, key="section_nav_" + key, use_container_width=True,
+            type="primary" if section == key else "secondary",
+        ) and section != key:
+            _navigate(key)
+
+    render_hero(section)
     return section
 
 
 def apply_theme():
-    st.markdown('''<style>
-    :root{--neon:#ff5365;--neon-light:#ff8a96}
-    .stApp{background:radial-gradient(ellipse at 55% -20%,#2b0c17 0%,#0c070c 44%,#050506 82%) fixed!important;color:#f4f0f2!important}
-    [data-testid="stHeader"]{background:transparent!important;color:#f4f0f2!important}
-    .stApp::before{content:"";position:fixed;inset:-25%;pointer-events:none;z-index:0;
-      background:radial-gradient(ellipse at 25% 35%,#ff35563b,transparent 40%),radial-gradient(ellipse at 75% 65%,#ff35562b,transparent 38%);
-      animation:neural-background-flow 12s ease-in-out infinite alternate;will-change:transform}
-    .stApp::after{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:999;pointer-events:none;
-      background:linear-gradient(90deg,transparent,#ff5365,#ffcad2,#ff5365,transparent);
-      background-size:200% 100%;box-shadow:0 0 16px #ff5365;
-      animation:neural-signal-flow 3s linear infinite}
-    @keyframes neural-background-flow{from{transform:translate(-6%,-4%) rotate(-8deg) scale(1)}to{transform:translate(6%,4%) rotate(8deg) scale(1.15)}}
-    @keyframes neural-signal-flow{from{background-position:200% 0}to{background-position:0 0}}
-    .block-container{max-width:1240px;padding-top:1.6rem;padding-bottom:3rem}
-    [data-testid="stMarkdownContainer"] h2{font-size:clamp(1.4rem,2.8vw,2.4rem)!important}
-    [data-testid="stMarkdownContainer"] h3{font-size:1.22rem!important}
-    h1,h2,h3,h4{color:#ff4667!important;letter-spacing:-.025em;text-shadow:0 0 7px #ffe8ec,0 0 21px #ff3059dd,0 0 44px #ff30598c;animation:heading-glow 3.4s ease-in-out infinite}
-    p,label,.stMarkdown{color:#f1ecee}a{color:#ff8a96!important}
-    .section-brand{font-weight:900;letter-spacing:.14em;color:#ff4e6d;font-size:15px;padding:10px 0;text-align:center;text-shadow:0 0 8px #ffeaef,0 0 22px #ff3059,0 0 48px #ff305995;animation:section-neon 3.4s ease-in-out infinite}
-    .section-brand span{font-weight:400;color:#d2b7bd;letter-spacing:.04em}
-    [data-testid="stMetric"]{background:linear-gradient(140deg,#25121b 0%,#12090e 100%);border:1px solid #733244;border-radius:18px;padding:1.15rem;box-shadow:0 14px 38px #0008,0 0 22px #ff426012}
-    [data-testid="stMetricValue"]{color:#fff}
-    [data-testid="stForm"], [data-testid="stExpander"]{background:#130d12!important;border:1px solid #632c3d!important;border-radius:18px!important;box-shadow:0 12px 36px #0004}
-    [data-testid="stVerticalBlockBorderWrapper"]>div{border-color:#7a334880!important;border-radius:18px!important;background:linear-gradient(140deg,#201119de,#11090cdd)!important}
-    [data-testid="stTextInput"] input:focus{border-color:#ff627a!important;box-shadow:0 0 0 1px #ff627aaa,0 0 25px #ff33552f!important}
-    [data-testid="stSelectbox"] [data-baseweb="select"]>div{background:#150c11!important;border:1px solid #673344!important;border-radius:12px!important}
-    [data-testid="stTextInput"] input,[data-testid="stTextArea"] textarea{background:#100b0d;color:#fff;caret-color:#ff6375}
-    button[kind="primary"],div.stFormSubmitButton>button{background:#ff6375!important;color:#160609!important;border:0!important;border-radius:10px!important;box-shadow:0 0 13px #ff536544;animation:button-breathe 3.9s ease-in-out infinite;transition:transform .2s ease,box-shadow .2s ease}
-    button[kind="secondary"]{border-color:#66303b!important;background:#11090d!important;color:#ff8a96!important;transition:transform .2s ease,box-shadow .2s ease}
-    button[kind="primary"]:hover,div.stFormSubmitButton>button:hover,button[kind="secondary"]:hover{transform:translateY(-2px);box-shadow:0 0 20px #ff53658c}
-    [data-testid="stDataFrame"]{border:1px solid #703044;border-radius:16px;overflow:hidden;box-shadow:0 10px 34px #0005}
-    a[data-testid="stLinkButton"]{border-color:#ff527a!important;color:#ffcad2!important;border-radius:12px!important;box-shadow:0 0 18px #ff37543d}
-    .stAlert{border-radius:12px!important}
-    div[data-testid="stMarkdownContainer"] p{line-height:1.65}
-    .stCaption{color:#ab9aa3!important}
-    .odds-price{color:#76f5a6;font-variant-numeric:tabular-nums;font-weight:800}
-    @keyframes section-arrive{from{opacity:0;transform:translateY(26px) scale(.985);filter:blur(5px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
-    .brain-page-entry{position:fixed;inset:0;z-index:999999;pointer-events:none;
-      background:radial-gradient(circle at 50% 50%,#ffc6d1dd 0%,#ff315bcc 4%,#6a0a2788 10%,#080308dd 34%,transparent 70%);
-      animation:brain-dive-screen 1.05s cubic-bezier(.12,.7,.15,1) both}
-    .brain-page-entry::before,.brain-page-entry::after{content:"";position:absolute;left:50%;top:50%;
-      width:65vmin;height:65vmin;border:2px solid #ff527dbb;border-radius:50%;
-      box-shadow:0 0 25px #ff315b,0 0 55px #ff315b88;transform:translate(-50%,-50%);
-      animation:brain-dive-ring 1.05s ease-out both}
-    .brain-page-entry::after{animation-delay:.14s;opacity:.55}
-    @keyframes brain-dive-screen{0%{opacity:1;transform:scale(.18);filter:blur(4px)}55%{opacity:.92;transform:scale(3);filter:blur(0)}100%{opacity:0;transform:scale(9);filter:blur(10px)}}
-    @keyframes brain-dive-ring{0%{transform:translate(-50%,-50%) scale(.5);opacity:.9}100%{transform:translate(-50%,-50%) scale(8);opacity:0}}
-    @keyframes heading-glow{0%,100%{text-shadow:0 0 7px #ffe8ec,0 0 21px #ff3059dd,0 0 44px #ff30598c}50%{text-shadow:0 0 13px #fff,0 0 35px #ff3059,0 0 70px #ff3059dd}}
-    @keyframes section-neon{0%,100%{transform:translateY(0);text-shadow:0 0 8px #ffeaef,0 0 22px #ff3059,0 0 48px #ff305995}50%{transform:translateY(-4px);text-shadow:0 0 15px #fff,0 0 42px #ff3059,0 0 82px #ff3059dd}}
-    @keyframes button-breathe{0%,100%{box-shadow:0 0 15px #ff536566;transform:scale(1)}50%{box-shadow:0 0 29px #ff5365c2;transform:scale(1.025)}}
-    .block-container{animation:section-arrive .65s cubic-bezier(.18,.76,.23,1)}
-    @media(max-width:640px){.section-brand{font-size:11px;letter-spacing:.05em}.section-brand span{display:block;font-size:10px}}
-    </style>''', unsafe_allow_html=True)
-
+    inject_theme()
