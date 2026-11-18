@@ -6,6 +6,7 @@ on:
     paths:
       - src/independent_picks.py
       - src/pick_judgement.py
+      - src/opponent_quality.py
       - src/pick_walkforward.py
       - src/model_calibration.py
       - scripts/backtest_seai.py
@@ -16,6 +17,7 @@ on:
     paths:
       - src/independent_picks.py
       - src/pick_judgement.py
+      - src/opponent_quality.py
       - src/pick_walkforward.py
       - src/model_calibration.py
       - scripts/backtest_seai.py
@@ -40,7 +42,7 @@ jobs:
           set -euo pipefail
           PYTHONPATH=. python -m scripts.backtest_seai \
             --sport NBA --start 2025-11-10 --end 2025-12-02 \
-            --max-games 160 --output audit-output/seai-nba-2025.json
+            --max-games 160 --output audit-output/seai-nba-2025.json --opponent-challenger
           python - <<'PY'
           import json
           from pathlib import Path
@@ -77,7 +79,7 @@ jobs:
         run: |
           PYTHONPATH=. python -m scripts.backtest_seai \
             --sport NFL --start 2025-10-13 --end 2025-11-19 \
-            --max-games 100 --output audit-output/seai-nfl-2025.json
+            --max-games 100 --output audit-output/seai-nfl-2025.json --opponent-challenger
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -99,7 +101,7 @@ jobs:
         run: |
           PYTHONPATH=. python -m scripts.backtest_seai \
             --sport NHL --start 2025-11-02 --end 2025-11-25 \
-            --max-games 160 --output audit-output/seai-nhl-2025.json
+            --max-games 160 --output audit-output/seai-nhl-2025.json --opponent-challenger
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -121,7 +123,7 @@ jobs:
         run: |
           PYTHONPATH=. python -m scripts.backtest_seai \
             --sport NBA --start 2026-10-28 --end 2026-11-17 \
-            --max-games 160 --output audit-output/seai-nba-2026.json
+            --max-games 160 --output audit-output/seai-nba-2026.json --opponent-challenger
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -143,7 +145,7 @@ jobs:
         run: |
           PYTHONPATH=. python -m scripts.backtest_seai \
             --sport NFL --start 2026-09-28 --end 2026-11-17 \
-            --max-games 110 --output audit-output/seai-nfl-2026.json
+            --max-games 110 --output audit-output/seai-nfl-2026.json --opponent-challenger
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -165,7 +167,7 @@ jobs:
         run: |
           PYTHONPATH=. python -m scripts.backtest_seai \
             --sport NHL --start 2026-10-25 --end 2026-11-17 \
-            --max-games 160 --output audit-output/seai-nhl-2026.json
+            --max-games 160 --output audit-output/seai-nhl-2026.json --opponent-challenger
       - uses: actions/upload-artifact@v4
         if: always()
         with:

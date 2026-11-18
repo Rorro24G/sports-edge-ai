@@ -18,10 +18,12 @@ from pathlib import Path
 
 from src.live_board import CalendarSourceError, fetch_scoreboard
 from src.pick_walkforward import walkforward
+from src.opponent_quality import compare_challenger
 from src.team_form import TeamFormError, fetch_team_schedule, season_year
 
 
-def run(sport: str, start: date, end: date, *, max_games: int = 40) -> dict:
+def run(sport: str, start: date, end: date, *, max_games: int = 40,
+        opponent_challenger: bool = False) -> dict:
     if sport not in ("NBA", "NFL", "NHL"):
         raise ValueError("Liga no soportada")
     if end < start or (end-start).days > 60 or not 1 <= max_games <= 240:
@@ -72,6 +74,8 @@ def run(sport: str, start: date, end: date, *, max_games: int = 40) -> dict:
         "Solo ESPN. Cada predicción se produce con resultados anteriores "
         "al encuentro. No se atribuyen cuotas históricas ni ganancias."
     )
+    if opponent_challenger:
+        report["opponent_challenger"] = compare_challenger(fixtures, histories)
     return report
 
 
@@ -81,12 +85,20 @@ def main():
     parser.add_argument("--start", type=date.fromisoformat, required=True)
     parser.add_argument("--end", type=date.fromisoformat, required=True)
     parser.add_argument("--max-games", type=int, default=40)
+    parser.add_argument("--opponent-challenger", action="store_true",
+                        help="Compara un veto experimental con fuerza de rivales previos")
     parser.add_argument("--output", type=Path, default=Path("daily-output/own-model-audit.json"))
     args = parser.parse_args()
-    report = run(args.sport, args.start, args.end, max_games=args.max_games)
+    report = run(args.sport, args.start, args.end, max_games=args.max_games,
+                 opponent_challenger=args.opponent_challenger)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     summary = {k: v for k, v in report.items() if k not in {"details"}}
+    if "opponent_challenger" in summary:
+        summary["opponent_challenger"] = {
+            k: v for k, v in summary["opponent_challenger"].items()
+            if k != "details"
+        }
     print(json.dumps(summary, indent=2, ensure_ascii=False))
     if report["evaluated_count"] == 0:
         print("No hubo encuentros históricos evaluables con los datos recibidos", file=sys.stderr)
