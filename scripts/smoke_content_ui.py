@@ -15,5 +15,5 @@ with patch('src.news_ui.cached_news',side_effect=NewsError('No se pudieron actua
 # The fully wired app flow is covered by scripts/smoke_parlay_ui.py.
 app=AppTest.from_string('from src.parlay_ui import render\nrender()').run()
 assert not app.exception
-assert any('analizador ESPN' in str(x.message) for x in app.warning)
+assert any('analizador ESPN' in str(x.value) for x in app.warning)
 print('CONTENT_UI_OK')
