@@ -31,9 +31,9 @@ with (
     app.session_state["brain_section"] = "picks"
     app = app.run()
     assert not app.exception, [str(e.message) for e in app.exception]
-    warnings = "\n".join(str(x.message) for x in app.warning)
-    errors = "\n".join(str(x.message) for x in app.error)
-    info = "\n".join(str(x.message) for x in app.info)
+    warnings = "\n".join(str(x.value) for x in app.warning)
+    errors = "\n".join(str(x.value) for x in app.error)
+    info = "\n".join(str(x.value) for x in app.info)
     assert "ESPN no respondió para: NBA" in warnings, warnings
     assert "fallaron las fuentes ESPN" not in errors, errors
     assert "No hay encuentros futuros" in info, info
@@ -44,7 +44,7 @@ with (
     # Same source view in Parlays, not a separate Covers-dependent path.
     app = app.button(key="section_nav_parlays").click().run()
     assert not app.exception, [str(e.message) for e in app.exception]
-    warnings = "\n".join(str(x.message) for x in app.warning)
+    warnings = "\n".join(str(x.value) for x in app.warning)
     assert "Sin respuesta del calendario ESPN: NBA" in warnings, warnings
     assert "Parlays propios del cerebro" in "\n".join(str(x.value) for x in app.markdown)
     print("PICKS_AND_PARLAYS_ESPN_SOURCE_DIAGNOSTICS_OK")
