@@ -1,11 +1,16 @@
 """Historical opponent quality can veto weak judgments, never invent them."""
 from datetime import date, timedelta
 from unittest import TestCase
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import json
+from copy import deepcopy
 
 from src.opponent_quality import (
     event_team_index, team_opponent_quality, challenge_pick, compare_challenger
 )
 from src.independent_picks import predict_from_results
+from src.model_audit_ui import load_opponent_experiment, AUDIT_PATH
 
 
 DAY = date(2026, 11, 18)
@@ -118,3 +123,32 @@ class ChallengerAuditTests(TestCase):
             report["assessable_candidates"] + report["unassessable_candidates"],
             report["historical_baseline_candidates"],
         )
+
+
+class HistoricalChallengerReportingTests(TestCase):
+    def test_six_real_reports_can_be_read_but_never_promoted(self):
+        report = load_opponent_experiment()
+        self.assertIsNotNone(report)
+        self.assertEqual(len(report["experiments"]), 6)
+        self.assertFalse(report["production_enabled"])
+        self.assertEqual(report["promotion_decision"], "NO_PROMOVER_EN_2026")
+        in_2026 = [r for r in report["experiments"] if r["season"] == 2026]
+        nba = next(r for r in in_2026 if r["sport"] == "NBA")
+        self.assertLess(nba["challenger_accuracy_retained"],
+                        nba["baseline_accuracy_assessable"])
+
+    def test_rejects_fabricated_promotions_and_mismatched_candidate_counts(self):
+        bundle = json.loads(AUDIT_PATH.read_text(encoding="utf-8"))
+        with TemporaryDirectory() as temp:
+            target = Path(temp) / "summary.json"
+            target.write_text(json.dumps(bundle), encoding="utf-8")
+            self.assertIsNotNone(load_opponent_experiment(target))
+            wrong = deepcopy(bundle)
+            wrong["opponent_challenger"]["production_enabled"] = True
+            target.write_text(json.dumps(wrong), encoding="utf-8")
+            self.assertIsNone(load_opponent_experiment(target))
+            wrong = deepcopy(bundle)
+            wrong["opponent_challenger"]["experiments"][0][
+                "historical_baseline_candidates"] += 1
+            target.write_text(json.dumps(wrong), encoding="utf-8")
+            self.assertIsNone(load_opponent_experiment(target))
