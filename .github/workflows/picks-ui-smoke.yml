@@ -121,3 +121,69 @@ jobs:
           path: audit-output/
           retention-days: 14
           if-no-files-found: warn
+
+  audit-2026-nba:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Auditoría separada NBA temporada actual 2026
+        run: |
+          PYTHONPATH=. python -m scripts.backtest_seai \
+            --sport NBA --start 2026-10-28 --end 2026-11-17 \
+            --max-games 160 --output audit-output/seai-nba-2026.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-real-nba-2026
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
+
+  audit-2026-nfl:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Auditoría separada NFL temporada actual 2026
+        run: |
+          PYTHONPATH=. python -m scripts.backtest_seai \
+            --sport NFL --start 2026-09-28 --end 2026-11-17 \
+            --max-games 110 --output audit-output/seai-nfl-2026.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-real-nfl-2026
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
+
+  audit-2026-nhl:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Auditoría separada NHL temporada actual 2026
+        run: |
+          PYTHONPATH=. python -m scripts.backtest_seai \
+            --sport NHL --start 2026-10-25 --end 2026-11-17 \
+            --max-games 160 --output audit-output/seai-nhl-2026.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-real-nhl-2026
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
