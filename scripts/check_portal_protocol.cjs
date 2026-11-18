@@ -9,7 +9,7 @@ for(const keyframe of ['brand-breathe','node-drift','neuron-heartbeat','neuron-a
  assert(html.includes('@keyframes '+keyframe),'missing animation '+keyframe);
 }
 assert(html.includes('.reduced #stage .brand'),'motion-reduction CSS missing');
-assert(code.includes('breathing=reduced?1'),'motion-reduction JS missing');
+assert(code.includes('const motion=(reduced||paused)?0:t'),'motion and pause behavior missing');
 assert(code.includes('if(!reduced&&i%7===0'),'travelling wire highlights missing');
 assert(code.includes('.map(project)'),'wire geometry projection missing');
 assert(code.includes('rotCa=Math.cos(angle)'),'angle trigonometry must be reused per frame');
@@ -42,7 +42,7 @@ function run(reduced,page){
  const messages=[],listeners={},arcs=[];let callback;
  const element=()=>({style:{},classList:{add(){},toggle(){}},setAttribute(){},focus(){},inert:false,clientWidth:1000,clientHeight:760});
  const elements=Object.fromEntries(['scene','stage','intro','brain-ui','flight-label','enter','rotate','reset','motion-toggle'].map(n=>[n,element()]));
- elements.scene.getContext=()=>new Proxy({},{get:(_,key)=>key==='arc'?((...args)=>arcs.push(args)):(()=>{})});
+ elements.scene.getContext=()=>new Proxy({},{get:(_,key)=>key==='arc'?((...args)=>arcs.push(args)):(key==='createRadialGradient'?(()=>({addColorStop(){}})):(()=>{}))});
  const nodes=pages.map(page=>Object.assign(element(),{dataset:{page},innerText:page.toUpperCase()}));
  const parent={postMessage:v=>messages.push(v)};
  const window={parent};
