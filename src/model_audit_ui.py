@@ -92,6 +92,40 @@ def load_model_audits(path: Path = AUDIT_PATH) -> list[dict]:
     return sorted(reports, key=lambda x: (x["sport"], x["period"]["start"]))
 
 
+def load_calibration_experiment(path: Path = AUDIT_PATH) -> dict | None:
+    """Only show a reproducible historical calibration that is NOT enabled."""
+    raw = _read(path)
+    if not isinstance(raw, dict) or raw.get("model") != VERSION:
+        return None
+    c = raw.get("calibration_experiment")
+    if not isinstance(c, dict):
+        return None
+    try:
+        if (c.get("status") != "EXPERIMENTO_CALIBRACION_SIN_ACTIVAR"
+                or c.get("sport") != "NBA"
+                or c.get("base_model") != VERSION
+                or c.get("production_enabled") is not False
+                or c.get("model_validated") is not False
+                or c.get("fit_uses_holdout") is not False
+                or c.get("train_count", 0) < 100
+                or c.get("holdout_count", 0) < 100
+                or c["train_period"]["end"] >= c["holdout_period"]["start"]):
+            return None
+        reports = load_model_audits(path)
+        test = next((r for r in reports
+                     if r["sport"] == "NBA"
+                     and r["period"] == c["holdout_period"]), None)
+        if not test:
+            return None
+        before = float(c["raw_holdout"]["brier"])
+        after = float(c["calibrated_holdout"]["brier"])
+        if not (0 <= after <= 1 and abs(before - test["brier_all_evaluated"]) <= .0002):
+            return None
+        return c
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
 def render_model_audit(path: Path = AUDIT_PATH) -> None:
     import streamlit as st
 
@@ -142,8 +176,18 @@ def render_model_audit(path: Path = AUDIT_PATH) -> None:
         if any(r["brier_all_evaluated"] >= .25 for r in reports):
             st.caption("Algunas muestras NO superan la referencia Brier 0.250; "
                        "esas señales requieren precaución especial.")
-        st.caption("Este motor todavía NO está entrenado/calibrado ni tiene "
-                   "rentabilidad validada. Los intervalos de acierto no son "
+        experiment = load_calibration_experiment(path)
+        if experiment:
+            old = experiment["raw_holdout"]["brier"]
+            new = experiment["calibrated_holdout"]["brier"]
+            st.markdown("**Calibración experimental NBA · 2025 frente a 2026**")
+            st.caption(
+                f"Brier sin ajuste: {old:.4f} · ajuste temporal: {new:.4f}. "
+                "El cambio es pequeño; no está activado en Picks ni valida "
+                "retornos de apuestas."
+            )
+        st.caption("Este motor todavía NO está entrenado/calibrado para producción "
+                   "ni tiene rentabilidad validada. Los intervalos de acierto no son "
                    "probabilidades de éxito de futuras apuestas.")
         urls = [
             r.get("audit_run_url", "") for r in reports
