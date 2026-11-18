@@ -56,7 +56,7 @@
 @keyframes neuron-aura{0%{transform:scale(.65);opacity:.9}75%{opacity:.6}100%{transform:scale(2.35);opacity:0}}
 @keyframes label-float{0%,100%{transform:translateX(-50%) translateY(0);opacity:.89}50%{transform:translateX(-50%) translateY(-5px);opacity:1}}
 @media(max-width:600px){#stage .neuron .label{font-size:10px}#stage .brand{font-size:clamp(46px,13vw,62px)}}
-/* OS preference is respected initially; users may opt in to movement here. */
+/* Movement is enabled by default as requested; the visible toggle can pause it. */
 .reduced #stage .brand,.reduced #stage .brand span,.reduced #stage .logo,
 .reduced #stage .eyebrow,.reduced #stage .enter-label,.reduced #stage #enter,
 .reduced #stage #enter:before,.reduced #stage #enter:after,.reduced #stage .neuron,
@@ -92,8 +92,8 @@
 <script>
 const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d'),stage=document.getElementById('stage');
 const intro=document.getElementById('intro'),ui=document.getElementById('brain-ui'),flight=document.getElementById('flight-label');
-const prefersReduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-let reduced=prefersReduced;
+// Continuous motion is the product default; only an explicit pause stops it.
+let reduced=false;
 function syncMotion(){
   document.body.classList.toggle('reduced',reduced);
   const toggle=document.getElementById('motion-toggle');
@@ -106,7 +106,7 @@ document.getElementById('motion-toggle').onclick=()=>{
   paused=reduced;
   syncMotion();updatePause();
 };
-let W=1000,H=760,state='intro',angle=-.18,tilt=.12,paused=reduced,drag=false,lastX=0,lastY=0,start=0,zoom=1,breathing=1,flightBlend=0,flightX=0,flightY=0,target=null,ready=false,hovering=false,renderTime=0;
+let W=1000,H=760,state='intro',angle=-.18,tilt=.12,paused=reduced,drag=false,lastX=0,lastY=0,start=0,zoom=1,breathing=1,flightBlend=0,flightX=0,flightY=0,target=null,ready=false,renderTime=0;
 const nodes=[...document.querySelectorAll('.neuron')];
 const anchors=[[-.64,-.65,.60],[.64,-.64,.60],[-.88,.05,.18],[.88,.06,.18],[-.50,.74,.48],[.50,.74,.48]];
 function send(type,extra={}){window.parent.postMessage({isStreamlitMessage:true,type,...extra},'*')}
@@ -123,11 +123,7 @@ function openSection(button){
   if(reduced)finish();
 }
 function finish(){state='done';send('streamlit:setComponentValue',{value:{page:target,nonce:Date.now()},dataType:'json'});flight.textContent=target.toUpperCase();if(window.parent===window){setTimeout(()=>{zoom=1;flightBlend=0;showBrain();flight.style.opacity=0},900)}}
-nodes.forEach(b=>{
- b.onclick=()=>openSection(b);
- b.onpointerenter=()=>{hovering=true};
- b.onpointerleave=()=>{hovering=false};
-});
+nodes.forEach(b=>{b.onclick=()=>openSection(b)});
 function updatePause(){document.getElementById('rotate').textContent=paused?'Reanudar giro':'Pausar giro';document.getElementById('rotate').setAttribute('aria-pressed',String(paused))}updatePause();
 document.getElementById('rotate').onclick=()=>{paused=!paused;updatePause()};document.getElementById('reset').onclick=()=>{angle=-.18;tilt=.12};
 canvas.onpointerdown=e=>{if(state!=='brain')return;drag=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)};canvas.onpointermove=e=>{if(!drag)return;angle+=(e.clientX-lastX)*.005;tilt=Math.max(-.5,Math.min(.5,tilt+(e.clientY-lastY)*.003));lastX=e.clientX;lastY=e.clientY};canvas.onpointerup=canvas.onpointercancel=()=>drag=false;
@@ -192,7 +188,7 @@ function drawBrain(t=0){
     ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(near[0],near[1]);ctx.stroke();
   });
 }
-let last=performance.now(),lastPaint=-Infinity;function frame(t){if(t-lastPaint<25){requestAnimationFrame(frame);return}lastPaint=t;const dt=Math.min(t-last,40);last=t;ctx.clearRect(0,0,W,H);if(state==='intro'){if(!reduced)angle+=dt*.00011;ctx.globalAlpha=1;drawBrain(t);ctx.globalAlpha=1}else if(state==='entry'){let p=Math.min((t-start)/1700,1);ctx.strokeStyle='#ff6678';ctx.lineWidth=1;ctx.shadowColor='#ff5365';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(W/2,H+30);ctx.bezierCurveTo(W*.37,H*.72,W*.62,H*.38,W/2,H*(.8-.48*p));ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<8;i++){let r=((p*2+i/8)%1)*Math.max(W,H);ctx.strokeStyle=`rgba(255,83,101,${.20*(1-r/Math.max(W,H))})`;ctx.beginPath();ctx.ellipse(W/2,H*.38,r*.72,r*.42,0,0,Math.PI*2);ctx.stroke()}if(p===1){flight.style.opacity=0;showBrain()}}else if(state==='brain'||state==='dive'||state==='done'){if(!paused&&!drag&&!hovering&&state==='brain')angle+=dt*.00018;if(state==='dive'){let p=Math.min((t-start)/1100,1);let ease=1-Math.pow(1-p,3);flightBlend=ease;zoom=1+Math.pow(ease,2)*20;ctx.globalAlpha=1-p*.68;drawBrain(t);ctx.globalAlpha=1;ctx.fillStyle='rgba(255,28,70,'+(p*p*.53)+')';ctx.fillRect(0,0,W,H);if(p===1)finish()}else drawBrain(t)}requestAnimationFrame(frame)}
+let last=performance.now(),lastPaint=-Infinity;function frame(t){if(t-lastPaint<25){requestAnimationFrame(frame);return}lastPaint=t;const dt=Math.min(t-last,40);last=t;ctx.clearRect(0,0,W,H);if(state==='intro'){if(!reduced)angle+=dt*.00025;ctx.globalAlpha=1;drawBrain(t);ctx.globalAlpha=1}else if(state==='entry'){let p=Math.min((t-start)/1700,1);ctx.strokeStyle='#ff6678';ctx.lineWidth=1;ctx.shadowColor='#ff5365';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(W/2,H+30);ctx.bezierCurveTo(W*.37,H*.72,W*.62,H*.38,W/2,H*(.8-.48*p));ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<8;i++){let r=((p*2+i/8)%1)*Math.max(W,H);ctx.strokeStyle=`rgba(255,83,101,${.20*(1-r/Math.max(W,H))})`;ctx.beginPath();ctx.ellipse(W/2,H*.38,r*.72,r*.42,0,0,Math.PI*2);ctx.stroke()}if(p===1){flight.style.opacity=0;showBrain()}}else if(state==='brain'||state==='dive'||state==='done'){if(!paused&&!drag&&state==='brain')angle+=dt*.00035;if(state==='dive'){let p=Math.min((t-start)/1100,1);let ease=1-Math.pow(1-p,3);flightBlend=ease;zoom=1+Math.pow(ease,2)*20;ctx.globalAlpha=1-p*.68;drawBrain(t);ctx.globalAlpha=1;ctx.fillStyle='rgba(255,28,70,'+(p*p*.53)+')';ctx.fillRect(0,0,W,H);if(p===1)finish()}else drawBrain(t)}requestAnimationFrame(frame)}
 addEventListener('message',e=>{if(e.source!==window.parent||e.data?.type!=='streamlit:render')return;if(!ready){ready=true;if(e.data.args?.skip_intro)showBrain()}size()});
 send('streamlit:componentReady',{apiVersion:1});size();requestAnimationFrame(frame);
 </script></body></html>

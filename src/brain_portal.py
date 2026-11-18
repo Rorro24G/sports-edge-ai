@@ -6,14 +6,14 @@ import streamlit.components.v1 as components
 SECTIONS = {"picks": "Picks", "parlays": "Parlays", "noticias": "Noticias",
             "simulaciones": "Simulaciones", "historial": "Mi historial", "calendario": "Calendario"}
 # Version the component endpoint to bypass stale browser/static iframe caches.
-portal = components.declare_component("sports_brain_portal_motion_v5", path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"))
+portal = components.declare_component("sports_brain_portal_motion_v6", path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"))
 
 
 def render_navigation():
     section = st.session_state.get("brain_section")
     if section not in (*SECTIONS, "asistente", "estado"):
         value = portal(skip_intro=st.session_state.get("brain_entered", False),
-                       key="brain_portal_motion_v5_" + str(st.session_state.get("brain_visit", 0)), default=None)
+                       key="brain_portal_motion_v6_" + str(st.session_state.get("brain_visit", 0)), default=None)
         if isinstance(value, dict) and value.get("page") in SECTIONS:
             st.session_state["brain_section"] = value["page"]
             st.session_state["brain_entered"] = True
@@ -47,7 +47,15 @@ def apply_theme():
     :root{--neon:#ff5365;--neon-light:#ff8a96}
     .stApp{background:radial-gradient(ellipse at 55% -20%,#2b0c17 0%,#0c070c 44%,#050506 82%) fixed!important;color:#f4f0f2!important}
     [data-testid="stHeader"]{background:transparent!important;color:#f4f0f2!important}
-    .stApp::before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(145deg,#ff355607,transparent 55%);z-index:0}
+    .stApp::before{content:"";position:fixed;inset:-25%;pointer-events:none;z-index:0;
+      background:radial-gradient(ellipse at 25% 35%,#ff35563b,transparent 40%),radial-gradient(ellipse at 75% 65%,#ff35562b,transparent 38%);
+      animation:neural-background-flow 12s ease-in-out infinite alternate;will-change:transform}
+    .stApp::after{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:999;pointer-events:none;
+      background:linear-gradient(90deg,transparent,#ff5365,#ffcad2,#ff5365,transparent);
+      background-size:200% 100%;box-shadow:0 0 16px #ff5365;
+      animation:neural-signal-flow 3s linear infinite}
+    @keyframes neural-background-flow{from{transform:translate(-6%,-4%) rotate(-8deg) scale(1)}to{transform:translate(6%,4%) rotate(8deg) scale(1.15)}}
+    @keyframes neural-signal-flow{from{background-position:200% 0}to{background-position:0 0}}
     .block-container{max-width:1240px;padding-top:1.6rem;padding-bottom:3rem}
     [data-testid="stMarkdownContainer"] h2{font-size:clamp(1.4rem,2.8vw,2.4rem)!important}
     [data-testid="stMarkdownContainer"] h3{font-size:1.22rem!important}
@@ -86,9 +94,6 @@ def apply_theme():
     @keyframes section-neon{0%,100%{transform:translateY(0);text-shadow:0 0 8px #ffeaef,0 0 22px #ff3059,0 0 48px #ff305995}50%{transform:translateY(-4px);text-shadow:0 0 15px #fff,0 0 42px #ff3059,0 0 82px #ff3059dd}}
     @keyframes button-breathe{0%,100%{box-shadow:0 0 15px #ff536566;transform:scale(1)}50%{box-shadow:0 0 29px #ff5365c2;transform:scale(1.025)}}
     .block-container{animation:section-arrive .65s cubic-bezier(.18,.76,.23,1)}
-    @media(prefers-reduced-motion:reduce){.block-container,h1,h2,h3,h4,.section-brand,button[kind="primary"],div.stFormSubmitButton>button,.brain-page-entry,.brain-page-entry::before,.brain-page-entry::after{animation:none!important}
-      .brain-page-entry{display:none!important}
-      button[kind="primary"],div.stFormSubmitButton>button,button[kind="secondary"]{transition:none!important}}
     @media(max-width:640px){.section-brand{font-size:11px;letter-spacing:.05em}.section-brand span{display:block;font-size:10px}}
     </style>''', unsafe_allow_html=True)
 
