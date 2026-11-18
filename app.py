@@ -99,6 +99,22 @@ def cached_own_slate(target, sports):
         covers_events=market_events, per_league=16
     )
 
+@st.cache_data(ttl=300, show_spinner=False)
+def cached_parlay_slate(target, sports):
+    """Own ESPN-only decisions. Covers must never be required to build parlays."""
+    boards = {}
+    for sport in sports:
+        if sport not in ("NBA", "NFL", "NHL"):
+            continue
+        try:
+            boards[sport] = cached_scoreboard(sport, target)["games"]
+        except (CalendarSourceError, ValueError, KeyError, OSError):
+            boards[sport] = []
+    return build_slate(
+        boards, target, team_fetch=cached_team_schedule,
+        covers_events=[], per_league=16,
+    )
+
 def safe_odds_key():
     try:
         return st.secrets.get("ODDS_API_KEY", "")
@@ -499,7 +515,10 @@ if section == "estado":
 
 if section == "parlays":
     from src.parlay_ui import render as render_parlay
-    render_parlay()
+    render_parlay(
+        slate_fetch=cached_parlay_slate,
+        covers_fetch=cached_covers,
+    )
 
 
 if section == "historial":
