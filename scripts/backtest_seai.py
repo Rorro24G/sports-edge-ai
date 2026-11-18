@@ -34,6 +34,18 @@ def _scoreboard_with_retries(sport: str, day: date) -> dict:
     raise CalendarSourceError("ESPN no entregó fecha verificada")
 
 
+def _schedule_with_retries(sport: str, team_id: str, day: date) -> dict:
+    """Retry ESPN team history transient errors without inventing records."""
+    for attempt in range(3):
+        try:
+            return fetch_team_schedule(sport, team_id, day)
+        except TeamFormError:
+            if attempt == 2:
+                raise
+            sleep(1.2 * (attempt+1))
+    raise TeamFormError("ESPN histórico no verificado")
+
+
 def run(sport: str, start: date, end: date, *, max_games: int = 40) -> dict:
     if sport not in ("NBA", "NFL", "NHL"):
         raise ValueError("Liga no soportada")
@@ -61,7 +73,7 @@ def run(sport: str, start: date, end: date, *, max_games: int = 40) -> dict:
     # strictly by EACH fixture's date before extracting model features.
     with ThreadPoolExecutor(max_workers=5) as executor:
         jobs = {
-            executor.submit(fetch_team_schedule, league, team_id,
+            executor.submit(_schedule_with_retries, league, team_id,
                             end + timedelta(days=1)): (league, team_id)
             for league, team_id in sorted(ids)
         }
