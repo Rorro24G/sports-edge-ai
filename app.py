@@ -79,35 +79,44 @@ def cached_team_schedule(sport, team_id, target):
 
 @st.cache_data(ttl=300, show_spinner=False)
 def cached_own_slate(target, sports):
-    """Generate the brain's own picks from ESPN ONLY, never from Covers."""
+    """One ESPN-only analysis shared by Picks and Parlays.
+
+    Preserve per-league source status: ESPN outage must never look like
+    an empty slate, and a model rejection must never look like missing ESPN.
+    """
     boards = {}
+    source_status = {}
     for sport in sports:
         if sport not in ("NBA", "NFL", "NHL"):
             continue
         try:
-            boards[sport] = cached_scoreboard(sport, target)["games"]
-        except (CalendarSourceError, KeyError, ValueError, OSError):
+            response = cached_scoreboard(sport, target)
+            games = response["games"]
+            if not isinstance(games, list):
+                raise ValueError("Calendario sin lista de partidos")
+        except (CalendarSourceError, KeyError, ValueError, OSError, TypeError):
             boards[sport] = []
-    return build_slate(
+            source_status[sport] = {"available": False, "games": 0}
+        else:
+            boards[sport] = games
+            source_status[sport] = {"available": True, "games": len(games)}
+    slate = build_slate(
         boards, target, team_fetch=cached_team_schedule,
         covers_events=[], per_league=16,
     )
+    slate["source_status"] = source_status
+    slate["source_errors"] = [
+        sport for sport, item in source_status.items() if not item["available"]
+    ]
+    slate["loaded_sports"] = list(source_status)
+    return slate
+
 
 @st.cache_data(ttl=300, show_spinner=False)
 def cached_parlay_slate(target, sports):
-    """Own ESPN-only decisions. Covers must never be required to build parlays."""
-    boards = {}
-    for sport in sports:
-        if sport not in ("NBA", "NFL", "NHL"):
-            continue
-        try:
-            boards[sport] = cached_scoreboard(sport, target)["games"]
-        except (CalendarSourceError, ValueError, KeyError, OSError):
-            boards[sport] = []
-    return build_slate(
-        boards, target, team_fetch=cached_team_schedule,
-        covers_events=[], per_league=16,
-    )
+    """Reuse the EXACT independent ESPN decisions from the Picks section."""
+    return cached_own_slate(target, sports)
+
 
 def safe_odds_key():
     try:
