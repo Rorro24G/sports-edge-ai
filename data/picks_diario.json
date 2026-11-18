@@ -1,6 +1,6 @@
 {
-  "date_cdmx": "2026-11-17",
-  "generated_at_utc": "2026-11-17T18:29:52.564134+00:00",
+  "date_cdmx": "2026-11-18",
+  "generated_at_utc": "2026-11-18T19:39:32.520847+00:00",
   "leagues": {
     "NBA": {
       "coverage": {
@@ -11,13 +11,13 @@
       "events": [
         {
           "liga": "NBA",
-          "partido": "New York @ Toronto",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "18:30",
+          "partido": "Philadelphia @ Orlando",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "18:00",
           "fuente_covers": "https://www.covers.com/picks/nba",
           "proyeccion_covers": [
-            109.67,
-            107.0
+            112.73,
+            111.25
           ],
           "momios_covers": [
             null,
@@ -27,23 +27,23 @@
             "visitante": null,
             "local": null
           },
-          "spreads_publicados": "-3.5 55%, +3.5 50%",
-          "totales_publicados": "o214.5 51%, u215.5 53%",
-          "porcentajes_covers": "55%, 51%, 62%, 50%, 53%, 39%",
+          "spreads_publicados": "+1.5 52%, -1.5 49%",
+          "totales_publicados": "o221.5 51%, u221.5 50%",
+          "porcentajes_covers": "52%, 51%, 49%, 50%",
           "momios_casas": [],
           "referencia_covers": {
             "liga": "NBA",
-            "partido": "New York @ Toronto",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "18:30",
-            "equipo_proyectado": "New York",
-            "seleccion_de_referencia": "New York ML",
+            "partido": "Philadelphia @ Orlando",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "18:00",
+            "equipo_proyectado": "Philadelphia",
+            "seleccion_de_referencia": "Philadelphia ML",
             "momio_covers": null,
             "umbral_equilibrio_precio": null,
             "lado_proyectado": "visitante",
-            "marcador_proyectado": "109.67 - 107",
-            "margen_proyectado": 2.67,
-            "total_proyectado": 216.67,
+            "marcador_proyectado": "112.73 - 111.25",
+            "margen_proyectado": 1.48,
+            "total_proyectado": 223.98,
             "tipo": "PROYECCION_COVERS_NO_VALIDADA",
             "fuente": "https://www.covers.com/picks/nba",
             "vigente_para_analisis_prepartido": true,
@@ -54,15 +54,629 @@
             "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
           },
           "espn": {
-            "evento": "401910002",
+            "evento": "401910010",
             "estado": "PRE",
-            "fuente": "https://www.espn.com/nba/game/_/gameId/401910002/knicks-raptors",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910010/76ers-magic",
+            "lesiones": [
+              {
+                "Equipo": "Orlando Magic",
+                "Jugador": "Izaiyah Nelson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Jugador": "Jonathan Isaac",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Jugador": "Noah Penda",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Jugador": "Paolo Banchero",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia 76ers",
+                "Jugador": "Dean Wade",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Philadelphia 76ers",
+                "Jugador": "Dominick Barlow",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia 76ers",
+                "Jugador": "Jaylen Brown",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia 76ers",
+                "Jugador": "Adem Bona",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia 76ers",
+                "Jugador": "Ariel Hukporti",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Orlando Magic",
+                "Categoría": "Points",
+                "Jugador": "Franz Wagner",
+                "Dato publicado": "24.2"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Categoría": "Assists",
+                "Jugador": "Franz Wagner",
+                "Dato publicado": "8.3"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Categoría": "Rebounds",
+                "Jugador": "Wendell Carter Jr.",
+                "Dato publicado": "8.8"
+              },
+              {
+                "Equipo": "Philadelphia 76ers",
+                "Categoría": "Points",
+                "Jugador": "Tyrese Maxey",
+                "Dato publicado": "26.5"
+              },
+              {
+                "Equipo": "Philadelphia 76ers",
+                "Categoría": "Assists",
+                "Jugador": "LeBron James",
+                "Dato publicado": "6.9"
+              },
+              {
+                "Equipo": "Philadelphia 76ers",
+                "Categoría": "Rebounds",
+                "Jugador": "Joel Embiid",
+                "Dato publicado": "8.5"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
+              },
+              {
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
+              },
+              {
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:33.982499+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Memphis @ Cleveland",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "18:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            115.63,
+            118.78
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "+5.5 56%, -5.5 49%",
+          "totales_publicados": "o237.5 50%, u237.5 50%",
+          "porcentajes_covers": "56%, 50%, 37%, 49%, 64%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Memphis @ Cleveland",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "18:00",
+            "equipo_proyectado": "Cleveland",
+            "seleccion_de_referencia": "Cleveland ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "local",
+            "marcador_proyectado": "115.63 - 118.78",
+            "margen_proyectado": 3.15,
+            "total_proyectado": 234.41,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401910007",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910007/grizzlies-cavaliers",
+            "lesiones": [
+              {
+                "Equipo": "Cleveland Cavaliers",
+                "Jugador": "Peyton Watson",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Cleveland Cavaliers",
+                "Jugador": "Jaylon Tyson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Cleveland Cavaliers",
+                "Jugador": "Nae'Qwan Tomlin",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Cleveland Cavaliers",
+                "Jugador": "Sam Merrill",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Cleveland Cavaliers",
+                "Jugador": "Evan Mobley",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Memphis Grizzlies",
+                "Jugador": "GG Jackson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Memphis Grizzlies",
+                "Jugador": "Isaiah Stewart",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Memphis Grizzlies",
+                "Jugador": "Ty Jerome",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Memphis Grizzlies",
+                "Jugador": "Scotty Pippen Jr.",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Memphis Grizzlies",
+                "Jugador": "Richie Saunders",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Cleveland Cavaliers",
+                "Categoría": "Points",
+                "Jugador": "Donovan Mitchell",
+                "Dato publicado": "24.1"
+              },
+              {
+                "Equipo": "Cleveland Cavaliers",
+                "Categoría": "Assists",
+                "Jugador": "James Harden",
+                "Dato publicado": "6.1"
+              },
+              {
+                "Equipo": "Cleveland Cavaliers",
+                "Categoría": "Rebounds",
+                "Jugador": "Jarrett Allen",
+                "Dato publicado": "8.8"
+              },
+              {
+                "Equipo": "Memphis Grizzlies",
+                "Categoría": "Points",
+                "Jugador": "Ty Jerome",
+                "Dato publicado": "25.4"
+              },
+              {
+                "Equipo": "Memphis Grizzlies",
+                "Categoría": "Assists",
+                "Jugador": "Cam Spencer",
+                "Dato publicado": "5.4"
+              },
+              {
+                "Equipo": "Memphis Grizzlies",
+                "Categoría": "Rebounds",
+                "Jugador": "Cameron Boozer",
+                "Dato publicado": "9.5"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
+              },
+              {
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
+              },
+              {
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:34.126524+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Houston @ Indiana",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "18:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            115.89,
+            109.45
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "-6.5 57%, +6.5 48%",
+          "totales_publicados": "o224.5 51%, u225.0 52%",
+          "porcentajes_covers": "57%, 51%, 74%, 48%, 52%, 27%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Houston @ Indiana",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "18:00",
+            "equipo_proyectado": "Houston",
+            "seleccion_de_referencia": "Houston ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "visitante",
+            "marcador_proyectado": "115.89 - 109.45",
+            "margen_proyectado": 6.44,
+            "total_proyectado": 225.34,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401910008",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910008/rockets-pacers",
+            "lesiones": [
+              {
+                "Equipo": "Indiana Pacers",
+                "Jugador": "T.J. McConnell",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Indiana Pacers",
+                "Jugador": "Andrew Nembhard",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Indiana Pacers",
+                "Jugador": "Tyrese Haliburton",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Indiana Pacers",
+                "Jugador": "Johnny Furphy",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Indiana Pacers",
+                "Jugador": "Ben Sheppard",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Houston Rockets",
+                "Jugador": "Clint Capela",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Houston Rockets",
+                "Jugador": "Amen Thompson",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Indiana Pacers",
+                "Categoría": "Points",
+                "Jugador": "Pascal Siakam",
+                "Dato publicado": "23.1"
+              },
+              {
+                "Equipo": "Indiana Pacers",
+                "Categoría": "Assists",
+                "Jugador": "Andrew Nembhard",
+                "Dato publicado": "7.6"
+              },
+              {
+                "Equipo": "Indiana Pacers",
+                "Categoría": "Rebounds",
+                "Jugador": "Ivica Zubac",
+                "Dato publicado": "8.4"
+              },
+              {
+                "Equipo": "Houston Rockets",
+                "Categoría": "Points",
+                "Jugador": "Alperen Sengun",
+                "Dato publicado": "22.8"
+              },
+              {
+                "Equipo": "Houston Rockets",
+                "Categoría": "Assists",
+                "Jugador": "Alperen Sengun",
+                "Dato publicado": "7.2"
+              },
+              {
+                "Equipo": "Houston Rockets",
+                "Categoría": "Rebounds",
+                "Jugador": "Alperen Sengun",
+                "Dato publicado": "9.3"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
+              },
+              {
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
+              },
+              {
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:34.331792+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Milwaukee @ Miami",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "18:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            112.39,
+            125.22
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "+12.5 53%, -12.5 48%",
+          "totales_publicados": "o236.5 50%, u236.5 50%",
+          "porcentajes_covers": "53%, 50%, 16%, 48%, 84%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Milwaukee @ Miami",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "18:00",
+            "equipo_proyectado": "Miami",
+            "seleccion_de_referencia": "Miami ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "local",
+            "marcador_proyectado": "112.39 - 125.22",
+            "margen_proyectado": 12.83,
+            "total_proyectado": 237.61,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401910009",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910009/bucks-heat",
+            "lesiones": [
+              {
+                "Equipo": "Miami Heat",
+                "Jugador": "Myron Gardner",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Milwaukee Bucks",
+                "Jugador": "Ryan Rollins",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Milwaukee Bucks",
+                "Jugador": "Ousmane Dieng",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Miami Heat",
+                "Categoría": "Points",
+                "Jugador": "Giannis Antetokounmpo",
+                "Dato publicado": "28.3"
+              },
+              {
+                "Equipo": "Miami Heat",
+                "Categoría": "Assists",
+                "Jugador": "Davion Mitchell",
+                "Dato publicado": "9.2"
+              },
+              {
+                "Equipo": "Miami Heat",
+                "Categoría": "Rebounds",
+                "Jugador": "Giannis Antetokounmpo",
+                "Dato publicado": "12.5"
+              },
+              {
+                "Equipo": "Milwaukee Bucks",
+                "Categoría": "Points",
+                "Jugador": "Tyler Herro",
+                "Dato publicado": "20.3"
+              },
+              {
+                "Equipo": "Milwaukee Bucks",
+                "Categoría": "Assists",
+                "Jugador": "Tyler Herro",
+                "Dato publicado": "4.2"
+              },
+              {
+                "Equipo": "Milwaukee Bucks",
+                "Categoría": "Rebounds",
+                "Jugador": "Kel'el Ware",
+                "Dato publicado": "6.8"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
+              },
+              {
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
+              },
+              {
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:34.544201+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Washington @ Toronto",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "18:30",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            109.68,
+            117.07
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "+4.5 49%, -4.5 51%",
+          "totales_publicados": "o224.5 52%, u225.5 52%",
+          "porcentajes_covers": "49%, 52%, 36%, 51%, 64%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Washington @ Toronto",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "18:30",
+            "equipo_proyectado": "Toronto",
+            "seleccion_de_referencia": "Toronto ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "local",
+            "marcador_proyectado": "109.68 - 117.07",
+            "margen_proyectado": 7.39,
+            "total_proyectado": 226.75,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401910012",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910012/wizards-raptors",
             "lesiones": [
               {
                 "Equipo": "Toronto Raptors",
-                "Jugador": "Scottie Barnes",
+                "Jugador": "RJ Barrett",
                 "Estado ESPN": "Day-To-Day",
                 "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Toronto Raptors",
+                "Jugador": "Scottie Barnes",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Toronto Raptors",
+                "Jugador": "Kawhi Leonard",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
               },
               {
                 "Equipo": "Toronto Raptors",
@@ -77,8 +691,32 @@
                 "Motivo": "INJURY_STATUS_DAYTODAY"
               },
               {
-                "Equipo": "Toronto Raptors",
-                "Jugador": "Kawhi Leonard",
+                "Equipo": "Washington Wizards",
+                "Jugador": "Felix Okpara",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Tristan Vukcevic",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Reece Beekman",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Justin Champagnie",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Jamir Watkins",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               }
@@ -88,7 +726,7 @@
                 "Equipo": "Toronto Raptors",
                 "Categoría": "Points",
                 "Jugador": "Scottie Barnes",
-                "Dato publicado": "24.2"
+                "Dato publicado": "23.8"
               },
               {
                 "Equipo": "Toronto Raptors",
@@ -100,63 +738,55 @@
                 "Equipo": "Toronto Raptors",
                 "Categoría": "Rebounds",
                 "Jugador": "Scottie Barnes",
-                "Dato publicado": "7.8"
+                "Dato publicado": "7.4"
               },
               {
-                "Equipo": "New York Knicks",
+                "Equipo": "Washington Wizards",
                 "Categoría": "Points",
-                "Jugador": "Jalen Brunson",
-                "Dato publicado": "26.7"
+                "Jugador": "Anthony Davis",
+                "Dato publicado": "24.5"
               },
               {
-                "Equipo": "New York Knicks",
+                "Equipo": "Washington Wizards",
                 "Categoría": "Assists",
-                "Jugador": "Jalen Brunson",
-                "Dato publicado": "5.9"
+                "Jugador": "Trae Young",
+                "Dato publicado": "8.9"
               },
               {
-                "Equipo": "New York Knicks",
+                "Equipo": "Washington Wizards",
                 "Categoría": "Rebounds",
-                "Jugador": "Karl-Anthony Towns",
-                "Dato publicado": "13.9"
+                "Jugador": "Anthony Davis",
+                "Dato publicado": "9.8"
               }
             ],
             "noticias": [
               {
-                "Titular ESPN": "Fantasy basketball adds and NBA bets: Ride with Doncic and Grimes on Tuesday",
-                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50511865/fantasy-basketball-tips-nba-betting-picks-today"
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
               },
               {
-                "Titular ESPN": "NBA buzz: Latest on trades, news, roster moves and intel",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50028196/2026-27-nba-buzz-latest-live-updates-news-intel-trades-deals"
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
               },
               {
-                "Titular ESPN": "Pistons' Duncan Robinson (quad), Ron Holland II (knee) out vs. Spurs",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50512067/pistons-robinson-quad-holland-knee-tuesday-vs-spurs"
-              },
-              {
-                "Titular ESPN": "What the NBA's first month has revealed about all 30 teams",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50502518/first-month-lakers-knicks-spurs-celtics"
-              },
-              {
-                "Titular ESPN": "The clock is ticking on Steph Curry's final act with the Warriors",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50503111/steph-curry-warriors-race-injuries"
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
               }
             ],
-            "consulta_utc": "2026-11-17T18:29:53.585924+00:00"
+            "consulta_utc": "2026-11-18T19:39:34.699657+00:00"
           },
           "pick_propio": null,
           "estado_pick": "SIN_MODELO_VALIDADO"
         },
         {
           "liga": "NBA",
-          "partido": "Detroit @ San Antonio",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "19:00",
+          "partido": "Chicago @ Brooklyn",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "18:30",
           "fuente_covers": "https://www.covers.com/picks/nba",
           "proyeccion_covers": [
-            105.07,
-            114.84
+            116.29,
+            120.24
           ],
           "momios_covers": [
             null,
@@ -166,23 +796,23 @@
             "visitante": null,
             "local": null
           },
-          "spreads_publicados": "+9.5 49%, -9.5 51%",
-          "totales_publicados": "o222.5 50%, u222.5 50%",
-          "porcentajes_covers": "49%, 50%, 21%, 51%, 80%",
+          "spreads_publicados": "+2.5 51%, -2.5 50%",
+          "totales_publicados": "o239.5 51%, u240.5 53%",
+          "porcentajes_covers": "51%, 44%, 50%, 53%, 57%",
           "momios_casas": [],
           "referencia_covers": {
             "liga": "NBA",
-            "partido": "Detroit @ San Antonio",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "19:00",
-            "equipo_proyectado": "San Antonio",
-            "seleccion_de_referencia": "San Antonio ML",
+            "partido": "Chicago @ Brooklyn",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "18:30",
+            "equipo_proyectado": "Brooklyn",
+            "seleccion_de_referencia": "Brooklyn ML",
             "momio_covers": null,
             "umbral_equilibrio_precio": null,
             "lado_proyectado": "local",
-            "marcador_proyectado": "105.07 - 114.84",
-            "margen_proyectado": 9.77,
-            "total_proyectado": 219.91,
+            "marcador_proyectado": "116.29 - 120.24",
+            "margen_proyectado": 3.95,
+            "total_proyectado": 236.53,
             "tipo": "PROYECCION_COVERS_NO_VALIDADA",
             "fuente": "https://www.covers.com/picks/nba",
             "vigente_para_analisis_prepartido": true,
@@ -193,25 +823,174 @@
             "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
           },
           "espn": {
-            "evento": "401910004",
+            "evento": "401910011",
             "estado": "PRE",
-            "fuente": "https://www.espn.com/nba/game/_/gameId/401910004/pistons-spurs",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910011/bulls-nets",
             "lesiones": [
               {
-                "Equipo": "San Antonio Spurs",
-                "Jugador": "Tobias Harris",
+                "Equipo": "Chicago Bulls",
+                "Jugador": "Patrick Williams",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Chicago Bulls",
+                "Jugador": "Tobe Awaka",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "San Antonio Spurs",
-                "Jugador": "Jayden Quaintance",
+                "Equipo": "Chicago Bulls",
+                "Jugador": "Caleb Wilson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Brooklyn Nets",
+                "Categoría": "Points",
+                "Jugador": "Michael Porter Jr.",
+                "Dato publicado": "21.8"
+              },
+              {
+                "Equipo": "Brooklyn Nets",
+                "Categoría": "Assists",
+                "Jugador": "Julius Randle",
+                "Dato publicado": "4.7"
+              },
+              {
+                "Equipo": "Brooklyn Nets",
+                "Categoría": "Rebounds",
+                "Jugador": "Michael Porter Jr.",
+                "Dato publicado": "7.4"
+              },
+              {
+                "Equipo": "Chicago Bulls",
+                "Categoría": "Points",
+                "Jugador": "Norman Powell",
+                "Dato publicado": "21.6"
+              },
+              {
+                "Equipo": "Chicago Bulls",
+                "Categoría": "Assists",
+                "Jugador": "Josh Giddey",
+                "Dato publicado": "8.5"
+              },
+              {
+                "Equipo": "Chicago Bulls",
+                "Categoría": "Rebounds",
+                "Jugador": "Jalen Smith",
+                "Dato publicado": "8.1"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
+              },
+              {
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
+              },
+              {
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:34.950025+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Detroit @ New Orleans",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "19:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            117.33,
+            110.87
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "-3.5 57%, +3.5 48%",
+          "totales_publicados": "o225.5 53%, u226.5 51%",
+          "porcentajes_covers": "57%, 53%, 64%, 48%, 51%, 36%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Detroit @ New Orleans",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "19:00",
+            "equipo_proyectado": "Detroit",
+            "seleccion_de_referencia": "Detroit ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "visitante",
+            "marcador_proyectado": "117.33 - 110.87",
+            "margen_proyectado": 6.46,
+            "total_proyectado": 228.2,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401910013",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910013/pistons-pelicans",
+            "lesiones": [
+              {
+                "Equipo": "New Orleans Pelicans",
+                "Jugador": "Bennedict Mathurin",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "New Orleans Pelicans",
+                "Jugador": "Bryce McGowens",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "New Orleans Pelicans",
+                "Jugador": "Trendon Watford",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "New Orleans Pelicans",
+                "Jugador": "Trey Murphy III",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "New Orleans Pelicans",
+                "Jugador": "Dejounte Murray",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
                 "Equipo": "Detroit Pistons",
-                "Jugador": "Duncan Robinson",
+                "Jugador": "Cade Cunningham",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Jugador": "Isaiah Joe",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
@@ -229,91 +1008,77 @@
               },
               {
                 "Equipo": "Detroit Pistons",
-                "Jugador": "Isaiah Joe",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Detroit Pistons",
-                "Jugador": "Jalen Duren",
+                "Jugador": "Duncan Robinson",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               }
             ],
             "lideres": [
               {
-                "Equipo": "San Antonio Spurs",
+                "Equipo": "New Orleans Pelicans",
                 "Categoría": "Points",
-                "Jugador": "Victor Wembanyama",
-                "Dato publicado": "28.6"
+                "Jugador": "Zion Williamson",
+                "Dato publicado": "21.5"
               },
               {
-                "Equipo": "San Antonio Spurs",
+                "Equipo": "New Orleans Pelicans",
                 "Categoría": "Assists",
-                "Jugador": "De'Aaron Fox",
-                "Dato publicado": "5.8"
+                "Jugador": "Jeremiah Fears",
+                "Dato publicado": "5.5"
               },
               {
-                "Equipo": "San Antonio Spurs",
+                "Equipo": "New Orleans Pelicans",
                 "Categoría": "Rebounds",
-                "Jugador": "Victor Wembanyama",
-                "Dato publicado": "11.6"
+                "Jugador": "Derik Queen",
+                "Dato publicado": "6.5"
               },
               {
                 "Equipo": "Detroit Pistons",
                 "Categoría": "Points",
                 "Jugador": "Cade Cunningham",
-                "Dato publicado": "25.7"
+                "Dato publicado": "25.8"
               },
               {
                 "Equipo": "Detroit Pistons",
                 "Categoría": "Assists",
                 "Jugador": "Cade Cunningham",
-                "Dato publicado": "7.9"
+                "Dato publicado": "7.8"
               },
               {
                 "Equipo": "Detroit Pistons",
                 "Categoría": "Rebounds",
                 "Jugador": "Ausar Thompson",
-                "Dato publicado": "8.6"
+                "Dato publicado": "8.7"
               }
             ],
             "noticias": [
               {
-                "Titular ESPN": "Fantasy basketball adds and NBA bets: Ride with Doncic and Grimes on Tuesday",
-                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50511865/fantasy-basketball-tips-nba-betting-picks-today"
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
               },
               {
-                "Titular ESPN": "NBA buzz: Latest on trades, news, roster moves and intel",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50028196/2026-27-nba-buzz-latest-live-updates-news-intel-trades-deals"
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
               },
               {
-                "Titular ESPN": "Pistons' Duncan Robinson (quad), Ron Holland II (knee) out vs. Spurs",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50512067/pistons-robinson-quad-holland-knee-tuesday-vs-spurs"
-              },
-              {
-                "Titular ESPN": "What the NBA's first month has revealed about all 30 teams",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50502518/first-month-lakers-knicks-spurs-celtics"
-              },
-              {
-                "Titular ESPN": "The clock is ticking on Steph Curry's final act with the Warriors",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50503111/steph-curry-warriors-race-injuries"
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
               }
             ],
-            "consulta_utc": "2026-11-17T18:29:53.734945+00:00"
+            "consulta_utc": "2026-11-18T19:39:35.080314+00:00"
           },
           "pick_propio": null,
           "estado_pick": "SIN_MODELO_VALIDADO"
         },
         {
           "liga": "NBA",
-          "partido": "Portland @ Minnesota",
-          "fecha_cdmx": "2026-11-17",
+          "partido": "Atlanta @ Oklahoma City",
+          "fecha_cdmx": "2026-11-18",
           "hora_cdmx": "19:00",
           "fuente_covers": "https://www.covers.com/picks/nba",
           "proyeccion_covers": [
-            113.07,
-            115.16
+            108.47,
+            116.1
           ],
           "momios_covers": [
             null,
@@ -323,23 +1088,23 @@
             "visitante": null,
             "local": null
           },
-          "spreads_publicados": "+2.5 55%, -2.5 50%",
-          "totales_publicados": "o226.5 50%, u226.5 50%",
-          "porcentajes_covers": "55%, 50%, 47%, 54%",
+          "spreads_publicados": "+7.5 58%, -7.5 47%",
+          "totales_publicados": "o228.5 51%, u229.5 53%",
+          "porcentajes_covers": "58%, 51%, 31%, 47%, 53%, 70%",
           "momios_casas": [],
           "referencia_covers": {
             "liga": "NBA",
-            "partido": "Portland @ Minnesota",
-            "fecha_cdmx": "2026-11-17",
+            "partido": "Atlanta @ Oklahoma City",
+            "fecha_cdmx": "2026-11-18",
             "hora_cdmx": "19:00",
-            "equipo_proyectado": "Minnesota",
-            "seleccion_de_referencia": "Minnesota ML",
+            "equipo_proyectado": "Oklahoma City",
+            "seleccion_de_referencia": "Oklahoma City ML",
             "momio_covers": null,
             "umbral_equilibrio_precio": null,
             "lado_proyectado": "local",
-            "marcador_proyectado": "113.07 - 115.16",
-            "margen_proyectado": 2.09,
-            "total_proyectado": 228.23,
+            "marcador_proyectado": "108.47 - 116.1",
+            "margen_proyectado": 7.63,
+            "total_proyectado": 224.57,
             "tipo": "PROYECCION_COVERS_NO_VALIDADA",
             "fuente": "https://www.covers.com/picks/nba",
             "vigente_para_analisis_prepartido": true,
@@ -350,133 +1115,137 @@
             "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
           },
           "espn": {
-            "evento": "401910003",
+            "evento": "401910014",
             "estado": "PRE",
-            "fuente": "https://www.espn.com/nba/game/_/gameId/401910003/trail-blazers-timberwolves",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910014/hawks-thunder",
             "lesiones": [
               {
-                "Equipo": "Minnesota Timberwolves",
-                "Jugador": "Jonathan Kuminga",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "Minnesota Timberwolves",
-                "Jugador": "Jaylen Clark",
+                "Equipo": "Oklahoma City Thunder",
+                "Jugador": "Thomas Sorber",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "Minnesota Timberwolves",
-                "Jugador": "Anthony Edwards",
+                "Equipo": "Oklahoma City Thunder",
+                "Jugador": "Jaylin Williams",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "Minnesota Timberwolves",
-                "Jugador": "Donte DiVincenzo",
+                "Equipo": "Oklahoma City Thunder",
+                "Jugador": "Cason Wallace",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "Portland Trail Blazers",
-                "Jugador": "Chris Youngblood",
+                "Equipo": "Oklahoma City Thunder",
+                "Jugador": "Chet Holmgren",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "Portland Trail Blazers",
-                "Jugador": "Vit Krejci",
+                "Equipo": "Oklahoma City Thunder",
+                "Jugador": "Jalen Williams",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "Portland Trail Blazers",
-                "Jugador": "Ja Morant",
+                "Equipo": "Atlanta Hawks",
+                "Jugador": "Jock Landale",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "Portland Trail Blazers",
-                "Jugador": "Shaedon Sharpe",
+                "Equipo": "Atlanta Hawks",
+                "Jugador": "Kingston Flemings",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Atlanta Hawks",
+                "Jugador": "Asa Newell",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Atlanta Hawks",
+                "Jugador": "CJ McCollum",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Atlanta Hawks",
+                "Jugador": "Mouhamed Gueye",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               }
             ],
             "lideres": [
               {
-                "Equipo": "Minnesota Timberwolves",
+                "Equipo": "Oklahoma City Thunder",
                 "Categoría": "Points",
-                "Jugador": "Ayo Dosunmu",
-                "Dato publicado": "17.8"
+                "Jugador": "Shai Gilgeous-Alexander",
+                "Dato publicado": "30.9"
               },
               {
-                "Equipo": "Minnesota Timberwolves",
+                "Equipo": "Oklahoma City Thunder",
                 "Categoría": "Assists",
-                "Jugador": "LaMelo Ball",
-                "Dato publicado": "5.8"
+                "Jugador": "Shai Gilgeous-Alexander",
+                "Dato publicado": "4.4"
               },
               {
-                "Equipo": "Minnesota Timberwolves",
+                "Equipo": "Oklahoma City Thunder",
                 "Categoría": "Rebounds",
-                "Jugador": "Rudy Gobert",
-                "Dato publicado": "11.7"
+                "Jugador": "Isaiah Hartenstein",
+                "Dato publicado": "10.6"
               },
               {
-                "Equipo": "Portland Trail Blazers",
+                "Equipo": "Atlanta Hawks",
                 "Categoría": "Points",
-                "Jugador": "Deni Avdija",
-                "Dato publicado": "24.2"
+                "Jugador": "Nickeil Alexander-Walker",
+                "Dato publicado": "21.4"
               },
               {
-                "Equipo": "Portland Trail Blazers",
+                "Equipo": "Atlanta Hawks",
                 "Categoría": "Assists",
-                "Jugador": "Deni Avdija",
-                "Dato publicado": "6.1"
+                "Jugador": "Jalen Johnson",
+                "Dato publicado": "7.3"
               },
               {
-                "Equipo": "Portland Trail Blazers",
+                "Equipo": "Atlanta Hawks",
                 "Categoría": "Rebounds",
-                "Jugador": "Donovan Clingan",
-                "Dato publicado": "10.5"
+                "Jugador": "Jalen Johnson",
+                "Dato publicado": "9.0"
               }
             ],
             "noticias": [
               {
-                "Titular ESPN": "Fantasy basketball adds and NBA bets: Ride with Doncic and Grimes on Tuesday",
-                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50511865/fantasy-basketball-tips-nba-betting-picks-today"
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
               },
               {
-                "Titular ESPN": "NBA buzz: Latest on trades, news, roster moves and intel",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50028196/2026-27-nba-buzz-latest-live-updates-news-intel-trades-deals"
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
               },
               {
-                "Titular ESPN": "Pistons' Duncan Robinson (quad), Ron Holland II (knee) out vs. Spurs",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50512067/pistons-robinson-quad-holland-knee-tuesday-vs-spurs"
-              },
-              {
-                "Titular ESPN": "What the NBA's first month has revealed about all 30 teams",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50502518/first-month-lakers-knicks-spurs-celtics"
-              },
-              {
-                "Titular ESPN": "The clock is ticking on Steph Curry's final act with the Warriors",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50503111/steph-curry-warriors-race-injuries"
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
               }
             ],
-            "consulta_utc": "2026-11-17T18:29:53.792271+00:00"
+            "consulta_utc": "2026-11-18T19:39:35.209573+00:00"
           },
           "pick_propio": null,
           "estado_pick": "SIN_MODELO_VALIDADO"
         },
         {
           "liga": "NBA",
-          "partido": "Utah @ L.A. Clippers",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "21:30",
+          "partido": "Golden State @ Dallas",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "19:00",
           "fuente_covers": "https://www.covers.com/picks/nba",
           "proyeccion_covers": [
-            106.67,
-            113.39
+            108.82,
+            112.39
           ],
           "momios_covers": [
             null,
@@ -486,23 +1255,23 @@
             "visitante": null,
             "local": null
           },
-          "spreads_publicados": "+6.5 51%, -6.5 50%",
-          "totales_publicados": "o225.5 50%, u226.0 51%",
-          "porcentajes_covers": "51%, 50%, 32%, 69%",
+          "spreads_publicados": "+4.5 49%, -4.5 51%",
+          "totales_publicados": "o224.5 53%, u225.5 51%",
+          "porcentajes_covers": "49%, 53%, 36%, 51%, 64%",
           "momios_casas": [],
           "referencia_covers": {
             "liga": "NBA",
-            "partido": "Utah @ L.A. Clippers",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "21:30",
-            "equipo_proyectado": "L.A. Clippers",
-            "seleccion_de_referencia": "L.A. Clippers ML",
+            "partido": "Golden State @ Dallas",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "19:00",
+            "equipo_proyectado": "Dallas",
+            "seleccion_de_referencia": "Dallas ML",
             "momio_covers": null,
             "umbral_equilibrio_precio": null,
             "lado_proyectado": "local",
-            "marcador_proyectado": "106.67 - 113.39",
-            "margen_proyectado": 6.72,
-            "total_proyectado": 220.06,
+            "marcador_proyectado": "108.82 - 112.39",
+            "margen_proyectado": 3.57,
+            "total_proyectado": 221.21,
             "tipo": "PROYECCION_COVERS_NO_VALIDADA",
             "fuente": "https://www.covers.com/picks/nba",
             "vigente_para_analisis_prepartido": true,
@@ -513,39 +1282,444 @@
             "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
           },
           "espn": {
-            "evento": "401910006",
+            "evento": "401910016",
             "estado": "PRE",
-            "fuente": "https://www.espn.com/nba/game/_/gameId/401910006/jazz-clippers",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910016/warriors-mavericks",
             "lesiones": [
               {
-                "Equipo": "LA Clippers",
-                "Jugador": "Yanic Konan Niederhauser",
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Sergio de Larrea",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "LA Clippers",
-                "Jugador": "Brandon Ingram",
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Walter Clayton Jr.",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Dereck Lively II",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "LA Clippers",
-                "Jugador": "Bradley Beal",
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Tobi Lawal",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Tarik Biberovic",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
               },
               {
-                "Equipo": "LA Clippers",
-                "Jugador": "Jordan Miller",
+                "Equipo": "Golden State Warriors",
+                "Jugador": "Brandon Williams",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Golden State Warriors",
+                "Jugador": "Draymond Green",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Golden State Warriors",
+                "Jugador": "Al Horford",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Golden State Warriors",
+                "Jugador": "Stephen Curry",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Golden State Warriors",
+                "Jugador": "Kristaps Porzingis",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Dallas Mavericks",
+                "Categoría": "Points",
+                "Jugador": "Cooper Flagg",
+                "Dato publicado": "23.5"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Categoría": "Assists",
+                "Jugador": "Cooper Flagg",
+                "Dato publicado": "6.2"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Categoría": "Rebounds",
+                "Jugador": "P.J. Washington",
+                "Dato publicado": "6.8"
+              },
+              {
+                "Equipo": "Golden State Warriors",
+                "Categoría": "Points",
+                "Jugador": "Stephen Curry",
+                "Dato publicado": "27.8"
+              },
+              {
+                "Equipo": "Golden State Warriors",
+                "Categoría": "Assists",
+                "Jugador": "Draymond Green",
+                "Dato publicado": "6.9"
+              },
+              {
+                "Equipo": "Golden State Warriors",
+                "Categoría": "Rebounds",
+                "Jugador": "Yaxel Lendeborg",
+                "Dato publicado": "7.4"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
+              },
+              {
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
+              },
+              {
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:35.329275+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Boston @ Denver",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "20:30",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            113.58,
+            109.63
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "-2.5 50%, +2.5 51%",
+          "totales_publicados": "o220.5 50%, u220.5 50%",
+          "porcentajes_covers": "50%, 56%, 51%, 44%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Boston @ Denver",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "20:30",
+            "equipo_proyectado": "Boston",
+            "seleccion_de_referencia": "Boston ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "visitante",
+            "marcador_proyectado": "113.58 - 109.63",
+            "margen_proyectado": 3.95,
+            "total_proyectado": 223.21,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401910015",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910015/celtics-nuggets",
+            "lesiones": [
+              {
+                "Equipo": "Denver Nuggets",
+                "Jugador": "Julian Strawther",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Denver Nuggets",
+                "Categoría": "Points",
+                "Jugador": "Jamal Murray",
+                "Dato publicado": "26.1"
+              },
+              {
+                "Equipo": "Denver Nuggets",
+                "Categoría": "Assists",
+                "Jugador": "Nikola Jokic",
+                "Dato publicado": "8.9"
+              },
+              {
+                "Equipo": "Denver Nuggets",
+                "Categoría": "Rebounds",
+                "Jugador": "Nikola Jokic",
+                "Dato publicado": "10.9"
+              },
+              {
+                "Equipo": "Boston Celtics",
+                "Categoría": "Points",
+                "Jugador": "Jayson Tatum",
+                "Dato publicado": "26.5"
+              },
+              {
+                "Equipo": "Boston Celtics",
+                "Categoría": "Assists",
+                "Jugador": "Jayson Tatum",
+                "Dato publicado": "7.1"
+              },
+              {
+                "Equipo": "Boston Celtics",
+                "Categoría": "Rebounds",
+                "Jugador": "Neemias Queta",
+                "Dato publicado": "6.6"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
+              },
+              {
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
+              },
+              {
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:35.459307+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Phoenix @ Sacramento",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "21:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            115.94,
+            109.81
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "-6.5 52%, +6.5 49%",
+          "totales_publicados": "o226.5 51%, u227.5 53%",
+          "porcentajes_covers": "52%, 51%, 72%, 49%, 53%, 29%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Phoenix @ Sacramento",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "21:00",
+            "equipo_proyectado": "Phoenix",
+            "seleccion_de_referencia": "Phoenix ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "visitante",
+            "marcador_proyectado": "115.94 - 109.81",
+            "margen_proyectado": 6.13,
+            "total_proyectado": 225.75,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401910018",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910018/suns-kings",
+            "lesiones": [
+              {
+                "Equipo": "Sacramento Kings",
+                "Jugador": "Maxime Raynaud",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Sacramento Kings",
+                "Jugador": "De'Andre Hunter",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Sacramento Kings",
+                "Jugador": "Precious Achiuwa",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Sacramento Kings",
+                "Jugador": "Ben Simmons",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Phoenix Suns",
+                "Jugador": "Mark Williams",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Sacramento Kings",
+                "Categoría": "Points",
+                "Jugador": "Darius Acuff Jr.",
+                "Dato publicado": "25.5"
+              },
+              {
+                "Equipo": "Sacramento Kings",
+                "Categoría": "Assists",
+                "Jugador": "Darius Acuff Jr.",
+                "Dato publicado": "7.1"
+              },
+              {
+                "Equipo": "Sacramento Kings",
+                "Categoría": "Rebounds",
+                "Jugador": "Domantas Sabonis",
+                "Dato publicado": "13.2"
+              },
+              {
+                "Equipo": "Phoenix Suns",
+                "Categoría": "Points",
+                "Jugador": "Devin Booker",
+                "Dato publicado": "24.5"
+              },
+              {
+                "Equipo": "Phoenix Suns",
+                "Categoría": "Assists",
+                "Jugador": "Devin Booker",
+                "Dato publicado": "5.4"
+              },
+              {
+                "Equipo": "Phoenix Suns",
+                "Categoría": "Rebounds",
+                "Jugador": "Miles Bridges",
+                "Dato publicado": "7.0"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
+              },
+              {
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
+              },
+              {
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:35.591523+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Utah @ L.A. Lakers",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "21:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            109.94,
+            120.09
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "+10.5 52%, -10.5 49%",
+          "totales_publicados": "o227.5 51%, u229.5 57%, o24.5 56%",
+          "porcentajes_covers": "52%, 51%, 22%, 49%, 57%, 78%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Utah @ L.A. Lakers",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "21:00",
+            "equipo_proyectado": "L.A. Lakers",
+            "seleccion_de_referencia": "L.A. Lakers ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "local",
+            "marcador_proyectado": "109.94 - 120.09",
+            "margen_proyectado": 10.15,
+            "total_proyectado": 230.03,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401910017",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401910017/jazz-lakers",
+            "lesiones": [
+              {
+                "Equipo": "Los Angeles Lakers",
+                "Jugador": "Austin Reaves",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Los Angeles Lakers",
+                "Jugador": "Walker Kessler",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
               },
               {
                 "Equipo": "Utah Jazz",
                 "Jugador": "Jaxson Hayes",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
               },
               {
                 "Equipo": "Utah Jazz",
@@ -568,155 +1742,16 @@
             ],
             "lideres": [
               {
-                "Equipo": "LA Clippers",
-                "Categoría": "Points",
-                "Jugador": "Darius Garland",
-                "Dato publicado": "21.2"
-              },
-              {
-                "Equipo": "LA Clippers",
-                "Categoría": "Assists",
-                "Jugador": "Darius Garland",
-                "Dato publicado": "6.9"
-              },
-              {
-                "Equipo": "LA Clippers",
-                "Categoría": "Rebounds",
-                "Jugador": "Rui Hachimura",
-                "Dato publicado": "6.0"
-              },
-              {
-                "Equipo": "Utah Jazz",
-                "Categoría": "Points",
-                "Jugador": "Keyonte George",
-                "Dato publicado": "20.3"
-              },
-              {
-                "Equipo": "Utah Jazz",
-                "Categoría": "Assists",
-                "Jugador": "Keyonte George",
-                "Dato publicado": "6.6"
-              },
-              {
-                "Equipo": "Utah Jazz",
-                "Categoría": "Rebounds",
-                "Jugador": "Ace Bailey",
-                "Dato publicado": "6.4"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Fantasy basketball adds and NBA bets: Ride with Doncic and Grimes on Tuesday",
-                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50511865/fantasy-basketball-tips-nba-betting-picks-today"
-              },
-              {
-                "Titular ESPN": "NBA buzz: Latest on trades, news, roster moves and intel",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50028196/2026-27-nba-buzz-latest-live-updates-news-intel-trades-deals"
-              },
-              {
-                "Titular ESPN": "Pistons' Duncan Robinson (quad), Ron Holland II (knee) out vs. Spurs",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50512067/pistons-robinson-quad-holland-knee-tuesday-vs-spurs"
-              },
-              {
-                "Titular ESPN": "What the NBA's first month has revealed about all 30 teams",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50502518/first-month-lakers-knicks-spurs-celtics"
-              },
-              {
-                "Titular ESPN": "The clock is ticking on Steph Curry's final act with the Warriors",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50503111/steph-curry-warriors-race-injuries"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:53.880853+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NBA",
-          "partido": "Charlotte @ L.A. Lakers",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "22:00",
-          "fuente_covers": "https://www.covers.com/picks/nba",
-          "proyeccion_covers": [
-            106.36,
-            116.49
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "+8.5 58%, -8.5 47%",
-          "totales_publicados": "o220.5 51%, u220.5 50%",
-          "porcentajes_covers": "58%, 51%, 28%, 47%, 50%, 73%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NBA",
-            "partido": "Charlotte @ L.A. Lakers",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "22:00",
-            "equipo_proyectado": "L.A. Lakers",
-            "seleccion_de_referencia": "L.A. Lakers ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "local",
-            "marcador_proyectado": "106.36 - 116.49",
-            "margen_proyectado": 10.13,
-            "total_proyectado": 222.85,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nba",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401910005",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nba/game/_/gameId/401910005/hornets-lakers",
-            "lesiones": [
-              {
-                "Equipo": "Los Angeles Lakers",
-                "Jugador": "Austin Reaves",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Los Angeles Lakers",
-                "Jugador": "Walker Kessler",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Charlotte Hornets",
-                "Jugador": "Kon Knueppel",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Charlotte Hornets",
-                "Jugador": "Dennis Schroder",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              }
-            ],
-            "lideres": [
-              {
                 "Equipo": "Los Angeles Lakers",
                 "Categoría": "Points",
                 "Jugador": "Luka Doncic",
-                "Dato publicado": "39.0"
+                "Dato publicado": "38.8"
               },
               {
                 "Equipo": "Los Angeles Lakers",
                 "Categoría": "Assists",
                 "Jugador": "Luka Doncic",
-                "Dato publicado": "7.8"
+                "Dato publicado": "7.7"
               },
               {
                 "Equipo": "Los Angeles Lakers",
@@ -725,47 +1760,39 @@
                 "Dato publicado": "10.9"
               },
               {
-                "Equipo": "Charlotte Hornets",
+                "Equipo": "Utah Jazz",
                 "Categoría": "Points",
-                "Jugador": "Brandon Miller",
-                "Dato publicado": "19.2"
+                "Jugador": "Keyonte George",
+                "Dato publicado": "21.0"
               },
               {
-                "Equipo": "Charlotte Hornets",
+                "Equipo": "Utah Jazz",
                 "Categoría": "Assists",
-                "Jugador": "Dennis Schroder",
-                "Dato publicado": "4.9"
+                "Jugador": "Keyonte George",
+                "Dato publicado": "6.9"
               },
               {
-                "Equipo": "Charlotte Hornets",
+                "Equipo": "Utah Jazz",
                 "Categoría": "Rebounds",
-                "Jugador": "Moussa Diabate",
-                "Dato publicado": "9.7"
+                "Jugador": "Mo Bamba",
+                "Dato publicado": "6.2"
               }
             ],
             "noticias": [
               {
-                "Titular ESPN": "Fantasy basketball adds and NBA bets: Ride with Doncic and Grimes on Tuesday",
-                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50511865/fantasy-basketball-tips-nba-betting-picks-today"
+                "Titular ESPN": "Updated NBA championship and MVP odds: Heat on the rise, Wemby ahead of Luka",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/44679680/2026-nba-finals-championship-mvp-odds"
               },
               {
-                "Titular ESPN": "NBA buzz: Latest on trades, news, roster moves and intel",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50028196/2026-27-nba-buzz-latest-live-updates-news-intel-trades-deals"
+                "Titular ESPN": "Where to watch 'A Night in Vice City': Bucks vs. Heat",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50521964/bucks-heat-gta-6-vice-city-game-watch"
               },
               {
-                "Titular ESPN": "Pistons' Duncan Robinson (quad), Ron Holland II (knee) out vs. Spurs",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50512067/pistons-robinson-quad-holland-knee-tuesday-vs-spurs"
-              },
-              {
-                "Titular ESPN": "What the NBA's first month has revealed about all 30 teams",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50502518/first-month-lakers-knicks-spurs-celtics"
-              },
-              {
-                "Titular ESPN": "The clock is ticking on Steph Curry's final act with the Warriors",
-                "Enlace": "https://www.espn.com/nba/story/_/id/50503111/steph-curry-warriors-race-injuries"
+                "Titular ESPN": "Miami Heat players receive GTA VI care packages from Rockstar Games",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50522801/gta-vi-miami-heat-davion-mitchell-nick-richards"
               }
             ],
-            "consulta_utc": "2026-11-17T18:29:54.036928+00:00"
+            "consulta_utc": "2026-11-18T19:39:35.734998+00:00"
           },
           "pick_propio": null,
           "estado_pick": "SIN_MODELO_VALIDADO"
@@ -791,1458 +1818,12 @@
       "events": [
         {
           "liga": "NHL",
-          "partido": "Edmonton @ Florida",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "18:00",
+          "partido": "Boston @ Detroit",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "18:30",
           "fuente_covers": "https://www.covers.com/picks/nhl",
           "proyeccion_covers": [
             2.99,
-            3.08
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "+1.5 69%, -1.5 32%",
-          "totales_publicados": "o5.5 56%, u6.0 51%",
-          "porcentajes_covers": "45%, 56%, 69%, 55%, 51%, 32%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Edmonton @ Florida",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "18:00",
-            "equipo_proyectado": "Florida",
-            "seleccion_de_referencia": "Florida ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "local",
-            "marcador_proyectado": "2.99 - 3.08",
-            "margen_proyectado": 0.09,
-            "total_proyectado": 6.07,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892730",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892730/oilers-panthers",
-            "lesiones": [
-              {
-                "Equipo": "Florida Panthers",
-                "Jugador": "Brad Marchand",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Florida Panthers",
-                "Jugador": "Aleksander Barkov",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Florida Panthers",
-                "Jugador": "Jonah Gadjovich",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Edmonton Oilers",
-                "Jugador": "Ryan Nugent-Hopkins",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Edmonton Oilers",
-                "Jugador": "Alec Regula",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Edmonton Oilers",
-                "Jugador": "Matt Savoie",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Edmonton Oilers",
-                "Jugador": "Frederik Andersen",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Edmonton Oilers",
-                "Jugador": "Mattias Janmark",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "Florida Panthers",
-                "Categoría": "Goals",
-                "Jugador": "Sam Reinhart",
-                "Dato publicado": "12"
-              },
-              {
-                "Equipo": "Florida Panthers",
-                "Categoría": "Assists",
-                "Jugador": "Matthew Tkachuk",
-                "Dato publicado": "25"
-              },
-              {
-                "Equipo": "Florida Panthers",
-                "Categoría": "Points",
-                "Jugador": "Matthew Tkachuk",
-                "Dato publicado": "30"
-              },
-              {
-                "Equipo": "Edmonton Oilers",
-                "Categoría": "Goals",
-                "Jugador": "Leon Draisaitl",
-                "Dato publicado": "20"
-              },
-              {
-                "Equipo": "Edmonton Oilers",
-                "Categoría": "Assists",
-                "Jugador": "Connor McDavid",
-                "Dato publicado": "41"
-              },
-              {
-                "Equipo": "Edmonton Oilers",
-                "Categoría": "Points",
-                "Jugador": "Connor McDavid",
-                "Dato publicado": "53"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:56.113811+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Buffalo @ Philadelphia",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "18:00",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            3.1,
-            2.94
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "-1.5 32%, +1.5 68%",
-          "totales_publicados": "o6.0 52%, u6.5 56%",
-          "porcentajes_covers": "54%, 52%, 32%, 45%, 56%, 68%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Buffalo @ Philadelphia",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "18:00",
-            "equipo_proyectado": "Buffalo",
-            "seleccion_de_referencia": "Buffalo ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "visitante",
-            "marcador_proyectado": "3.1 - 2.94",
-            "margen_proyectado": 0.16,
-            "total_proyectado": 6.04,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892732",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892732/sabres-flyers",
-            "lesiones": [
-              {
-                "Equipo": "Philadelphia Flyers",
-                "Jugador": "Nikita Grebenkin",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Buffalo Sabres",
-                "Jugador": "Konsta Helenius",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Buffalo Sabres",
-                "Jugador": "Justin Danforth",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Buffalo Sabres",
-                "Jugador": "Matt Grzelcyk",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "Philadelphia Flyers",
-                "Categoría": "Goals",
-                "Jugador": "Matvei Michkov",
-                "Dato publicado": "11"
-              },
-              {
-                "Equipo": "Philadelphia Flyers",
-                "Categoría": "Assists",
-                "Jugador": "Trevor Zegras",
-                "Dato publicado": "10"
-              },
-              {
-                "Equipo": "Philadelphia Flyers",
-                "Categoría": "Points",
-                "Jugador": "Matvei Michkov",
-                "Dato publicado": "17"
-              },
-              {
-                "Equipo": "Buffalo Sabres",
-                "Categoría": "Goals",
-                "Jugador": "Tage Thompson",
-                "Dato publicado": "12"
-              },
-              {
-                "Equipo": "Buffalo Sabres",
-                "Categoría": "Assists",
-                "Jugador": "Zach Benson",
-                "Dato publicado": "13"
-              },
-              {
-                "Equipo": "Buffalo Sabres",
-                "Categoría": "Points",
-                "Jugador": "Tage Thompson",
-                "Dato publicado": "21"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:56.188629+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Los Angeles @ Boston",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "18:00",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            2.77,
-            3.42
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "+1.5 64%, -1.5 36%",
-          "totales_publicados": "o5.5 59%, u6.5 56%",
-          "porcentajes_covers": "41%, 59%, 64%, 56%, 36%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Los Angeles @ Boston",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "18:00",
-            "equipo_proyectado": "Boston",
-            "seleccion_de_referencia": "Boston ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "local",
-            "marcador_proyectado": "2.77 - 3.42",
-            "margen_proyectado": 0.65,
-            "total_proyectado": 6.19,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892728",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892728/kings-bruins",
-            "lesiones": [
-              {
-                "Equipo": "Boston Bruins",
-                "Jugador": "James Hagens",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Los Angeles Kings",
-                "Jugador": "Artemi Panarin",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Los Angeles Kings",
-                "Jugador": "Jakub Dvorak",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "Boston Bruins",
-                "Categoría": "Goals",
-                "Jugador": "David Pastrnak",
-                "Dato publicado": "9"
-              },
-              {
-                "Equipo": "Boston Bruins",
-                "Categoría": "Assists",
-                "Jugador": "David Pastrnak",
-                "Dato publicado": "17"
-              },
-              {
-                "Equipo": "Boston Bruins",
-                "Categoría": "Points",
-                "Jugador": "David Pastrnak",
-                "Dato publicado": "26"
-              },
-              {
-                "Equipo": "Los Angeles Kings",
-                "Categoría": "Goals",
-                "Jugador": "Artemi Panarin",
-                "Dato publicado": "8"
-              },
-              {
-                "Equipo": "Los Angeles Kings",
-                "Categoría": "Assists",
-                "Jugador": "Artemi Panarin",
-                "Dato publicado": "11"
-              },
-              {
-                "Equipo": "Los Angeles Kings",
-                "Categoría": "Points",
-                "Jugador": "Artemi Panarin",
-                "Dato publicado": "19"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:56.297423+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Columbus @ NY Islanders",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "18:00",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            2.71,
-            3.11
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "+1.5 68%, -1.5 34%",
-          "totales_publicados": "o5.5 53%, u5.5 47%",
-          "porcentajes_covers": "44%, 53%, 68%, 56%, 47%, 34%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Columbus @ NY Islanders",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "18:00",
-            "equipo_proyectado": "NY Islanders",
-            "seleccion_de_referencia": "NY Islanders ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "local",
-            "marcador_proyectado": "2.71 - 3.11",
-            "margen_proyectado": 0.4,
-            "total_proyectado": 5.82,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892731",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892731/blue-jackets-islanders",
-            "lesiones": [
-              {
-                "Equipo": "New York Islanders",
-                "Jugador": "Jean-Gabriel Pageau",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "New York Islanders",
-                "Jugador": "Logan Stanley",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "New York Islanders",
-                "Jugador": "Calum Ritchie",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "New York Islanders",
-                "Jugador": "Alexander Romanov",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Columbus Blue Jackets",
-                "Jugador": "Sean Monahan",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "New York Islanders",
-                "Categoría": "Goals",
-                "Jugador": "Bo Horvat",
-                "Dato publicado": "9"
-              },
-              {
-                "Equipo": "New York Islanders",
-                "Categoría": "Assists",
-                "Jugador": "Matthew Schaefer",
-                "Dato publicado": "15"
-              },
-              {
-                "Equipo": "New York Islanders",
-                "Categoría": "Points",
-                "Jugador": "Matthew Schaefer",
-                "Dato publicado": "21"
-              },
-              {
-                "Equipo": "Columbus Blue Jackets",
-                "Categoría": "Goals",
-                "Jugador": "Kent Johnson",
-                "Dato publicado": "8"
-              },
-              {
-                "Equipo": "Columbus Blue Jackets",
-                "Categoría": "Assists",
-                "Jugador": "Zach Werenski",
-                "Dato publicado": "13"
-              },
-              {
-                "Equipo": "Columbus Blue Jackets",
-                "Categoría": "Points",
-                "Jugador": "Kent Johnson",
-                "Dato publicado": "18"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:56.399501+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Ottawa @ Winnipeg",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "18:00",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            3.32,
-            3.02
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "-1.5 33%, +1.5 68%",
-          "totales_publicados": "o5.5 55%, u6.0 54%",
-          "porcentajes_covers": "56%, 55%, 33%, 44%, 54%, 68%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Ottawa @ Winnipeg",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "18:00",
-            "equipo_proyectado": "Ottawa",
-            "seleccion_de_referencia": "Ottawa ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "visitante",
-            "marcador_proyectado": "3.32 - 3.02",
-            "margen_proyectado": 0.3,
-            "total_proyectado": 6.34,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892736",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892736/senators-jets",
-            "lesiones": [
-              {
-                "Equipo": "Winnipeg Jets",
-                "Jugador": "Isak Rosen",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Winnipeg Jets",
-                "Jugador": "Dylan DeMelo",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Winnipeg Jets",
-                "Jugador": "Elias Salomonsson",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Winnipeg Jets",
-                "Jugador": "Vladislav Namestnikov",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Winnipeg Jets",
-                "Jugador": "Nick Bjugstad",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Ottawa Senators",
-                "Jugador": "Hayden Hodgson",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Ottawa Senators",
-                "Jugador": "Warren Foegele",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Ottawa Senators",
-                "Jugador": "Nick Cousins",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Ottawa Senators",
-                "Jugador": "Andre Burakovsky",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Ottawa Senators",
-                "Jugador": "William Eklund",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "Winnipeg Jets",
-                "Categoría": "Goals",
-                "Jugador": "Kyle Connor",
-                "Dato publicado": "17"
-              },
-              {
-                "Equipo": "Winnipeg Jets",
-                "Categoría": "Assists",
-                "Jugador": "Mark Scheifele",
-                "Dato publicado": "19"
-              },
-              {
-                "Equipo": "Winnipeg Jets",
-                "Categoría": "Points",
-                "Jugador": "Kyle Connor",
-                "Dato publicado": "26"
-              },
-              {
-                "Equipo": "Ottawa Senators",
-                "Categoría": "Goals",
-                "Jugador": "Tim Stutzle",
-                "Dato publicado": "11"
-              },
-              {
-                "Equipo": "Ottawa Senators",
-                "Categoría": "Assists",
-                "Jugador": "Tim Stutzle",
-                "Dato publicado": "14"
-              },
-              {
-                "Equipo": "Ottawa Senators",
-                "Categoría": "Points",
-                "Jugador": "Tim Stutzle",
-                "Dato publicado": "25"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:56.561530+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Washington @ Tampa Bay",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "18:30",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            2.96,
-            3.52
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "+2.5 75%, -2.5 26%",
-          "totales_publicados": "o6.5 50%, u6.5 51%",
-          "porcentajes_covers": "40%, 50%, 75%, 60%, 51%, 26%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Washington @ Tampa Bay",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "18:30",
-            "equipo_proyectado": "Tampa Bay",
-            "seleccion_de_referencia": "Tampa Bay ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "local",
-            "marcador_proyectado": "2.96 - 3.52",
-            "margen_proyectado": 0.56,
-            "total_proyectado": 6.48,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892729",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892729/capitals-lightning",
-            "lesiones": [
-              {
-                "Equipo": "Tampa Bay Lightning",
-                "Jugador": "Conor Geekie",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Tampa Bay Lightning",
-                "Jugador": "Erik Cernak",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "Tampa Bay Lightning",
-                "Jugador": "Anthony Cirelli",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "Washington Capitals",
-                "Jugador": "Rasmus Sandin",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Washington Capitals",
-                "Jugador": "Vincent Desharnais",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "Tampa Bay Lightning",
-                "Categoría": "Goals",
-                "Jugador": "Brandon Hagel",
-                "Dato publicado": "13"
-              },
-              {
-                "Equipo": "Tampa Bay Lightning",
-                "Categoría": "Assists",
-                "Jugador": "Nikita Kucherov",
-                "Dato publicado": "20"
-              },
-              {
-                "Equipo": "Tampa Bay Lightning",
-                "Categoría": "Points",
-                "Jugador": "Nikita Kucherov",
-                "Dato publicado": "28"
-              },
-              {
-                "Equipo": "Washington Capitals",
-                "Categoría": "Goals",
-                "Jugador": "Alex Tuch",
-                "Dato publicado": "11"
-              },
-              {
-                "Equipo": "Washington Capitals",
-                "Categoría": "Assists",
-                "Jugador": "Dylan Strome",
-                "Dato publicado": "13"
-              },
-              {
-                "Equipo": "Washington Capitals",
-                "Categoría": "Points",
-                "Jugador": "Dylan Strome",
-                "Dato publicado": "16"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:56.816043+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Toronto @ Chicago",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "18:30",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            3.47,
-            2.96
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "-1.5 35%, +1.5 66%",
-          "totales_publicados": "o6.5 50%, u6.5 50%",
-          "porcentajes_covers": "57%, 50%, 35%, 43%, 66%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Toronto @ Chicago",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "18:30",
-            "equipo_proyectado": "Toronto",
-            "seleccion_de_referencia": "Toronto ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "visitante",
-            "marcador_proyectado": "3.47 - 2.96",
-            "margen_proyectado": 0.51,
-            "total_proyectado": 6.43,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892733",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892733/maple-leafs-blackhawks",
-            "lesiones": [
-              {
-                "Equipo": "Chicago Blackhawks",
-                "Jugador": "Bowen Byram",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Toronto Maple Leafs",
-                "Jugador": "Colton Sissons",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Toronto Maple Leafs",
-                "Jugador": "Kirill Marchenko",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Toronto Maple Leafs",
-                "Jugador": "Miles Wood",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Toronto Maple Leafs",
-                "Jugador": "Nick Blankenburg",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Toronto Maple Leafs",
-                "Jugador": "Marshall Rifai",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "Chicago Blackhawks",
-                "Categoría": "Goals",
-                "Jugador": "Roman Kantserov",
-                "Dato publicado": "9"
-              },
-              {
-                "Equipo": "Chicago Blackhawks",
-                "Categoría": "Assists",
-                "Jugador": "Connor Bedard",
-                "Dato publicado": "11"
-              },
-              {
-                "Equipo": "Chicago Blackhawks",
-                "Categoría": "Points",
-                "Jugador": "Connor Bedard",
-                "Dato publicado": "17"
-              },
-              {
-                "Equipo": "Toronto Maple Leafs",
-                "Categoría": "Goals",
-                "Jugador": "Auston Matthews",
-                "Dato publicado": "12"
-              },
-              {
-                "Equipo": "Toronto Maple Leafs",
-                "Categoría": "Assists",
-                "Jugador": "Auston Matthews",
-                "Dato publicado": "17"
-              },
-              {
-                "Equipo": "Toronto Maple Leafs",
-                "Categoría": "Points",
-                "Jugador": "Auston Matthews",
-                "Dato publicado": "29"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:56.967750+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Anaheim @ St. Louis",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "19:00",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            2.96,
-            3.36
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "+1.5 67%, -1.5 34%",
-          "totales_publicados": "o6.5 50%, u6.5 51%",
-          "porcentajes_covers": "45%, 50%, 67%, 55%, 51%, 34%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Anaheim @ St. Louis",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "19:00",
-            "equipo_proyectado": "St. Louis",
-            "seleccion_de_referencia": "St. Louis ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "local",
-            "marcador_proyectado": "2.96 - 3.36",
-            "margen_proyectado": 0.4,
-            "total_proyectado": 6.32,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892734",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892734/ducks-blues",
-            "lesiones": [
-              {
-                "Equipo": "St. Louis Blues",
-                "Jugador": "Ross Johnston",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "St. Louis Blues",
-                "Jugador": "Aleksanteri Kaskimaki",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "St. Louis Blues",
-                "Jugador": "Torey Krug",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "St. Louis Blues",
-                "Jugador": "Dillon Dube",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "St. Louis Blues",
-                "Jugador": "Tyler Tucker",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Anaheim Ducks",
-                "Jugador": "Ryan Poehling",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Anaheim Ducks",
-                "Jugador": "A.J. Greer",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "St. Louis Blues",
-                "Categoría": "Goals",
-                "Jugador": "Jimmy Snuggerud",
-                "Dato publicado": "10"
-              },
-              {
-                "Equipo": "St. Louis Blues",
-                "Categoría": "Assists",
-                "Jugador": "Robert Thomas",
-                "Dato publicado": "11"
-              },
-              {
-                "Equipo": "St. Louis Blues",
-                "Categoría": "Points",
-                "Jugador": "Jimmy Snuggerud",
-                "Dato publicado": "14"
-              },
-              {
-                "Equipo": "Anaheim Ducks",
-                "Categoría": "Goals",
-                "Jugador": "Cutter Gauthier",
-                "Dato publicado": "18"
-              },
-              {
-                "Equipo": "Anaheim Ducks",
-                "Categoría": "Assists",
-                "Jugador": "Leo Carlsson",
-                "Dato publicado": "21"
-              },
-              {
-                "Equipo": "Anaheim Ducks",
-                "Categoría": "Points",
-                "Jugador": "Leo Carlsson",
-                "Dato publicado": "27"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:57.025418+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Nashville @ Minnesota",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "19:00",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            2.59,
-            3.54
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "+2.5 71%, -2.5 31%",
-          "totales_publicados": "o6.0 51%, u6.5 56%",
-          "porcentajes_covers": "35%, 51%, 71%, 66%, 56%, 31%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Nashville @ Minnesota",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "19:00",
-            "equipo_proyectado": "Minnesota",
-            "seleccion_de_referencia": "Minnesota ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "local",
-            "marcador_proyectado": "2.59 - 3.54",
-            "margen_proyectado": 0.95,
-            "total_proyectado": 6.13,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892735",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892735/predators-wild",
-            "lesiones": [
-              {
-                "Equipo": "Minnesota Wild",
-                "Jugador": "Olli Maatta",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Minnesota Wild",
-                "Jugador": "Filip Gustavsson",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "Minnesota Wild",
-                "Categoría": "Goals",
-                "Jugador": "Kirill Kaprizov",
-                "Dato publicado": "17"
-              },
-              {
-                "Equipo": "Minnesota Wild",
-                "Categoría": "Assists",
-                "Jugador": "Quinn Hughes",
-                "Dato publicado": "23"
-              },
-              {
-                "Equipo": "Minnesota Wild",
-                "Categoría": "Points",
-                "Jugador": "Kirill Kaprizov",
-                "Dato publicado": "37"
-              },
-              {
-                "Equipo": "Nashville Predators",
-                "Categoría": "Goals",
-                "Jugador": "Steven Stamkos",
-                "Dato publicado": "12"
-              },
-              {
-                "Equipo": "Nashville Predators",
-                "Categoría": "Assists",
-                "Jugador": "Roman Josi",
-                "Dato publicado": "21"
-              },
-              {
-                "Equipo": "Nashville Predators",
-                "Categoría": "Points",
-                "Jugador": "Filip Forsberg",
-                "Dato publicado": "23"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:57.092770+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Dallas @ Vegas",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "21:00",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            2.77,
-            3.11
-          ],
-          "momios_covers": [
-            null,
-            null
-          ],
-          "probabilidad_implicita_mercado": {
-            "visitante": null,
-            "local": null
-          },
-          "spreads_publicados": "+1.5 67%, -1.5 34%",
-          "totales_publicados": "o5.5 53%, u5.5 47%",
-          "porcentajes_covers": "45%, 53%, 67%, 55%, 47%, 34%",
-          "momios_casas": [],
-          "referencia_covers": {
-            "liga": "NHL",
-            "partido": "Dallas @ Vegas",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "21:00",
-            "equipo_proyectado": "Vegas",
-            "seleccion_de_referencia": "Vegas ML",
-            "momio_covers": null,
-            "umbral_equilibrio_precio": null,
-            "lado_proyectado": "local",
-            "marcador_proyectado": "2.77 - 3.11",
-            "margen_proyectado": 0.34,
-            "total_proyectado": 5.88,
-            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
-            "fuente": "https://www.covers.com/picks/nhl",
-            "vigente_para_analisis_prepartido": true,
-            "probabilidad_propia": null,
-            "ev_propio": null,
-            "pick_validado": false,
-            "stake_recomendado": null,
-            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
-          },
-          "espn": {
-            "evento": "401892737",
-            "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892737/stars-golden-knights",
-            "lesiones": [
-              {
-                "Equipo": "Vegas Golden Knights",
-                "Jugador": "Noah Hanifin",
-                "Estado ESPN": "Out",
-                "Motivo": "INJURY_STATUS_OUT"
-              },
-              {
-                "Equipo": "Dallas Stars",
-                "Jugador": "Tyler Myers",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "Dallas Stars",
-                "Jugador": "Miro Heiskanen",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "Dallas Stars",
-                "Jugador": "Kyle Capobianco",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Dallas Stars",
-                "Jugador": "Lian Bichsel",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Dallas Stars",
-                "Jugador": "Oskar Back",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              }
-            ],
-            "lideres": [
-              {
-                "Equipo": "Vegas Golden Knights",
-                "Categoría": "Goals",
-                "Jugador": "Mark Stone",
-                "Dato publicado": "11"
-              },
-              {
-                "Equipo": "Vegas Golden Knights",
-                "Categoría": "Assists",
-                "Jugador": "Mitch Marner",
-                "Dato publicado": "23"
-              },
-              {
-                "Equipo": "Vegas Golden Knights",
-                "Categoría": "Points",
-                "Jugador": "Jack Eichel",
-                "Dato publicado": "27"
-              },
-              {
-                "Equipo": "Dallas Stars",
-                "Categoría": "Goals",
-                "Jugador": "Jason Robertson",
-                "Dato publicado": "10"
-              },
-              {
-                "Equipo": "Dallas Stars",
-                "Categoría": "Assists",
-                "Jugador": "Mikko Rantanen",
-                "Dato publicado": "13"
-              },
-              {
-                "Equipo": "Dallas Stars",
-                "Categoría": "Points",
-                "Jugador": "Jason Robertson",
-                "Dato publicado": "22"
-              }
-            ],
-            "noticias": [
-              {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
-              },
-              {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
-              },
-              {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
-              }
-            ],
-            "consulta_utc": "2026-11-17T18:29:57.165554+00:00"
-          },
-          "pick_propio": null,
-          "estado_pick": "SIN_MODELO_VALIDADO"
-        },
-        {
-          "liga": "NHL",
-          "partido": "Calgary @ San Jose",
-          "fecha_cdmx": "2026-11-17",
-          "hora_cdmx": "21:00",
-          "fuente_covers": "https://www.covers.com/picks/nhl",
-          "proyeccion_covers": [
-            3.0,
             3.15
           ],
           "momios_covers": [
@@ -2253,23 +1834,23 @@
             "visitante": null,
             "local": null
           },
-          "spreads_publicados": "+1.5 68%, -1.5 33%",
-          "totales_publicados": "o5.5 56%, u6.5 56%",
-          "porcentajes_covers": "46%, 56%, 68%, 54%, 33%",
+          "spreads_publicados": "+1.5 71%, -1.5 29%",
+          "totales_publicados": "o5.5 55%, u6.5 59%",
+          "porcentajes_covers": "50%, 55%, 71%, 59%, 29%",
           "momios_casas": [],
           "referencia_covers": {
             "liga": "NHL",
-            "partido": "Calgary @ San Jose",
-            "fecha_cdmx": "2026-11-17",
-            "hora_cdmx": "21:00",
-            "equipo_proyectado": "San Jose",
-            "seleccion_de_referencia": "San Jose ML",
+            "partido": "Boston @ Detroit",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "18:30",
+            "equipo_proyectado": "Detroit",
+            "seleccion_de_referencia": "Detroit ML",
             "momio_covers": null,
             "umbral_equilibrio_precio": null,
             "lado_proyectado": "local",
-            "marcador_proyectado": "3 - 3.15",
-            "margen_proyectado": 0.15,
-            "total_proyectado": 6.15,
+            "marcador_proyectado": "2.99 - 3.15",
+            "margen_proyectado": 0.16,
+            "total_proyectado": 6.14,
             "tipo": "PROYECCION_COVERS_NO_VALIDADA",
             "fuente": "https://www.covers.com/picks/nhl",
             "vigente_para_analisis_prepartido": true,
@@ -2280,116 +1861,422 @@
             "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
           },
           "espn": {
-            "evento": "401892738",
+            "evento": "401892739",
             "estado": "PRE",
-            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892738/flames-sharks",
+            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892739/bruins-red-wings",
             "lesiones": [
               {
-                "Equipo": "San Jose Sharks",
-                "Jugador": "Alexander Wennberg",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "San Jose Sharks",
-                "Jugador": "Kiefer Sherwood",
-                "Estado ESPN": "Day-To-Day",
-                "Motivo": "INJURY_STATUS_DAYTODAY"
-              },
-              {
-                "Equipo": "San Jose Sharks",
-                "Jugador": "Igor Chernyshov",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "San Jose Sharks",
-                "Jugador": "Quentin Musty",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "San Jose Sharks",
-                "Jugador": "Kyle Keyser",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Calgary Flames",
-                "Jugador": "Jonathan Huberdeau",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Calgary Flames",
-                "Jugador": "Kevin Bahl",
-                "Estado ESPN": "Injured Reserve",
-                "Motivo": "INJURY_STATUS_IR"
-              },
-              {
-                "Equipo": "Calgary Flames",
-                "Jugador": "Connor Zary",
+                "Equipo": "Detroit Red Wings",
+                "Jugador": "William Wallinder",
                 "Estado ESPN": "Out",
                 "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Detroit Red Wings",
+                "Jugador": "Albert Johansson",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Detroit Red Wings",
+                "Jugador": "Dylan Larkin",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Detroit Red Wings",
+                "Jugador": "Simon Edvinsson",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Boston Bruins",
+                "Jugador": "James Hagens",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
               }
             ],
             "lideres": [
               {
-                "Equipo": "San Jose Sharks",
+                "Equipo": "Detroit Red Wings",
                 "Categoría": "Goals",
-                "Jugador": "Macklin Celebrini",
+                "Jugador": "Lucas Raymond",
+                "Dato publicado": "8"
+              },
+              {
+                "Equipo": "Detroit Red Wings",
+                "Categoría": "Assists",
+                "Jugador": "Lucas Raymond",
+                "Dato publicado": "13"
+              },
+              {
+                "Equipo": "Detroit Red Wings",
+                "Categoría": "Points",
+                "Jugador": "Lucas Raymond",
+                "Dato publicado": "21"
+              },
+              {
+                "Equipo": "Boston Bruins",
+                "Categoría": "Goals",
+                "Jugador": "David Pastrnak",
                 "Dato publicado": "9"
               },
               {
-                "Equipo": "San Jose Sharks",
+                "Equipo": "Boston Bruins",
                 "Categoría": "Assists",
-                "Jugador": "Macklin Celebrini",
-                "Dato publicado": "18"
-              },
-              {
-                "Equipo": "San Jose Sharks",
-                "Categoría": "Points",
-                "Jugador": "Macklin Celebrini",
-                "Dato publicado": "27"
-              },
-              {
-                "Equipo": "Calgary Flames",
-                "Categoría": "Goals",
-                "Jugador": "Joel Farabee",
-                "Dato publicado": "7"
-              },
-              {
-                "Equipo": "Calgary Flames",
-                "Categoría": "Assists",
-                "Jugador": "Matt Coronato",
-                "Dato publicado": "11"
-              },
-              {
-                "Equipo": "Calgary Flames",
-                "Categoría": "Points",
-                "Jugador": "Joel Farabee",
+                "Jugador": "David Pastrnak",
                 "Dato publicado": "17"
+              },
+              {
+                "Equipo": "Boston Bruins",
+                "Categoría": "Points",
+                "Jugador": "David Pastrnak",
+                "Dato publicado": "26"
               }
             ],
             "noticias": [
               {
-                "Titular ESPN": "Statue to memorialize Johnny, Matthew Gaudreau at childhood skating rink",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50511347/statue-memorialize-johnny-matthew-gaudreau-ice-rink"
+                "Titular ESPN": "Blackhawks star Connor Bedard awaiting test results on injured shoulder",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50522884/connor-bedard-awaiting-test-results-injured-shoulder"
               },
               {
-                "Titular ESPN": "The Connor McDavid Scoring Tracker: Can the Oilers' superstar break 200 points?",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50502384/nhl-2026-27-connor-mcdavid-scoring-200-points-stats-record-wayne-gretzky"
+                "Titular ESPN": "Mammoth, Avalanche bring mountain style to Winter Classic uniforms",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50516521/utah-mammoth-colorado-avalanche-2026-winter-classic-uniforms"
               },
               {
-                "Titular ESPN": "NHL Tonight: Keys to Capitals-Lightning, 10 other Tuesday games",
-                "Enlace": "https://www.espn.com/nhl/story/_/id/50503265/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
-              },
-              {
-                "Titular ESPN": "Vancouver Canucks vs. Utah Mammoth: Game Highlights",
-                "Enlace": "https://www.espn.com/video/clip/_/id/50508141/game-highlights"
+                "Titular ESPN": "Boston College to retire late Johnny Gaudreau's No. 13 jersey",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50521835/boston-college-retire-late-johnny-gaudreau-no-13"
               }
             ],
-            "consulta_utc": "2026-11-17T18:29:57.241729+00:00"
+            "consulta_utc": "2026-11-18T19:39:37.738049+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NHL",
+          "partido": "Montreal @ New Jersey",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "18:30",
+          "fuente_covers": "https://www.covers.com/picks/nhl",
+          "proyeccion_covers": [
+            2.74,
+            3.54
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "+2.5 77%, -2.5 28%",
+          "totales_publicados": "o6.0 53%, u6.5 55%",
+          "porcentajes_covers": "40%, 53%, 77%, 60%, 55%, 28%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NHL",
+            "partido": "Montreal @ New Jersey",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "18:30",
+            "equipo_proyectado": "New Jersey",
+            "seleccion_de_referencia": "New Jersey ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "local",
+            "marcador_proyectado": "2.74 - 3.54",
+            "margen_proyectado": 0.8,
+            "total_proyectado": 6.28,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nhl",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401892740",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892740/canadiens-devils",
+            "lesiones": [
+              {
+                "Equipo": "New Jersey Devils",
+                "Jugador": "Jonas Siegenthaler",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "New Jersey Devils",
+                "Jugador": "Anthony Mantha",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "New Jersey Devils",
+                "Jugador": "Johnathan Kovacevic",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "New Jersey Devils",
+                "Jugador": "Seamus Casey",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Montreal Canadiens",
+                "Jugador": "Alexandre Texier",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Montreal Canadiens",
+                "Jugador": "Mike Matheson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Montreal Canadiens",
+                "Jugador": "Josh Anderson",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Montreal Canadiens",
+                "Jugador": "Chris Kreider",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Montreal Canadiens",
+                "Jugador": "Ivan Demidov",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "New Jersey Devils",
+                "Categoría": "Goals",
+                "Jugador": "Jack Hughes",
+                "Dato publicado": "10"
+              },
+              {
+                "Equipo": "New Jersey Devils",
+                "Categoría": "Assists",
+                "Jugador": "Jack Hughes",
+                "Dato publicado": "17"
+              },
+              {
+                "Equipo": "New Jersey Devils",
+                "Categoría": "Points",
+                "Jugador": "Jack Hughes",
+                "Dato publicado": "27"
+              },
+              {
+                "Equipo": "Montreal Canadiens",
+                "Categoría": "Goals",
+                "Jugador": "Cole Caufield",
+                "Dato publicado": "12"
+              },
+              {
+                "Equipo": "Montreal Canadiens",
+                "Categoría": "Assists",
+                "Jugador": "Lane Hutson",
+                "Dato publicado": "16"
+              },
+              {
+                "Equipo": "Montreal Canadiens",
+                "Categoría": "Points",
+                "Jugador": "Cole Caufield",
+                "Dato publicado": "19"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Blackhawks star Connor Bedard awaiting test results on injured shoulder",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50522884/connor-bedard-awaiting-test-results-injured-shoulder"
+              },
+              {
+                "Titular ESPN": "Mammoth, Avalanche bring mountain style to Winter Classic uniforms",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50516521/utah-mammoth-colorado-avalanche-2026-winter-classic-uniforms"
+              },
+              {
+                "Titular ESPN": "Boston College to retire late Johnny Gaudreau's No. 13 jersey",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50521835/boston-college-retire-late-johnny-gaudreau-no-13"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:37.971038+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NHL",
+          "partido": "Colorado @ Utah",
+          "fecha_cdmx": "2026-11-18",
+          "hora_cdmx": "21:00",
+          "fuente_covers": "https://www.covers.com/picks/nhl",
+          "proyeccion_covers": [
+            3.24,
+            3.2
+          ],
+          "momios_covers": [
+            null,
+            null
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": null,
+            "local": null
+          },
+          "spreads_publicados": "+1.5 71%, -1.5 30%",
+          "totales_publicados": "o6.0 54%, u6.5 54%",
+          "porcentajes_covers": "50%, 54%, 71%, 30%",
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NHL",
+            "partido": "Colorado @ Utah",
+            "fecha_cdmx": "2026-11-18",
+            "hora_cdmx": "21:00",
+            "equipo_proyectado": "Colorado",
+            "seleccion_de_referencia": "Colorado ML",
+            "momio_covers": null,
+            "umbral_equilibrio_precio": null,
+            "lado_proyectado": "visitante",
+            "marcador_proyectado": "3.24 - 3.2",
+            "margen_proyectado": 0.04,
+            "total_proyectado": 6.44,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nhl",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401892741",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892741/avalanche-mammoth",
+            "lesiones": [
+              {
+                "Equipo": "Utah Mammoth",
+                "Jugador": "Dylan Guenther",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Utah Mammoth",
+                "Jugador": "John Marino",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Utah Mammoth",
+                "Jugador": "Nick Schmaltz",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Utah Mammoth",
+                "Jugador": "Nate Schmidt",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Utah Mammoth",
+                "Jugador": "Maveric Lamoureux",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Colorado Avalanche",
+                "Jugador": "Scott Wedgewood",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Colorado Avalanche",
+                "Jugador": "Cale Makar",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Colorado Avalanche",
+                "Jugador": "Nathan MacKinnon",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Colorado Avalanche",
+                "Jugador": "Josh Manson",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Colorado Avalanche",
+                "Jugador": "Zachary L'Heureux",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Utah Mammoth",
+                "Categoría": "Goals",
+                "Jugador": "Logan Cooley",
+                "Dato publicado": "11"
+              },
+              {
+                "Equipo": "Utah Mammoth",
+                "Categoría": "Assists",
+                "Jugador": "Clayton Keller",
+                "Dato publicado": "23"
+              },
+              {
+                "Equipo": "Utah Mammoth",
+                "Categoría": "Points",
+                "Jugador": "Clayton Keller",
+                "Dato publicado": "28"
+              },
+              {
+                "Equipo": "Colorado Avalanche",
+                "Categoría": "Goals",
+                "Jugador": "Artturi Lehkonen",
+                "Dato publicado": "15"
+              },
+              {
+                "Equipo": "Colorado Avalanche",
+                "Categoría": "Assists",
+                "Jugador": "Nathan MacKinnon",
+                "Dato publicado": "20"
+              },
+              {
+                "Equipo": "Colorado Avalanche",
+                "Categoría": "Points",
+                "Jugador": "Nathan MacKinnon",
+                "Dato publicado": "30"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Blackhawks star Connor Bedard awaiting test results on injured shoulder",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50522884/connor-bedard-awaiting-test-results-injured-shoulder"
+              },
+              {
+                "Titular ESPN": "Mammoth, Avalanche bring mountain style to Winter Classic uniforms",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50516521/utah-mammoth-colorado-avalanche-2026-winter-classic-uniforms"
+              },
+              {
+                "Titular ESPN": "Boston College to retire late Johnny Gaudreau's No. 13 jersey",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50521835/boston-college-retire-late-johnny-gaudreau-no-13"
+              }
+            ],
+            "consulta_utc": "2026-11-18T19:39:38.106869+00:00"
           },
           "pick_propio": null,
           "estado_pick": "SIN_MODELO_VALIDADO"
