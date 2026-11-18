@@ -45,7 +45,15 @@ def _enrich_prices(slate: dict, day, sports, covers_fetch) -> tuple[dict, list[s
             missing.append(sport)
     priced = dict(slate)
     priced["picks"] = [
-        add_covers_price(item, item, events, day)
+        add_covers_price(
+            item,
+            {
+                "sport": item["sport"], "event_id": item["event_id"],
+                "away": item["away"], "home": item["home"],
+                "local_time": item["time"],
+            },
+            events, day,
+        )
         for item in slate.get("picks") or []
     ]
     return priced, missing
