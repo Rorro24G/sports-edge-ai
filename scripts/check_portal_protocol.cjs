@@ -16,7 +16,7 @@ assert(html.includes('MOVIMIENTO ON'),'motion control must be visible');
 assert(html.includes('rgba(5,5,6,.24)'),'intro must reveal moving brain');
 assert(code.includes('ctx.globalAlpha=1;drawBrain(t)'),'intro canvas must be visible');
 assert(code.includes("state==='intro'"),'ambient brain on entry screen missing');
-assert(code.includes("angle+=dt*.00018"),'visible idle spin missing');
+assert(code.includes("angle+=dt*.00035"),'visible idle spin missing');
 assert(code.includes('flightBlend=ease'),'node-directed transition missing');
 assert(html.includes('neuron-heartbeat 1.75s'),'always-on node beat missing');
 
@@ -35,23 +35,32 @@ function run(reduced,page){
  vm.runInNewContext(code,context);
  assert(messages.some(m=>m.type==='streamlit:componentReady'));
  listeners.message({source:parent,data:{type:'streamlit:render',args:{}}});
- assert(elements['motion-toggle'].textContent.includes(reduced?'ACTIVAR':'ON'));
-  elements.enter.onclick();if(!reduced)callback(1800);
+ assert(elements['motion-toggle'].textContent.includes('ON'),'motion starts enabled even when OS prefers reduced motion');
+  elements.enter.onclick();callback(1800);
  assert.equal(elements['brain-ui'].inert,false);
  callback(1850);
  const before=nodes.map(n=>[n.style.left,n.style.top]);
  const firstHalo=arcs[arcs.length-1][2];
  callback(2250);
  const after=nodes.map(n=>[n.style.left,n.style.top]);
- if(reduced){assert.deepEqual(before,after,'reduced motion must stay still')}
- else {
-  assert.notDeepEqual(before,after,'brain and nodes must move between frames');
-  assert.notEqual(firstHalo,arcs[arcs.length-1][2],'canvas aura must pulse');
- }
+ assert.notDeepEqual(before,after,'brain and nodes must move between frames');
+ assert.notEqual(firstHalo,arcs[arcs.length-1][2],'canvas aura must pulse');
+ nodes[0].onpointerenter?.();
+ const oldAngle=vm.runInNewContext('angle',context);
+ callback(60000);
+ assert.notEqual(vm.runInNewContext('angle',context),oldAngle,'rotation continues over a node after a minute');
+ const minute=nodes.map(n=>[n.style.left,n.style.top]);
+ callback(120000);
+ assert.notDeepEqual(minute,nodes.map(n=>[n.style.left,n.style.top]),'animation must keep running without input');
  elements['motion-toggle'].onclick();
- assert(elements['motion-toggle'].textContent.includes(reduced?'ON':'ACTIVAR'));
+ assert(elements['motion-toggle'].textContent.includes('ACTIVAR'));
+ callback(120100);
+ const still=nodes.map(n=>[n.style.left,n.style.top]);
+ callback(120500);
+ assert.deepEqual(still,nodes.map(n=>[n.style.left,n.style.top]),'explicit pause must work');
  elements['motion-toggle'].onclick();
- nodes[pages.indexOf(page)].onclick();if(!reduced)callback(3500);
+ assert(elements['motion-toggle'].textContent.includes('ON'));
+ nodes[pages.indexOf(page)].onclick();callback(122000);
  const selected=messages.find(m=>m.type==='streamlit:setComponentValue');
  assert.equal(selected.value.page,page);assert.equal(selected.dataType,'json');
  assert.equal(selected.isStreamlitMessage,true);
