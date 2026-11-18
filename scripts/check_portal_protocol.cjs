@@ -21,10 +21,10 @@ assert(code.includes('flightBlend=ease'),'node-directed transition missing');
 assert(html.includes('neuron-heartbeat 1.75s'),'always-on node beat missing');
 
 function run(reduced,page){
- const messages=[],listeners={};let callback;
+ const messages=[],listeners={},arcs=[];let callback;
  const element=()=>({style:{},classList:{add(){},toggle(){}},setAttribute(){},focus(){},inert:false,clientWidth:1000,clientHeight:760});
  const elements=Object.fromEntries(['scene','stage','intro','brain-ui','flight-label','enter','rotate','reset','motion-toggle'].map(n=>[n,element()]));
- elements.scene.getContext=()=>new Proxy({},{get:()=>()=>{}});
+ elements.scene.getContext=()=>new Proxy({},{get:(_,key)=>key==='arc'?((...args)=>arcs.push(args)):(()=>{})});
  const nodes=pages.map(page=>Object.assign(element(),{dataset:{page},innerText:page.toUpperCase()}));
  const parent={postMessage:v=>messages.push(v)};
  const window={parent};
@@ -38,10 +38,24 @@ function run(reduced,page){
  assert(elements['motion-toggle'].textContent.includes(reduced?'ACTIVAR':'ON'));
   elements.enter.onclick();if(!reduced)callback(1800);
  assert.equal(elements['brain-ui'].inert,false);
- nodes[pages.indexOf(page)].onclick();if(!reduced)callback(3100);
+ callback(1850);
+ const before=nodes.map(n=>[n.style.left,n.style.top]);
+ const firstHalo=arcs[arcs.length-1][2];
+ callback(2250);
+ const after=nodes.map(n=>[n.style.left,n.style.top]);
+ if(reduced){assert.deepEqual(before,after,'reduced motion must stay still')}
+ else {
+  assert.notDeepEqual(before,after,'brain and nodes must move between frames');
+  assert.notEqual(firstHalo,arcs[arcs.length-1][2],'canvas aura must pulse');
+ }
+ elements['motion-toggle'].onclick();
+ assert(elements['motion-toggle'].textContent.includes(reduced?'ON':'ACTIVAR'));
+ elements['motion-toggle'].onclick();
+ nodes[pages.indexOf(page)].onclick();if(!reduced)callback(3500);
  const selected=messages.find(m=>m.type==='streamlit:setComponentValue');
  assert.equal(selected.value.page,page);assert.equal(selected.dataType,'json');
  assert.equal(selected.isStreamlitMessage,true);
 }
 for(const page of pages){run(false,page);run(true,page)}
 console.log('PORTAL_TRANSITIONS_AND_SIX_ROUTES_OK');
+
