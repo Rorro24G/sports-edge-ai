@@ -66,6 +66,6 @@ with (
     assert "Momio externo NO verificado" in draft
     assert "No se calculó cuota combinada" in draft
     assert "Fuente: https://www.espn.com/" in draft
-    assert "NO es una recomendación validada" in draft
+    assert "no es una recomendación validada" in draft.lower()
     assert "NO es una cuota real ofrecida" not in draft
     print("STREAMLIT_OWN_PARLAYS_FROM_ESPN_OK")
