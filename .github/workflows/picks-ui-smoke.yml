@@ -187,3 +187,35 @@ jobs:
           path: audit-output/
           retention-days: 14
           if-no-files-found: warn
+
+  calibration-experiment-nba:
+    needs: [audit-real-nba, audit-2026-nba]
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: seai-real-espn-audit
+          path: audit-data/train
+      - uses: actions/download-artifact@v4
+        with:
+          name: seai-real-nba-2026
+          path: audit-data/holdout
+      - name: Ajustar en NBA 2025 y evaluar NBA 2026 sin reentrenamiento futuro
+        run: |
+          PYTHONPATH=. python -m scripts.calibrate_seai \
+            --train audit-data/train/seai-nba-2025.json \
+            --holdout audit-data/holdout/seai-nba-2026.json \
+            --output audit-output/seai-nba-temporal-calibration.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: seai-nba-temporal-calibration
+          path: audit-output/
+          retention-days: 14
+          if-no-files-found: warn
