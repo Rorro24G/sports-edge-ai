@@ -69,3 +69,35 @@ with (
     assert "no es una recomendación validada" in draft.lower()
     assert "NO es una cuota real ofrecida" not in draft
     print("STREAMLIT_OWN_PARLAYS_FROM_ESPN_OK")
+
+
+# Verify the OPTIONAL price enrichment is joined after the model made its pick.
+# A malformed Covers projection must not change the winner or produce a bet.
+from src.parlay_ui import _enrich_prices
+from src.independent_picks import VERSION
+
+own_pick = {
+    "status": "CANDIDATO_EXPERIMENTAL", "sport": "NBA",
+    "event_id": "40110000", "away": "Road Stars 0", "home": "Home Stars 0",
+    "time": "23:59", "team": "Road Stars 0", "side": "visitante",
+    "version": VERSION, "model_validated": False, "stability": .9,
+    "probability_experimental": .61,
+    "espn_url": "https://www.espn.com/nba/game/_/gameId/40110000",
+}
+
+def quoted(sport, day):
+    return {"events": [{
+        "liga": "NBA", "partido": "Road Stars 0 @ Home Stars 0",
+        "fecha_cdmx": day.isoformat(), "hora_cdmx": "23:59",
+        "momio_visitante": "+115", "momio_local": "-125",
+        "fuente": "https://www.covers.com/picks/nba",
+        "proyeccion_visitante": 70, "proyeccion_local": 150,
+    }] if sport == "NBA" else []}
+
+enriched, errors = _enrich_prices({"model": VERSION, "picks": [own_pick]},
+                                   TODAY, ["NBA"], quoted)
+assert errors == []
+assert enriched["picks"][0]["team"] == "Road Stars 0", "Covers changed the model winner"
+assert enriched["picks"][0]["market_price"] == "+115", "Quoted moneyline did not join"
+assert enriched["picks"][0]["market_source"] == "https://www.covers.com/picks/nba"
+print("PARLAY_OPTIONAL_COVERS_PRICE_ONLY_OK")
