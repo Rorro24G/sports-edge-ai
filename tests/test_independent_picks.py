@@ -1,6 +1,7 @@
 """Independent picks must never use Covers projections to choose a winner."""
 from datetime import date, datetime, timedelta
 from unittest import TestCase
+from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 from src.independent_picks import (
@@ -125,6 +126,25 @@ class OwnPicksTests(TestCase):
         result = evaluate_game(nhl, DAY, team_fetch=fetch, now=NOW)
         self.assertEqual(result["status"], "CANDIDATO_EXPERIMENTAL")
         self.assertEqual(result["team"], "Montreal Canadiens")
+
+    def test_does_not_rank_cross_sport_uncalibrated_probabilities(self):
+        nhl = dict(GAME, sport="NHL", event_id="990",
+                   away="Montreal Canadiens", home="Boston Bruins")
+        def predict_fixture(game, target, **kwargs):
+            return {
+                "sport": game["sport"], "event_id": game["event_id"],
+                "status": "CANDIDATO_EXPERIMENTAL",
+                "side": "local", "team": game["home"], "stability": 1.0,
+                "probability_experimental": (.95 if game["sport"] == "NHL" else .59),
+                "margin_experimental": 2.0, "time": "18:00",
+            }
+        with patch("src.independent_picks.evaluate_game", side_effect=predict_fixture):
+            slate = build_slate(
+                {"NBA": [GAME], "NHL": [nhl]}, DAY,
+                team_fetch=fetch, now=NOW,
+            )
+        self.assertEqual([row["sport"] for row in slate["picks"]],
+                         ["NBA", "NHL"])
 
     def test_asof_excludes_same_day_final(self):
         from src.independent_picks import _history
