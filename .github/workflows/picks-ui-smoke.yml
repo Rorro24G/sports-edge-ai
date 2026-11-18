@@ -22,6 +22,8 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Comprobar interfaz de Picks
         run: PYTHONPATH=. python scripts/smoke_picks_ui.py
+      - name: Comprobar diagnóstico de ESPN en Picks y Parlays
+        run: PYTHONPATH=. python scripts/smoke_source_diagnostics.py
       - name: Comprobar borradores Parlays de Covers y discusión
         run: PYTHONPATH=. python scripts/smoke_parlay_ui.py
       - name: Probar asistente natural sin API
