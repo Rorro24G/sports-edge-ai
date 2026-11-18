@@ -10,6 +10,7 @@ from datetime import date
 from math import isfinite, sqrt
 
 from .independent_picks import VERSION, predict_from_results
+from .learned_challenger import extract_features
 
 
 def _number(raw: object) -> float | None:
@@ -97,6 +98,11 @@ def walkforward(fixtures: list[dict], histories: dict[tuple[str, str], dict],
         )
         if signal.get("status") not in {"PASAR", "CANDIDATO_EXPERIMENTAL"}:
             continue
+        # Point-in-time features are stored with their last historical date,
+        # allowing an independent learner to prove no post-event leakage.
+        snapshot = extract_features(
+            game["sport"], away_history, home_history, target
+        )
         chosen = signal["status"] == "CANDIDATO_EXPERIMENTAL"
         actual_home = home_score > away_score
         correct = (signal["side"] == ("local" if actual_home else "visitante"))
@@ -109,6 +115,8 @@ def walkforward(fixtures: list[dict], histories: dict[tuple[str, str], dict],
             "actual_home": actual_home,
             "correct": correct if chosen else None,
             "p_home_experimental": p_home,
+            "pregame_features": snapshot["features"] if snapshot else None,
+            "last_feature_date": snapshot["max_history_date"] if snapshot else None,
             "p_selected_experimental": signal["probability_experimental"] if chosen else None,
             "brier": round((p_home - float(actual_home)) ** 2, 6),
             "home_only_correct": actual_home,

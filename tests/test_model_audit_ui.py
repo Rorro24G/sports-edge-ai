@@ -9,7 +9,8 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 from src.independent_picks import VERSION
-from src.model_audit_ui import load_model_audit, load_model_audits, load_calibration_experiment
+from src.model_audit_ui import (AUDIT_PATH, load_model_audit, load_model_audits,
+                                load_calibration_experiment, load_learned_experiments)
 from src.pick_walkforward import wilson_interval, calibration_bins, walkforward
 
 
@@ -134,6 +135,31 @@ class AuditQualityTests(TestCase):
             changed["reports"][0]["version"] = "old-model"
             write(changed)
             self.assertEqual(load_model_audits(path), [])
+
+    def test_real_2025_2026_trained_challengers_are_independent_and_unpromoted(self):
+        rows = load_learned_experiments(AUDIT_PATH)
+        self.assertEqual([r["sport"] for r in rows], ["NBA", "NHL"])
+        by_sport = {r["sport"]: r for r in rows}
+        self.assertLess(by_sport["NBA"]["brier_delta_learned_minus_old"], 0)
+        self.assertGreater(by_sport["NHL"]["brier_delta_learned_minus_old"], 0)
+        self.assertTrue(all(not r["production_enabled"] for r in rows))
+        self.assertTrue(all(not r["used_covers_to_train"] for r in rows))
+        with TemporaryDirectory() as temp:
+            path = Path(temp)/"audit.json"
+            original = json.loads(AUDIT_PATH.read_text(encoding="utf-8"))
+            def check(doc):
+                path.write_text(json.dumps(doc), encoding="utf-8")
+                return load_learned_experiments(path)
+            self.assertEqual(len(check(original)), 2)
+            manipulated = deepcopy(original)
+            manipulated["learned_challengers"]["results"][0]["production_enabled"] = True
+            self.assertEqual(check(manipulated), [])
+            manipulated = deepcopy(original)
+            manipulated["learned_challengers"]["results"][1]["used_covers_to_train"] = True
+            self.assertEqual(check(manipulated), [])
+            manipulated = deepcopy(original)
+            manipulated["learned_challengers"]["results"][0]["old_model_holdout"]["brier"] = .999
+            self.assertEqual(check(manipulated), [])
 
     def test_ui_does_not_accept_wrong_version_or_bad_source_or_incomplete_sample(self):
         with TemporaryDirectory() as temp:
