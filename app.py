@@ -28,6 +28,7 @@ from src.prop_offers import fetch_player_prop_offers
 from src.brain_dashboard import render_brain_header, render_morning_snapshot
 from src.independent_picks import build_slate, evaluate_game, add_covers_price
 from src.own_picks_ui import render_own_slate, render_own_result
+from src.model_audit_ui import render_model_audit
 
 st.set_page_config(
     page_title="Sports Edge AI | Cerebro",
@@ -94,7 +95,7 @@ def cached_own_slate(target, sports):
             pass
     return build_slate(
         boards, target, team_fetch=fetch_team_schedule,
-        covers_events=market_events, per_league=5
+        covers_events=market_events, per_league=16
     )
 
 def safe_odds_key():
@@ -107,6 +108,7 @@ if section == "picks":
     render_morning_snapshot()
     st.markdown("## Picks de Sports Edge AI")
     st.caption("Primero decide el cerebro con resultados ESPN. Covers solo aporta momios.")
+    render_model_audit()
     with st.form("sports_query"):
         prompt = st.text_input(
             "¿Qué partido, jugador o mercado quieres analizar?",

@@ -203,10 +203,13 @@ def build_slate(boards: dict[str, list[dict]], target: date, *,
             out.append(add_covers_price(result, game, covers_events or [], target))
     out.sort(key=lambda r: (r.get("sport", ""), r.get("time", ""), r.get("event_id", "")))
     candidates = [r for r in out if r.get("status") == "CANDIDATO_EXPERIMENTAL"]
+    # An uncalibrated 70% NFL is NOT comparable to 70% NBA/NHL.
+    # Group by league, then sort by robustness within that league only.
+    order = {"NBA": 0, "NFL": 1, "NHL": 2}
     candidates.sort(key=lambda r: (
+        order.get(r.get("sport"), 9),
         -r.get("stability", 0),
         -r.get("probability_experimental", 0),
-        -r.get("margin_experimental", 0),
         r.get("time", ""),
     ))
     return {"picks": candidates, "evaluated": out,

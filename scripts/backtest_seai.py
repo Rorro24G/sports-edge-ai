@@ -11,6 +11,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -22,8 +24,8 @@ from src.team_form import TeamFormError, fetch_team_schedule, season_year
 def run(sport: str, start: date, end: date, *, max_games: int = 40) -> dict:
     if sport not in ("NBA", "NFL", "NHL"):
         raise ValueError("Liga no soportada")
-    if end < start or (end-start).days > 45 or not 1 <= max_games <= 150:
-        raise ValueError("Fechas fuera de rango (máximo 46 días y 150 partidos)")
+    if end < start or (end-start).days > 60 or not 1 <= max_games <= 240:
+        raise ValueError("Fechas fuera de rango (máximo 61 días y 240 partidos)")
     if season_year(sport, start) != season_year(sport, end):
         raise ValueError("El backtest debe permanecer en una sola temporada")
     fixtures, error_dates = [], []
@@ -41,21 +43,35 @@ def run(sport: str, start: date, end: date, *, max_games: int = 40) -> dict:
     ids = {(sport, str(g["away_team_id"])) for g in fixtures}
     ids |= {(sport, str(g["home_team_id"])) for g in fixtures}
     histories, history_failures = {}, []
-    # Request the FULL season up to the end of the audit. The model will
-    # then re-filter to each earlier fixture's date (strictly before).
-    for league, team_id in sorted(ids):
-        try:
-            histories[(league, team_id)] = fetch_team_schedule(
-                league, team_id, end+timedelta(days=1)
-            )
-        except (TeamFormError, ValueError):
-            history_failures.append(team_id)
+    # Request full ESPN season through audit end (at most one per team).
+    # Future completed results remain in histories but _history() filters
+    # strictly by EACH fixture's date before extracting model features.
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        jobs = {
+            executor.submit(fetch_team_schedule, league, team_id,
+                            end + timedelta(days=1)): (league, team_id)
+            for league, team_id in sorted(ids)
+        }
+        for future in as_completed(jobs):
+            league, team_id = jobs[future]
+            try:
+                histories[(league, team_id)] = future.result()
+            except (TeamFormError, ValueError, OSError):
+                history_failures.append(f"{league}:{team_id}")
     report = walkforward(fixtures, histories)
     report["sport"] = sport
     report["period"] = {"start": start.isoformat(), "end": end.isoformat()}
     report["source"] = "ESPN scoreboard + ESPN team schedules"
+    report["audited_at_utc"] = datetime.now(timezone.utc).isoformat()
     report["scoreboard_errors"] = error_dates
-    report["team_history_failures"] = history_failures
+    report["team_history_failures"] = sorted(history_failures)
+    report["retrieved_fixture_count"] = len(fixtures)
+    report["retrieved_team_count"] = len(histories)
+    report["data_complete"] = not error_dates and not history_failures
+    report["source_note"] = (
+        "Solo ESPN. Cada predicción se produce con resultados anteriores "
+        "al encuentro. No se atribuyen cuotas históricas ni ganancias."
+    )
     return report
 
 
@@ -75,6 +91,9 @@ def main():
     if report["evaluated_count"] == 0:
         print("No hubo encuentros históricos evaluables con los datos recibidos", file=sys.stderr)
         sys.exit(2)
+    if not report["data_complete"]:
+        print("ADVERTENCIA: auditoría parcial por fallos de proveedores; "
+              "no interpretar los promedios como cobertura completa.", file=sys.stderr)
 
 
 if __name__ == "__main__":

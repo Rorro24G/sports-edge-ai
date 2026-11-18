@@ -32,8 +32,9 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
                                " en pruebas de sensibilidad. "
                                "No es una tasa de acierto.")
                     st.caption(item.get("reason", ""))
-            st.caption("Estimación NO calibrada: no demuestra ventaja ni valor esperado. "
-                       "Sin recomendación de importe.")
+            if not compact:
+                st.caption("Estimación NO calibrada; no es ventaja comprobada "
+                           "ni recomendación de importe.")
             if item.get("espn_url", "").startswith("https://"):
                 st.link_button("Datos ESPN", item["espn_url"])
             if item.get("market_source", "") and item["market_source"].startswith("https://"):
@@ -54,8 +55,25 @@ def render_own_slate(slate: dict) -> None:
     if candidates:
         st.caption(str(len(candidates)) + " selecciones experimentales entre "
                    + str(len(slate.get("evaluated") or [])) + " partidos evaluados.")
-        for item in candidates:
-            render_own_result(item, compact=True)
+        # Group the choices: raw confidence scores cannot rank different
+        # sports against each other without cross-sport calibration.
+        from .model_audit_ui import load_model_audits
+        audits = load_model_audits()
+        for league in ("NBA", "NFL", "NHL"):
+            group = [item for item in candidates if item.get("sport") == league]
+            if not group:
+                continue
+            st.markdown("#### " + league + " · señales propias")
+            league_audits = [r for r in audits if r.get("sport") == league]
+            if league_audits and any(
+                r["validation_status"] == "MUESTRA_INSUFICIENTE"
+                or r["brier_all_evaluated"] >= .25 for r in league_audits
+            ):
+                st.caption("La evidencia histórica de esta liga es limitada "
+                           "o inconsistente entre temporadas. "
+                           "Solo se muestran señales de investigación.")
+            for item in group:
+                render_own_result(item, compact=True)
     else:
         st.info("Hoy el cerebro no encontró partidos con historial y señal suficientes. "
                 "No seleccionará a un favorito solo por sus momios.")
@@ -72,5 +90,6 @@ def render_own_slate(slate: dict) -> None:
             } for x in evaluated], hide_index=True, use_container_width=True)
         else:
             st.caption("Sin encuentros prepartido verificables.")
-    st.caption("No es un modelo entrenado y validado fuera de muestra. "
-               "Las señales propias no constituyen apuestas recomendadas.")
+    st.caption("Selecciones ordenadas por liga, no como ranking global entre "
+               "NBA, NFL y NHL. Probabilidades aún sin calibración final; "
+               "sin importes de apuesta recomendados.")
