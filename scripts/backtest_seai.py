@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from time import sleep
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 from datetime import date, timedelta
@@ -19,6 +20,18 @@ from pathlib import Path
 from src.live_board import CalendarSourceError, fetch_scoreboard
 from src.pick_walkforward import walkforward
 from src.team_form import TeamFormError, fetch_team_schedule, season_year
+
+
+def _scoreboard_with_retries(sport: str, day: date) -> dict:
+    """ESPN occasionally drops a date request. Retry, never substitute data."""
+    for attempt in range(3):
+        try:
+            return fetch_scoreboard(sport, day)
+        except CalendarSourceError:
+            if attempt == 2:
+                raise
+            sleep(0.8 * (attempt+1))
+    raise CalendarSourceError("ESPN no entregó fecha verificada")
 
 
 def run(sport: str, start: date, end: date, *, max_games: int = 40) -> dict:
@@ -32,7 +45,7 @@ def run(sport: str, start: date, end: date, *, max_games: int = 40) -> dict:
     day = start
     while day <= end and len(fixtures) < max_games:
         try:
-            board = fetch_scoreboard(sport, day)
+            board = _scoreboard_with_retries(sport, day)
         except CalendarSourceError:
             error_dates.append(day.isoformat())
             day += timedelta(days=1)
