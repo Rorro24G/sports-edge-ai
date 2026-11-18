@@ -13,15 +13,14 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
            team_fetch=fetch_team_schedule) -> None:
     st.subheader("Asistente · pregunta por partidos y jugadores")
     st.caption(
-        "Sports Edge AI analiza resultados de ESPN para formar sus propias selecciones. "
-        "Covers sirve para consultar momios. "
-        "Es un motor estadístico experimental, no una IA predictiva validada."
+        "Consulta partidos, jugadores, noticias y combinadas. Puedes seguir preguntando "
+        "sobre el mismo jugador o partido. Análisis experimental: no garantiza resultados."
     )
     examples = (
         "«Picks NBA hoy» · «Lakers contra Warriors» · "
         "«Over de 24.5 puntos de Luka Doncic NBA» · "
         "«¿Y el under de 27.5?» · «¿Y las lesiones?» · «Dame 3 parlays de 2 selecciones» · "
-        "«¿Qué porcentaje de picks de Covers acertaron?»"
+        "«Noticias NBA» · «¿Qué tan confiable es tu modelo NBA?»"
     )
     st.caption("Ejemplos: " + examples)
     history = st.session_state.setdefault("sports_assistant_history", [])
@@ -35,8 +34,9 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
         with st.chat_message(item["role"]):
             st.write(item["text"])
             if item.get("sources") and item["role"] == "assistant":
-                for index, url in enumerate(item["sources"][:4]):
-                    st.link_button("Fuente " + str(index + 1), url)
+                with st.expander("Consultar detalles"):
+                    for index, url in enumerate(item["sources"][:4]):
+                        st.link_button("Referencia " + str(index + 1), url)
 
     with st.form("sports_assistant_question_form", clear_on_submit=True):
         question = st.text_input(
@@ -61,10 +61,10 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
                     prop_odds_fetch=prop_odds_fetch,
                     prop_api_key=prop_api_key,
                 )
-            except (ValueError, TypeError, KeyError, IndexError) as exc:
+            except (ValueError, TypeError, KeyError, IndexError, OSError, RuntimeError):
                 answer = {"reply": "No pude interpretar la consulta. Indica liga, "
-                                   "jugador y línea cuando corresponda. "
-                                   "Detalle: " + str(exc),
+                                   "jugador y línea cuando corresponda. Si la consulta era correcta, "
+                                   "puede fallar la actualización de datos; intenta de nuevo.",
                           "sources": [], "context": ctx}
         st.session_state["sports_assistant_context"] = answer["context"]
         history.append({"role": "assistant", "text": answer["reply"],

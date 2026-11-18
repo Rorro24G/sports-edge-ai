@@ -29,6 +29,7 @@ from .team_form import fetch_team_schedule
 from .independent_picks import build_slate, evaluate_game, add_covers_price
 from .picks_feed import live_picks_catalog
 from .model_audit_ui import load_model_audits
+from .content_feed import live_parlay_report, fetch_news, NewsError
 
 MX = ZoneInfo("America/Mexico_City")
 _PROP_LABEL = {"PTS": "puntos", "REB": "rebotes",
@@ -77,6 +78,11 @@ def _adapt_followup(question: str, previous: dict) -> str:
     previous_player = previous.get("player_name")
     if not previous_player:
         return question
+    # A named player starts a new subject. Never append the previous name.
+    if re.search(r"\b(?:de|del)\s+(?!\d)(?!hoy\b|manana\b|ese\b|este\b)[a-z]", q):
+        return question
+    if previous.get("topic") not in (None, "player"):
+        return question
     # Only a short, unambiguous follow-up inherits the complete market.
     risk_followup = re.fullmatch(
         r"(?:y )?(?:(?:las?|los?|su|sus|que) )?"
@@ -97,6 +103,13 @@ def _adapt_followup(question: str, previous: dict) -> str:
     if not re.search(r"\b(?:over|under|mas de|menos de|puntos?|pts|rebotes?|"
                      r"asistencias?|triples?|otra linea|y si)\b", q):
         return question
+    remainder = normalized(question).replace(normalized(previous_player), "")
+    allowed = {"y", "si", "el", "la", "los", "las", "de", "del", "su", "sus", "en",
+               "over", "under", "mas", "menos", "punto", "puntos", "pts", "rebote", "rebotes",
+               "asistencia", "asistencias", "triple", "triples", "otra", "linea", "a",
+               "hoy", "manana", "ayer", "nba", "seria", "con", "que", "tal"}
+    if any(word not in allowed for word in re.findall(r"[a-z]+", remainder)):
+        return question
     if parse_player_question(question) is None:
         stat = previous.get("player_stat")
         if stat not in _PROP_LABEL:
@@ -114,6 +127,7 @@ def answer_query(
     team_fetch=fetch_team_schedule,
     report_loader=load_today_snapshot, backtest_loader=load_backtest,
     prop_odds_fetch=None, prop_api_key: str = "",
+    news_fetch=fetch_news,
 ) -> dict:
     """Returns a text answer with traceable sources and conversation context."""
     context = dict(context or {})
@@ -130,16 +144,57 @@ def answer_query(
                 "sources": [], "context": context}
     q = normalized(message)
     expanded = _adapt_followup(message, context)
-    request = interpret_request(expanded, now=clock)
+    try:
+        request = interpret_request(expanded, now=clock)
+    except ValueError:
+        return {"reply": "Esa fecha no existe. Escríbela como AAAA-MM-DD, o usa hoy o mañana.",
+                "sources": [], "context": context}
     target = request.target_date
     if re.search(r"\bayer\b", q):
         target = clock.date() - timedelta(days=1)
-    if not _is_explicit_date(expanded) and context.get("date_cdmx"):
+    followup = bool(re.match(r"^(?:¿?\s*y\b|¿?\s*(?:ese|esa|el mismo|la misma)\b)", q))
+    if followup and not _is_explicit_date(expanded) and context.get("date_cdmx"):
         try:
             target = date.fromisoformat(context["date_cdmx"])
         except ValueError:
             target = request.target_date
     context["date_cdmx"] = target.isoformat()
+
+    if re.fullmatch(r"[¿¡ ]*(?:hola|buenas|buenos dias|gracias|ok|que puedes hacer|ayuda)[?!¡¿ .]*", q):
+        return {"reply": "Puedo revisar «Picks NBA hoy», «Lakers contra Warriors», "
+                "«Over de 24.5 puntos de Luka Doncic NBA», «Noticias NBA» "
+                "o «Dame 3 parlays de 2 selecciones». Después puedes cambiar "
+                "la línea o preguntar «¿Y las lesiones?». ¿Qué quieres analizar?",
+                "sources": [], "context": context}
+
+    if re.search(r"\b(?:noticias|titulares|novedades)\b", q):
+        leagues = [s for s in request.sports if s in _SPORTS]
+        terms = re.findall(r"[a-z0-9]+", q)
+        ignored = {"noticias", "titulares", "novedades", "ultimas", "ultimos", "recientes",
+                   "dame", "ver", "muestra", "muestrame", "hay", "que", "de", "del",
+                   "sobre", "los", "las", "el", "la", "hoy", "nba", "nfl", "nhl"}
+        terms = [t for t in terms if t not in ignored]
+        articles, failed = [], []
+        for league in leagues:
+            try:
+                feed = news_fetch(league)
+                articles.extend((league, a) for a in feed["articles"]
+                                if all(t in normalized(a["headline"]) for t in terms))
+            except (NewsError, OSError, ValueError, KeyError, TypeError):
+                failed.append(league)
+        articles.sort(key=lambda pair: pair[1]["published_utc"], reverse=True)
+        lines = ["Titulares recientes (últimas 72 horas; no es un archivo de la fecha solicitada):"]
+        urls = []
+        for league, article in articles[:6]:
+            lines.append("- " + league + " · " + article["headline"] + " · " + article["published_utc"])
+            urls.append(article["url"])
+        if not articles:
+            lines.append("No encontré titulares para ese filtro. Prueba con la liga o el apellido del jugador.")
+        if failed:
+            lines.append("No se pudo actualizar: " + ", ".join(failed) + ". Puedes reintentar.")
+        lines.append("Un titular no confirma una baja ni una alineación.")
+        context["topic"] = "news"
+        return {"reply": "\n\n".join(lines), "sources": _trusted_sources(urls), "context": context}
 
     # Answer about OUR model from recorded ESPN walk-forward audits, not from
     # the Covers reference backtest or any implied market odds.
@@ -265,16 +320,17 @@ def answer_query(
         count = int(count_match.group(1)) if count_match else 3
         legs_match = re.search(r"\b(\d{1,2})\s*(?:picks|selecciones|piernas|legs)\b", q)
         legs = int(legs_match.group(1)) if legs_match else 3
-        if legs > 30:
+        if not 1 <= legs <= 30:
             return {"reply": "Puedo revisar como máximo 30 selecciones en un borrador. "
                              "Pide una combinación más corta.",
                     "sources": [], "context": context}
         report = report_loader(target)
-        if report is None:
-            return {"reply": "No tengo un informe del día verificable para esas combinadas. "
-                             "No mezclaré cuotas viejas con encuentros nuevos. "
-                             "Abre «Parlays» cuando aparezcan juegos futuros en Covers.",
-                    "sources": [], "context": context}
+        if report is None or report.get("date_cdmx") != target.isoformat():
+            report = live_parlay_report(target, board_fetch=board_fetch, covers_fetch=covers_fetch)
+        requested_leagues = [s for s in request.sports if s in _SPORTS]
+        report = {**report, "leagues": {s: data for s, data in report.get("leagues", {}).items()
+                                         if s in requested_leagues}}
+        context["topic"] = "parlay"
         proposals = build_reference_parlays(
             report, count=count, legs_per_parlay=legs,
             more_than_ten=legs > 10, now=clock,
@@ -402,6 +458,7 @@ def answer_query(
             "player_line": parsed.line,
             "player_direction": parsed.direction,
             "sport": "NBA",
+            "topic": "player",
         })
         return {
             "reply": response,
@@ -476,6 +533,7 @@ def answer_query(
             "Modelo NO calibrado ni validado fuera de muestra; "
             "sin apuestas ni importe recomendado."
         )
+        context["topic"] = "picks"
         return {"reply": "\n".join(lines),
                 "sources": _trusted_sources([x for x in urls if x]), "context": context}
 
@@ -490,7 +548,7 @@ def answer_query(
     if not leagues:
         leagues = list(_SPORTS)
     if context.get("sport") in _SPORTS and not re.search(
-        r"\b(?:nba|nfl|nhl)\b", normalized(query)
+        r"\b(?:nba|nfl|nhl)\b", q
     ):
         leagues = [context["sport"]]
 
@@ -511,7 +569,7 @@ def answer_query(
             "No encontré un partido inequívoco en ESPN/Covers para la fecha indicada. "
             "Escribe ambos equipos y la liga para ubicar el juego exacto."
             ), "sources": [], "context": context}
-    if was_specific and len(exact) > 1:
+    if not was_specific or len(exact) > 1:
         return {"reply": "Encontré varios encuentros compatibles. Escribe ambos "
                          "equipos y la liga para no confundirme de partido.",
                 "sources": [], "context": context}
@@ -559,7 +617,7 @@ def answer_query(
             lines.append(label + ": " + str(value))
     lines.append("Modelo propio estadístico, aún NO calibrado ni validado. "
                  "No garantiza rentabilidad ni propone importe de apuesta.")
-    context.update({"matchup": game["partido"], "sport": game["liga"]})
+    context.update({"matchup": game["partido"], "sport": game["liga"], "topic": "matchup"})
     return {"reply": "\n\n".join(lines),
             "sources": _trusted_sources([url for url in sources if url]),
             "context": context}
