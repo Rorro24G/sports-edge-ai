@@ -35,5 +35,7 @@ jobs:
         run: PYTHONPATH=. python scripts/smoke_content_ui.py
       - name: Comprobar navegación del cerebro
         run: PYTHONPATH=. python scripts/smoke_portal_ui.py
+      - name: Comprobar rediseño y saltos entre apartados
+        run: PYTHONPATH=. python scripts/smoke_visual_ui.py
       - name: Comprobar transiciones y seis conexiones
         run: node scripts/check_portal_protocol.cjs

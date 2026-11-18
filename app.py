@@ -29,6 +29,7 @@ from src.brain_dashboard import render_brain_header, render_morning_snapshot
 from src.independent_picks import build_slate, evaluate_game, add_covers_price
 from src.own_picks_ui import render_own_slate, render_own_result
 from src.model_audit_ui import render_model_audit
+from src.section_design import render_footer
 
 st.set_page_config(
     page_title="Sports Edge AI | Cerebro",
@@ -105,9 +106,9 @@ def safe_odds_key():
         return ""
 
 if section == "picks":
+    st.markdown("### Centro de análisis")
+    st.caption("Selecciones independientes con evidencia ESPN y revisión de riesgos.")
     render_morning_snapshot()
-    st.markdown("## Picks de Sports Edge AI")
-    st.caption("Primero decide el cerebro con resultados ESPN. Covers solo aporta momios.")
     render_model_audit()
     with st.form("sports_query"):
         prompt = st.text_input(
@@ -464,42 +465,12 @@ if section == "simulaciones":
                 )
 
 if section == "calendario":
-    st.subheader("Calendario actualizado por fecha")
-    st.caption(
-        "Consulta los partidos de NBA, NFL y NHL en ESPN bajo demanda. "
-        "La consulta se renueva automáticamente como máximo cada diez minutos; "
-        "no depende de una fecha fija guardada."
+    from src.calendar_ui import render as render_calendar
+    render_calendar(
+        board_fetch=cached_scoreboard,
+        clear_cache=cached_scoreboard.clear,
     )
-    day = st.date_input("Fecha en Ciudad de México",
-                        value=datetime.now(ZoneInfo("America/Mexico_City")).date(),
-                        key="calendar_date")
-    leagues = st.multiselect("Ligas", ["NBA", "NFL", "NHL"],
-                             default=["NBA", "NFL", "NHL"], key="calendar_leagues")
-    if st.button("Actualizar calendario ahora"):
-        cached_scoreboard.clear()
-    calendar_rows = []
-    for league in leagues:
-        try:
-            board = cached_scoreboard(league, day)
-        except CalendarSourceError:
-            st.warning(league + ": no se pudo actualizar el calendario; no se usarán datos antiguos.")
-            continue
-        st.caption(league + " · consulta " + board["checked_at_utc"] + " (UTC)")
-        if not board["games"]:
-            st.info("No se encontraron juegos de " + league + " para esa fecha en ESPN.")
-        for game in board["games"]:
-            calendar_rows.append({
-                "Liga": game["sport"],
-                "Visitante": game["away"],
-                "Local": game["home"],
-                "Hora CDMX": game["local_time"],
-                "Estado": game["status"],
-                "Fuente": game["source_url"],
-            })
-    if calendar_rows:
-        st.dataframe(sorted(calendar_rows, key=lambda row: (row["Hora CDMX"], row["Liga"])),
-                     use_container_width=True, hide_index=True)
-    st.caption("ATP/WTA: calendario por conectar. La ausencia de datos no equivale a partido cancelado.")
+
 
 if section == "noticias":
     from src.news_ui import render as render_news
@@ -535,3 +506,6 @@ if section == "historial":
     from src.ledger_ui import render
     render()
 
+
+# Consistent end-of-section visual signature.
+render_footer()

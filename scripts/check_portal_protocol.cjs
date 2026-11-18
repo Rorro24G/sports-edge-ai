@@ -18,6 +18,9 @@ assert(code.includes('ctx.globalAlpha=1;drawBrain(t)'),'intro canvas must be vis
 assert(code.includes("state==='intro'"),'ambient brain on entry screen missing');
 assert(code.includes("angle+=dt*.00035"),'visible idle spin missing');
 assert(code.includes('flightBlend=ease'),'node-directed transition missing');
+assert(html.includes('@keyframes portal-depth-launch'),'entry depth animation missing');
+assert(html.includes('@keyframes portal-title-launch'),'page title animation missing');
+assert(code.includes("stage.classList.add('portal-diving')"),'section launch class missing');
 assert(html.includes('neuron-heartbeat 1.75s'),'always-on node beat missing');
 
 function run(reduced,page){
