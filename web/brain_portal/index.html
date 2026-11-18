@@ -76,6 +76,34 @@
 @keyframes connected-heartbeat{0%,100%{transform:scale(.9);box-shadow:0 0 13px #ff5365,0 0 26px #ff536580}18%{transform:scale(1.36);box-shadow:0 0 23px #ffb2be,0 0 46px #ff375b}32%{transform:scale(.98)}44%{transform:scale(1.19);box-shadow:0 0 19px #ff8a9b,0 0 36px #ff375b}62%{transform:scale(.9)}}
 @keyframes connected-wave{0%{transform:scale(.6);opacity:.8}100%{transform:scale(1.9);opacity:0}}
 .reduced #stage .neuron .dot,.reduced #stage .neuron .dot:before,.reduced #stage .neuron .dot:after{animation:none!important}
+
+/* Explicit depth and light-speed feedback when entering any of the six nodes. */
+#stage.portal-diving::before{
+  content:"";position:absolute;inset:-16%;z-index:7;pointer-events:none;
+  background:
+    repeating-radial-gradient(circle at center,transparent 0 24px,#ff7b9861 25px 26px,transparent 27px 51px),
+    radial-gradient(circle at center,#ffd6e7ce 0%,#ff3f6a91 11%,#55122c83 27%,transparent 68%);
+  filter:drop-shadow(0 0 30px #ff5578);
+  opacity:0;animation:portal-depth-launch 1.1s cubic-bezier(.19,.67,.16,1) both;
+}
+#stage.portal-diving #flight-label{
+  z-index:10;color:#fff;font-size:clamp(16px,3vw,31px);
+  letter-spacing:.23em;font-weight:900;text-shadow:0 0 18px #fff,0 0 40px #ff486f;
+  animation:portal-title-launch 1.1s ease-out both;
+}
+@keyframes portal-depth-launch{
+  0%{opacity:0;transform:scale(.12) rotate(-9deg)}
+  31%{opacity:.65;transform:scale(.58)}
+  73%{opacity:.96;transform:scale(2.5) rotate(6deg)}
+  100%{opacity:0;transform:scale(8);filter:blur(18px)}
+}
+@keyframes portal-title-launch{
+  0%{opacity:0;transform:scale(.45) translateY(22px)}
+  23%,56%{opacity:1}
+  100%{opacity:0;transform:scale(3) translateY(-14px)}
+}
+.reduced #stage.portal-diving::before,
+.reduced #stage.portal-diving #flight-label{animation:none!important}
 </style></head>
 <body><main id="stage">
 <canvas id="scene" aria-label="Cerebro tridimensional de líneas rojas. Usa los seis botones para abrir una sección."></canvas>
@@ -118,6 +146,7 @@ function openSection(button){
   const index=nodes.indexOf(button),focus=nodePoint(index);
   flightX=focus[0]-W/2;flightY=focus[1]-H*.48;flightBlend=0;
   target=button.dataset.page;state='dive';start=performance.now();
+  stage.classList.add('portal-diving');
   ui.style.opacity=0;ui.inert=true;
   flight.textContent=button.innerText;flight.style.opacity=1;
   if(reduced)finish();
