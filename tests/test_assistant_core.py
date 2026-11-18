@@ -3,7 +3,9 @@ from datetime import date, datetime, timedelta
 from unittest import TestCase
 from zoneinfo import ZoneInfo
 
-from src.assistant_core import answer_query, _trusted_sources
+from src.assistant_core import answer_query, _trusted_sources, _adapt_followup
+from unittest.mock import patch
+from src.content_feed import NewsError
 
 MX = ZoneInfo("America/Mexico_City")
 NOW = datetime(2026, 11, 17, 9, 0, tzinfo=MX)
@@ -103,6 +105,64 @@ def assistant(text, *, context=None, report=None):
 
 
 class AssistantTests(TestCase):
+    def test_new_player_is_never_combined_with_previous_player(self):
+        ctx = {"player_name": "Luka Doncic", "player_stat": "PTS", "topic": "player"}
+        for question in ("Over 25.5 puntos de Stephen Curry", "rebotes Stephen Curry"):
+            self.assertEqual(_adapt_followup(question, ctx), question)
+        ctx["topic"] = "matchup"
+        self.assertEqual(_adapt_followup("¿Y los puntos?", ctx), "¿Y los puntos?")
+
+    def test_new_query_resets_date_but_followup_keeps_it(self):
+        first = assistant("Picks NBA mañana")
+        second = assistant("Over 24.5 puntos de Luka Doncic NBA", context=first["context"])
+        self.assertEqual(second["context"]["date_cdmx"], "2026-11-17")
+        followup = assistant("¿Y el under 25.5?", context={
+            **second["context"], "date_cdmx": "2026-11-18"})
+        self.assertEqual(followup["context"]["date_cdmx"], "2026-11-18")
+
+    def test_invalid_date_and_greeting_need_no_network(self):
+        def forbidden(*args):
+            self.fail("This query should not request game data")
+        for text, expected in (("Hola", "Puedo revisar"),
+                               ("Picks NBA 2026-02-30", "Esa fecha no existe")):
+            result = answer_query(text, now=NOW, board_fetch=forbidden, covers_fetch=forbidden)
+            self.assertIn(expected, result["reply"])
+
+    def test_generic_question_cannot_select_first_game(self):
+        result = assistant("¿Qué hay hoy?")
+        self.assertNotIn("SELECCIÓN SPORTS EDGE AI", result["reply"])
+        self.assertIn("equipos", result["reply"])
+
+    def test_parlay_fetches_live_when_report_is_missing_or_stale(self):
+        for report in (None, {**snapshot(), "date_cdmx": "2026-11-16"}):
+            with patch("src.assistant_core.live_parlay_report", return_value=snapshot()) as live:
+                result = assistant("Dame 2 parlays NBA de 2 selecciones hoy", report=report)
+            live.assert_called_once()
+            self.assertIn("Alternativa", result["reply"])
+            self.assertNotIn("Edmonton", result["reply"])
+
+    def test_news_filters_player_and_handles_feed_failure(self):
+        feed = {"articles": [
+            {"headline": "Luka Doncic vuelve a entrenar", "published_utc": "2026-11-17T12:00:00+00:00",
+             "url": "https://www.espn.com/nba/story/1"},
+            {"headline": "Otro jugador", "published_utc": "2026-11-17T13:00:00+00:00",
+             "url": "https://www.espn.com/nba/story/2"}]}
+        calls = []
+        def news(league):
+            calls.append(league)
+            return feed
+        result = answer_query("Noticias de Luka Doncic NBA", now=NOW, news_fetch=news)
+        self.assertEqual(calls, ["NBA"])
+        self.assertIn("vuelve a entrenar", result["reply"])
+        self.assertNotIn("Otro jugador", result["reply"])
+        self.assertIn("no confirma una baja", result["reply"])
+        with patch("src.assistant_core.fetch_news"):
+            def failed(_):
+                raise NewsError("private service details")
+            result = answer_query("Noticias NBA", now=NOW, news_fetch=failed)
+        self.assertIn("No se pudo actualizar: NBA", result["reply"])
+        self.assertNotIn("private service", result["reply"])
+
     def test_props_by_name_and_followup_line(self):
         a = assistant("Over de 24,5 puntos de Luka Doncic NBA hoy")
         self.assertIn("Luka Doncic", a["reply"])
