@@ -52,6 +52,26 @@ def render_own_slate(slate: dict) -> None:
     st.markdown("### Selecciones del cerebro")
     st.caption("Motor " + str(slate.get("model", VERSION)) +
                " · análisis independiente de resultados ESPN previos al partido.")
+    source_status = slate.get("source_status") or {}
+    unavailable = [
+        sport for sport, status in source_status.items()
+        if not status.get("available")
+    ]
+    if unavailable:
+        st.warning(
+            "ESPN no respondió para: " + ", ".join(unavailable) +
+            ". Esas ligas no fueron evaluadas; no significa que no haya partidos."
+        )
+    if source_status:
+        cols = st.columns(3)
+        for index, sport in enumerate(("NBA", "NFL", "NHL")):
+            if sport not in source_status:
+                continue
+            status = source_status[sport]
+            cols[index].metric(
+                sport + " · calendario ESPN",
+                str(status.get("games", 0)) if status.get("available") else "Sin conexión",
+            )
     candidates = slate.get("picks") or []
     if candidates:
         st.caption(str(len(candidates)) + " selecciones experimentales entre "
@@ -76,9 +96,27 @@ def render_own_slate(slate: dict) -> None:
             for item in group:
                 render_own_result(item, compact=True)
     else:
-        st.info("Hoy el cerebro no encontró partidos con historial y señal suficientes. "
-                "No seleccionará a un favorito solo por sus momios.")
+        analyzed = slate.get("evaluated") or []
+        if unavailable and not analyzed:
+            st.error("No se pudieron evaluar partidos: fallaron las fuentes ESPN "
+                     "seleccionadas. Reintenta la consulta cuando se restablezcan.")
+        elif not analyzed:
+            st.info("No hay encuentros futuros verificables en las ligas y fecha "
+                    "solicitadas. Prueba otra fecha o liga.")
+        else:
+            st.info(
+                "El cerebro revisó " + str(len(analyzed)) +
+                " partidos pero ninguno pasó sus filtros. No fabricaremos "
+                "selecciones usando favoritos ni cuotas Covers."
+            )
     evaluated = slate.get("evaluated") or []
+    if evaluated:
+        from collections import Counter
+        counts = Counter(str(x.get("status") or "SIN_DATOS") for x in evaluated)
+        st.caption(
+            "Diagnóstico ESPN/modelo · " +
+            " · ".join(key + ": " + str(count) for key, count in sorted(counts.items()))
+        )
     with st.expander("Partidos analizados por el cerebro", expanded=False):
         if evaluated:
             st.dataframe([{
