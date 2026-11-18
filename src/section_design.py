@@ -6,7 +6,6 @@ rendered through Streamlit widgets, not interpolated into raw HTML.
 from __future__ import annotations
 
 import html
-import streamlit as st
 
 SECTION_INFO = {
     "picks": (
@@ -290,10 +289,12 @@ a[data-testid="stLinkButton"]:hover{border-color:#ff8099!important;background:#3
 
 
 def inject_theme() -> None:
+    import streamlit as st
     st.markdown(THEME_CSS, unsafe_allow_html=True)
 
 
 def render_hero(section: str) -> None:
+    import streamlit as st
     if section not in SECTION_INFO:
         return
     eyebrow, headline, description, labels, symbol = SECTION_INFO[section]
@@ -313,6 +314,7 @@ def render_hero(section: str) -> None:
 
 
 def render_footer() -> None:
+    import streamlit as st
     st.html(
         '<footer class="se-page-bottom">SPORTS EDGE AI &nbsp; / &nbsp; '
         'MODELOS EXPERIMENTALES &nbsp; / &nbsp; DATOS CON FUENTE &nbsp; / &nbsp; '
