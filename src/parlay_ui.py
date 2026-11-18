@@ -28,9 +28,9 @@ def cached_live_report(day):
 
 
 def render() -> None:
-    st.subheader("Parlays · planificación y discusión")
-    st.caption("Normalmente se analizarán 2 o 3 combinaciones, máximo 10 "
-               "selecciones por combinada salvo que tú pidas más.")
+    st.markdown("### Estudio de combinaciones")
+    st.caption("Arma borradores de 2 o 3 alternativas, compara cada selección "
+               "y revisa por separado sus riesgos y sus fuentes.")
     c1, c2, c3 = st.columns(3)
     with c1:
         count = st.selectbox("Parlays que quieres comparar", [2, 3], index=1)
@@ -64,7 +64,13 @@ def render() -> None:
             report, count=count, legs_per_parlay=requested_legs,
             more_than_ten=allow_more, now=now,
         )
-    st.markdown("**Combinadas de referencia**")
+    overview = st.columns(3)
+    overview[0].metric("Alternativas disponibles", len(proposals))
+    overview[1].metric("Selecciones solicitadas", requested_legs)
+    overview[2].metric("Fecha CDMX", now.strftime("%d/%m/%Y"))
+    st.markdown("### Combinadas de referencia")
+    st.caption("Cada alternativa contiene mercados externos. "
+               "No confundir un borrador con una decisión del motor propio.")
     if not proposals:
         st.info(
             "No hay suficientes partidos futuros con proyección, momios y calendario "
@@ -78,14 +84,18 @@ def render() -> None:
                 str(proposal["num_selecciones"]) + " selecciones",
                 expanded=(i == 0),
             ):
+                details = st.columns(2)
+                details[0].metric("Piernas", proposal["num_selecciones"])
+                details[1].metric("Cuota decimal matemática",
+                                  proposal["cuota_decimal_teorica"])
                 st.dataframe(pd.DataFrame([
                     {
                         "Liga": leg["liga"], "Partido": leg["evento"],
                         "Hora CDMX": leg["hora_cdmx"],
                         "Selección ML": leg["seleccion"],
-                        "Momio de referencia": leg["momio_covers"],
+                        "Momio externo": leg["momio_covers"],
                     } for leg in proposal["selecciones"]
-                ]).style.set_properties(subset=["Momio de referencia"], **{"color": "#76f5a6", "font-weight": "bold"}), hide_index=True, use_container_width=True)
+                ]), hide_index=True, use_container_width=True)
                 st.caption("Producto matemático de momios publicados: " +
                            proposal["cuota_decimal_teorica"] +
                            " decimal. NO es una cuota combinada ofrecida por una casa "
@@ -112,7 +122,7 @@ def render() -> None:
     st.caption("Pedir más de diez selecciones es posible únicamente al activar "
                "la opción correspondiente; si no existen partidos suficientes "
                "se mostrará una propuesta más corta, nunca apuestas ficticias.")
-    st.markdown("**Discute un parlay antes de decidir**")
+    st.markdown("### Mesa de revisión")
     st.caption("Puedes cuestionar correlaciones, revisar momios y compartir selecciones "
                "que quieras comparar. Las respuestas de IA no ejecutan apuestas ni "
                "las guardan automáticamente en tu historial.")
@@ -123,7 +133,9 @@ def render() -> None:
                    "Esta conversación de Streamlit no está conectada directamente a la de aquí.")
         draft = st.session_state.get("parlay_chat_question", "")
         if draft:
-            st.code(draft, language="text")
+            with st.expander("Ver el borrador listo para copiar", expanded=True):
+                st.text_area("Resumen del análisis para compartir",
+                             value=draft, height=220, key="parlay_share_draft")
         else:
             st.info("Selecciona «Preparar esta combinación para discutir» "
                     "o escribe tus selecciones para revisarlas en ChatGPT.")
