@@ -9,11 +9,14 @@ for(const keyframe of ['brand-breathe','node-drift','neuron-heartbeat','neuron-a
  assert(html.includes('@keyframes '+keyframe),'missing animation '+keyframe);
 }
 assert(html.includes('.reduced #stage .brand'),'motion-reduction CSS missing');
-assert(code.includes('breathing=reduced?1'),'motion-reduction JS missing');
+assert(code.includes('const motion=(reduced||paused)?0:t'),'motion and pause behavior missing');
 assert(code.includes('if(!reduced&&i%7===0'),'travelling wire highlights missing');
 assert(code.includes('.map(project)'),'wire geometry projection missing');
 assert(code.includes('rotCa=Math.cos(angle)'),'angle trigonometry must be reused per frame');
 assert(code.includes('const frameInterval=lowPower?33:18'),'adaptive frame pacing missing');
+assert(code.includes('function drawBrainMass()'),'cerebro volumétrico sin masa no permitido');
+assert(code.includes('drawBrainMass();'),'se debe pintar volumen antes de líneas');
+assert(html.includes('Cerebro tridimensional volumétrico'),'descripción accesible del cerebro falta');
 assert(code.includes('const d=lowPower?1:Math.min(devicePixelRatio||1,1.35)'),
   'pixel budget must be capped for high-DPI devices');
 assert(!code.includes('zoom=1+Math.pow(ease,2)*20'),
@@ -23,7 +26,12 @@ assert(html.includes('MOVIMIENTO ON'),'motion control must be visible');
 assert(html.includes('rgba(5,5,6,.24)'),'intro must reveal moving brain');
 assert(code.includes('ctx.globalAlpha=1;drawBrain(t)'),'intro canvas must be visible');
 assert(code.includes("state==='intro'"),'ambient brain on entry screen missing');
-assert(code.includes("angle+=dt*.00035"),'visible idle spin missing');
+assert(!code.includes("angle+=dt*.00035"),'el cerebro no debe girar en 360 grados');
+assert(!code.includes("angle+=dt*.00025"),'el cerebro no debe girar solo en portada');
+assert(code.includes('floatY=motion?7*Math.sin(motion*.00055):0'),
+  'falta flotación lenta de cerebro y nodos');
+assert(code.includes('Math.max(-.30,Math.min(.30,angle+'),
+  'no permitir giro manual completo de 360');
 assert(code.includes('flightBlend=ease'),'node-directed transition missing');
 assert(html.includes('@keyframes portal-depth-launch'),'entry depth animation missing');
 assert(html.includes('@keyframes portal-title-launch'),'page title animation missing');
@@ -34,7 +42,7 @@ function run(reduced,page){
  const messages=[],listeners={},arcs=[];let callback;
  const element=()=>({style:{},classList:{add(){},toggle(){}},setAttribute(){},focus(){},inert:false,clientWidth:1000,clientHeight:760});
  const elements=Object.fromEntries(['scene','stage','intro','brain-ui','flight-label','enter','rotate','reset','motion-toggle'].map(n=>[n,element()]));
- elements.scene.getContext=()=>new Proxy({},{get:(_,key)=>key==='arc'?((...args)=>arcs.push(args)):(()=>{})});
+ elements.scene.getContext=()=>new Proxy({},{get:(_,key)=>key==='arc'?((...args)=>arcs.push(args)):(key==='createRadialGradient'?(()=>({addColorStop(){}})):(()=>{}))});
  const nodes=pages.map(page=>Object.assign(element(),{dataset:{page},innerText:page.toUpperCase()}));
  const parent={postMessage:v=>messages.push(v)};
  const window={parent};
@@ -58,10 +66,12 @@ function run(reduced,page){
  nodes[0].onpointerenter?.();
  const oldAngle=vm.runInNewContext('angle',context);
  callback(60000);
- assert.notEqual(vm.runInNewContext('angle',context),oldAngle,'rotation continues over a node after a minute');
+ assert.equal(vm.runInNewContext('angle',context),oldAngle,
+   'front-facing brain must not turn even after a minute');
  const minute=nodes.map(n=>[n.style.left,n.style.top]);
  callback(120000);
- assert.notDeepEqual(minute,nodes.map(n=>[n.style.left,n.style.top]),'animation must keep running without input');
+ assert.notDeepEqual(minute,nodes.map(n=>[n.style.left,n.style.top]),
+   'brain must keep floating gently without changing orientation');
  elements['motion-toggle'].onclick();
  assert(elements['motion-toggle'].textContent.includes('ACTIVAR'));
  callback(120100);

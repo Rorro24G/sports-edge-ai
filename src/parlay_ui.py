@@ -266,6 +266,12 @@ def render(*, slate_fetch=None, covers_fetch=None) -> None:
     result = build_own_parlays(
         slate, now.date(), count=count, legs_per_parlay=int(legs), now=now,
     )
+    failures = slate.get("source_errors") or []
+    if failures:
+        st.warning(
+            "Sin respuesta del calendario ESPN: " + ", ".join(failures) +
+            ". Son ligas sin evaluar, NO ligas sin partidos."
+        )
     stats = st.columns(3)
     stats[0].metric("Partidos elegibles", result["eligible_games"])
     stats[1].metric("Picks propios del cerebro", result["available"])
@@ -298,6 +304,21 @@ def render(*, slate_fetch=None, covers_fetch=None) -> None:
             st.dataframe([
                 {"Decisión del cerebro": key, "Partidos": value}
                 for key, value in sorted(excluded.items())
+            ], hide_index=True, use_container_width=True)
+        rejected = [
+            row for row in (slate.get("evaluated") or [])
+            if isinstance(row, dict) and row.get("status") != "CANDIDATO_EXPERIMENTAL"
+        ]
+        if rejected:
+            st.markdown("**Por qué descartó cada partido**")
+            st.dataframe([
+                {
+                    "Liga": row.get("sport", ""),
+                    "Partido": str(row.get("away", "")) + " vs " + str(row.get("home", "")),
+                    "Decisión": row.get("status", ""),
+                    "Motivo": row.get("reason", "Sin explicación del proveedor"),
+                }
+                for row in rejected
             ], hide_index=True, use_container_width=True)
         if result["available"] < 2:
             st.caption(
