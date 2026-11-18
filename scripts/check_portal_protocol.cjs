@@ -10,8 +10,15 @@ for(const keyframe of ['brand-breathe','node-drift','neuron-heartbeat','neuron-a
 }
 assert(html.includes('.reduced #stage .brand'),'motion-reduction CSS missing');
 assert(code.includes('breathing=reduced?1'),'motion-reduction JS missing');
-assert(code.includes('if(!reduced&&i%5===0'),'travelling wire highlights missing');
-assert(code.includes('thinkingPoint(p,t,i,j)'),'real line deformation missing');
+assert(code.includes('if(!reduced&&i%7===0'),'travelling wire highlights missing');
+assert(code.includes('.map(project)'),'wire geometry projection missing');
+assert(code.includes('rotCa=Math.cos(angle)'),'angle trigonometry must be reused per frame');
+assert(code.includes('const frameInterval=lowPower?33:18'),'adaptive frame pacing missing');
+assert(code.includes('const d=lowPower?1:Math.min(devicePixelRatio||1,1.35)'),
+  'pixel budget must be capped for high-DPI devices');
+assert(!code.includes('zoom=1+Math.pow(ease,2)*20'),
+  'old 20x dive zoom causes expensive offscreen Canvas work');
+assert(html.includes('animation:fast-heart'),'neon motion should survive reduced paint');
 assert(html.includes('MOVIMIENTO ON'),'motion control must be visible');
 assert(html.includes('rgba(5,5,6,.24)'),'intro must reveal moving brain');
 assert(code.includes('ctx.globalAlpha=1;drawBrain(t)'),'intro canvas must be visible');
