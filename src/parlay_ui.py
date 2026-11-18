@@ -93,9 +93,15 @@ def _show_proposal(proposal: dict, index: int) -> None:
                         " (no es probabilidad de ganar)."
                     )
                 st.caption(leg["motivo"] or "Señal estadística prepartido de ESPN.")
-                st.link_button("Ver encuentro ESPN", leg["fuente"])
+                st.link_button(
+                    "ESPN · " + proposal["nombre"] + " · " + leg["seleccion"],
+                    leg["fuente"],
+                )
                 if leg["fuente_covers"]:
-                    st.link_button("Ver momio Covers", leg["fuente_covers"])
+                    st.link_button(
+                        "Covers · " + proposal["nombre"] + " · " + leg["seleccion"],
+                        leg["fuente_covers"],
+                    )
         if not proposal["cuota_decimal_teorica"]:
             st.caption(
                 "Sin precio combinado: faltan momios verificables. "
