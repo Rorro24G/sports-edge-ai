@@ -132,6 +132,52 @@ def load_calibration_experiment(path: Path = AUDIT_PATH) -> dict | None:
         return None
 
 
+def load_opponent_experiment(path: Path = AUDIT_PATH) -> dict | None:
+    """Display the rejected historical challenger only with six grounded audits."""
+    bundle = _read(path)
+    if not isinstance(bundle, dict) or bundle.get("model") != VERSION:
+        return None
+    experiment = bundle.get("opponent_challenger")
+    if not isinstance(experiment, dict):
+        return None
+    if (experiment.get("model") != "SEAI-RIVALES-0.3-EXPERIMENTAL"
+            or experiment.get("production_enabled") is not False
+            or experiment.get("promotion_decision") != "NO_PROMOVER_EN_2026"):
+        return None
+    rows = experiment.get("experiments")
+    if not isinstance(rows, list) or len(rows) != 6:
+        return None
+    audits = load_model_audits(path)
+    try:
+        seen = set()
+        for row in rows:
+            key = (row["sport"], str(row["season"]))
+            if key in seen:
+                return None
+            seen.add(key)
+            baseline = next((r for r in audits
+                             if r["sport"] == key[0]
+                             and r["period"]["end"].startswith(key[1])), None)
+            if baseline is None:
+                return None
+            if (row["model"] != experiment["model"]
+                    or row["production_enabled"] is not False
+                    or row["eligible_for_promotion"] is not False
+                    or row["historical_baseline_candidates"] != baseline["candidate_count"]
+                    or row["assessable_candidates"] < 0
+                    or row["retained_candidates"] + row["vetoed_candidates"]
+                       != row["assessable_candidates"]
+                    or row["unassessable_candidates"] + row["assessable_candidates"]
+                       != row["historical_baseline_candidates"]):
+                return None
+        if seen != {(sport, str(year)) for sport in ("NBA", "NFL", "NHL")
+                    for year in (2025, 2026)}:
+            return None
+        return experiment
+    except (KeyError, ValueError, TypeError):
+        return None
+
+
 def render_model_audit(path: Path = AUDIT_PATH) -> None:
     import streamlit as st
 
@@ -203,3 +249,22 @@ def render_model_audit(path: Path = AUDIT_PATH) -> None:
         ]
         if urls:
             st.link_button("Ver ejecución y auditoría ESPN", urls[-1])
+        opponent = load_opponent_experiment(path)
+        if opponent:
+            st.markdown("**Laboratorio: ¿mejoran los picks al medir la dificultad de los rivales?**")
+            st.dataframe([
+                {
+                    "Liga": row["sport"],
+                    "Año": row["season"],
+                    "Candidatos comparables": row["assessable_candidates"],
+                    "Descartados por adversario": row["vetoed_candidates"],
+                    "Modelo actual": f"{row['baseline_accuracy_assessable']:.1%}"
+                                    if row["baseline_accuracy_assessable"] is not None else "—",
+                    "Con filtro de rivales": f"{row['challenger_accuracy_retained']:.1%}"
+                                            if row["challenger_accuracy_retained"] is not None else "—",
+                }
+                for row in opponent["experiments"]
+            ], hide_index=True, use_container_width=True)
+            st.caption("Este filtro quedó rechazado para producción: sus resultados "
+                       "empeoraron en NBA y NHL 2026. Muestra de investigación, "
+                       "no un cambio de los picks en vivo.")
