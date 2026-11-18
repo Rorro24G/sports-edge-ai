@@ -553,5 +553,87 @@
     "return_on_investment_known": false,
     "notes": "Calibración logística entrenada solo con temporada anterior; la temporada posterior se usa para evaluación y no para escoger parámetros. El resultado no acredita ganancias ni se aplica todavía a Picks en vivo.",
     "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44317149330"
+  },
+  "learned_challengers": {
+    "trained_model": "SEAI-APRENDIZAJE-0.1",
+    "source": "Real GitHub Actions ESPN historical audits",
+    "run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44323603764",
+    "production_enabled": false,
+    "results": [
+      {
+        "status": "CHALLENGER_ENTRENADO_EN_SOMBRA",
+        "trained_model": "SEAI-APRENDIZAJE-0.1",
+        "base_model": "SEAI-JUICIO-0.2",
+        "sport": "NBA",
+        "train_period": {
+          "start": "2025-11-10",
+          "end": "2025-12-02"
+        },
+        "holdout_period": {
+          "start": "2026-10-28",
+          "end": "2026-11-17"
+        },
+        "train_count": 160,
+        "holdout_count": 101,
+        "old_model_holdout": {
+          "brier": 0.21343,
+          "log_loss": 0.617027,
+          "winner_accuracy": 0.67327,
+          "mean_home_probability": 0.52768,
+          "home_win_frequency": 0.50495
+        },
+        "learned_model_holdout": {
+          "brier": 0.21074,
+          "log_loss": 0.611191,
+          "winner_accuracy": 0.68317,
+          "mean_home_probability": 0.49645,
+          "home_win_frequency": 0.50495
+        },
+        "brier_delta_learned_minus_old": -0.00269,
+        "logloss_delta_learned_minus_old": -0.005836,
+        "train_uses_holdout": false,
+        "used_covers_to_train": false,
+        "production_enabled": false,
+        "model_validated": false,
+        "notes": "Challenger entrenado con ESPN 2025 y contrastado en ESPN 2026; hiperparámetros fijos antes de comprobar la muestra posterior. No es validación prospectiva ni ROI de apuestas."
+      },
+      {
+        "status": "CHALLENGER_ENTRENADO_EN_SOMBRA",
+        "trained_model": "SEAI-APRENDIZAJE-0.1",
+        "base_model": "SEAI-JUICIO-0.2",
+        "sport": "NHL",
+        "train_period": {
+          "start": "2025-11-02",
+          "end": "2025-11-25"
+        },
+        "holdout_period": {
+          "start": "2026-10-25",
+          "end": "2026-11-17"
+        },
+        "train_count": 160,
+        "holdout_count": 160,
+        "old_model_holdout": {
+          "brier": 0.243669,
+          "log_loss": 0.680192,
+          "winner_accuracy": 0.5625,
+          "mean_home_probability": 0.52121,
+          "home_win_frequency": 0.4625
+        },
+        "learned_model_holdout": {
+          "brier": 0.245518,
+          "log_loss": 0.684221,
+          "winner_accuracy": 0.575,
+          "mean_home_probability": 0.51034,
+          "home_win_frequency": 0.4625
+        },
+        "brier_delta_learned_minus_old": 0.001849,
+        "logloss_delta_learned_minus_old": 0.004029,
+        "train_uses_holdout": false,
+        "used_covers_to_train": false,
+        "production_enabled": false,
+        "model_validated": false,
+        "notes": "Challenger entrenado con ESPN 2025 y contrastado en ESPN 2026; hiperparámetros fijos antes de comprobar la muestra posterior. No es validación prospectiva ni ROI de apuestas."
+      }
+    ]
   }
 }
