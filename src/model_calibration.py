@@ -149,7 +149,7 @@ def evaluate_calibration(train: dict, holdout: dict, *,
         "model_validated": False,
         "return_on_investment_known": False,
         "notes": ("Calibración logística entrenada solo con temporada anterior; "
-                  "la temporada posterior se usa para evaluación y no para "
-                  "escoger parámetros. El resultado no acredita ganancias ni "
-                  "se aplica todavía a Picks en vivo."),
+                  "la temporada posterior se usa para una evaluación exploratoria. "
+                  "No existe una prueba confirmatoria pre-registrada. "
+                  "El resultado no acredita ganancias ni se aplica a Picks en vivo."),
     }
