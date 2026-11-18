@@ -1,5 +1,5 @@
 """Prueba real de renderizado de Streamlit, sin credenciales ni peticiones externas."""
-from datetime import datetime
+from datetime import datetime, timedelta
 from unittest.mock import patch
 from streamlit.testing.v1 import AppTest
 from unittest.mock import patch as content_patch
@@ -36,6 +36,20 @@ def fake_board(league, target):
         }] if league == "NBA" else []),
         "checked_at_utc": "2026-11-13T16:00:00+00:00",
     }
+
+def fake_team_schedule(sport, team_id, target):
+    dominant = str(team_id) == "28"
+    return {
+        "games": [{
+            "event_id": str(int(team_id)*1000+i),
+            "date": (target-timedelta(days=i+1)).isoformat(),
+            "points_for": (126 if dominant else 92)+(i%3),
+            "points_against": (91 if dominant else 123)+(i%2),
+            "home": bool(i%2),
+        } for i in range(10)],
+        "source_url": "https://www.espn.com/nba/team/schedule",
+    }
+
 
 def fake_summary(league, event_id):
     return {
@@ -82,6 +96,8 @@ with (
     patch("src.covers_public.fetch_public_picks", side_effect=fake_covers),
     patch("src.live_board.fetch_scoreboard", side_effect=fake_board),
     patch("src.pick_context.fetch_summary", side_effect=fake_summary),
+    patch("src.team_form.fetch_team_schedule", side_effect=fake_team_schedule),
+
 ):
     app = AppTest.from_file("../app.py", default_timeout=40)
     app.session_state["brain_section"] = "picks"
@@ -89,20 +105,38 @@ with (
     assert not app.exception, [str(e.message) for e in app.exception]
     initial_text = "\n".join(str(x.value) for x in app.markdown)
     assert "SPORTS EDGE AI" in initial_text, "No apareció la cabecera"
-    assert "Radar del día" in initial_text, "No apareció el radar diario"
+    assert "Centro de análisis" in initial_text
+    assert "Recalcular Picks con ESPN" in "\n".join(b.label for b in app.button)
+    assert "Momios publicados por Covers" not in initial_text
+    # No Covers HTTP lookup or empty odds tables until user explicitly opts in.
+    assert len([c for c in app.checkbox if c.key == "picks_show_covers"]) == 1
     inputs = list(app.text_input)
-    assert inputs, "No aparece el campo para preguntar por un partido"
+    assert inputs, "No aparece la consulta de partido"
     inputs[0].set_value("Analiza Toronto contra Philadelphia 13 de noviembre de 2026")
-    buttons = [b for b in app.button if b.label == "Analizar partido"]
-    assert len(buttons) == 1, "No se encontro el boton de Picks"
-    app = buttons[0].click().run()
+    app = [b for b in app.button if b.label == "Analizar partido"][0].click().run()
     assert not app.exception, [str(e.message) for e in app.exception]
     visible = "\n".join(str(x.value) for x in app.markdown)
-    assert "Toronto @ Philadelphia" in visible, "No se renderizo el partido"
-    assert "Momios publicados por Covers" in visible, "Faltan momios con fuente Covers"
-    assert "Lakers" not in visible, "No debe colarse un equipo ajeno a la ficha"
-    assert any(b.label.startswith("🧠 Analizar este partido") for b in app.button), "Falta análisis propio"
-    assert "Noticias" in visible or "noticias" in visible, "Falta panel de contexto"
+    assert "Toronto Raptors @ Philadelphia 76ers" in visible
+    assert "Partidos y momios" not in visible, "Covers no debe llenar la portada"
+    assert "Umbral implícito de los momios" not in visible
+    assert "Covers no publicó moneylines verificables" not in visible
+    assert any(b.key == "own_single_game" for b in app.button)
+    app = app.button(key="own_single_game").click().run()
+    assert not app.exception, [str(e.message) for e in app.exception]
+    assert "Covers no publicó momios" not in "\n".join(str(x.value) for x in app.markdown)
+    # ESPN context should load on demand, not on every repaint of the Picks page.
+    app = app.button(key="load_selected_espn_context").click().run()
+    assert not app.exception, [str(e.message) for e in app.exception]
+    visible = "\n".join(str(x.value) for x in app.markdown)
+    assert "Noticia del partido" in visible
+    # The optional Covers option is still available, but never its predictions as Picks.
+    app = app.checkbox(key="picks_show_covers").check().run()
+    assert not app.exception, [str(e.message) for e in app.exception]
+    visible = "\n".join(str(x.value) for x in app.markdown)
+    assert any(
+        "Momios externos publicados para este partido" in x.label
+        for x in app.expander
+    ), "El mercado externo debe aparecer solo tras activar Covers"
     app.text_input[0].set_value("Analiza Dallas contra Phoenix 13 de noviembre de 2026")
     app = [b for b in app.button if b.label == "Analizar partido"][0].click().run()
     assert not app.exception, [str(e.message) for e in app.exception]
