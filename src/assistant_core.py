@@ -28,6 +28,7 @@ from .pick_context import match_espn_event
 from .team_form import fetch_team_schedule
 from .independent_picks import build_slate, evaluate_game, add_covers_price
 from .picks_feed import live_picks_catalog
+from .model_audit_ui import load_model_audits
 
 MX = ZoneInfo("America/Mexico_City")
 _PROP_LABEL = {"PTS": "puntos", "REB": "rebotes",
@@ -43,8 +44,16 @@ def _trusted_sources(urls: list[str]) -> list[str]:
             continue
         info = urlsplit(value)
         host = (info.hostname or "").lower()
-        if info.scheme != "https" or not (host == "espn.com" or host.endswith(".espn.com")
-                                           or host == "covers.com" or host.endswith(".covers.com")):
+        repo_audit = (
+            host == "github.com" and re.fullmatch(
+                r"/Rorro24G/sports-edge-ai/actions/runs/\d+/?", info.path
+            ) and not info.query and not info.fragment
+        )
+        if info.scheme != "https" or not (
+            host == "espn.com" or host.endswith(".espn.com")
+            or host == "covers.com" or host.endswith(".covers.com")
+            or repo_audit
+        ):
             continue
         if value not in seen:
             seen.add(value)
@@ -131,6 +140,57 @@ def answer_query(
         except ValueError:
             target = request.target_date
     context["date_cdmx"] = target.isoformat()
+
+    # Answer about OUR model from recorded ESPN walk-forward audits, not from
+    # the Covers reference backtest or any implied market odds.
+    asks_model_accuracy = bool(
+        re.search(r"\b(?:aciertos?|acertaron|pegaron|ganaron|resultados?|"
+                  r"rendimiento|desempeno|brier|calibracion|pruebas?|"
+                  r"backtest|efectividad|fiable|confiable)\b", q)
+        and re.search(r"\b(?:cerebro|seai|sports edge|modelo|"
+                      r"picks? propios?|tus picks?|sus picks?)\b", q)
+        and not re.search(r"\b(?:mi historial|mis apuestas|bank)\b", q)
+    )
+    if asks_model_accuracy:
+        reports = load_model_audits()
+        requested = [
+            sport for sport in ("NBA", "NFL", "NHL")
+            if re.search(r"\b" + sport.lower() + r"\b", q)
+        ]
+        if requested:
+            reports = [r for r in reports if r["sport"] in requested]
+        if not reports:
+            return {
+                "reply": "No hay auditoría histórica verificable de esta "
+                         "versión del cerebro para la liga solicitada.",
+                "sources": [], "context": context,
+            }
+        lines = [
+            "Resultados históricos del modelo propio Sports Edge AI "
+            "(prueba ESPN anterior a cada partido, sin usar Covers para decidir):"
+        ]
+        for report in reports:
+            count = report["candidate_count"]
+            rate = (f"{report['candidate_accuracy_observed']:.1%}"
+                    if count else "sin selecciones")
+            lines.append(
+                "- " + report["sport"] + " " + report["period"]["end"][:4] +
+                ": " + str(report["correct_candidates"]) + "/" + str(count) +
+                " selecciones acertadas (" + rate + ") de " +
+                str(report["evaluated_count"]) + " partidos evaluados; Brier " +
+                f"{report['brier_all_evaluated']:.3f}."
+            )
+        lines.append(
+            "Brier 0.250 equivale a una estimación constante de 50/50. "
+            "NFL tiene muestras limitadas y NHL varía entre temporadas. "
+            "El modelo NO está calibrado para producción y no existe "
+            "un ROI histórico verificable con momios a la misma hora."
+        )
+        urls = [r.get("audit_run_url", "") for r in reports]
+        return {
+            "reply": "\n".join(lines),
+            "sources": _trusted_sources(urls), "context": context,
+        }
 
     # Resultados históricos de REFERENCIAS públicas, nunca el historial privado.
     about_audit = bool(re.search(
