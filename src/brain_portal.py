@@ -13,7 +13,7 @@ SECTIONS = {
 
 # Portal itself remains versioned; this redesign changes Streamlit page chrome.
 portal = components.declare_component(
-    "sports_brain_portal_motion_v6",
+    "sports_brain_portal_motion_v7",
     path=str(Path(__file__).resolve().parents[1] / "web" / "brain_portal"),
 )
 
@@ -35,7 +35,7 @@ def render_navigation():
     if section not in (*SECTIONS, "asistente", "estado"):
         value = portal(
             skip_intro=st.session_state.get("brain_entered", False),
-            key="brain_portal_motion_v6_" + str(st.session_state.get("brain_visit", 0)),
+            key="brain_portal_motion_v7_" + str(st.session_state.get("brain_visit", 0)),
             default=None,
         )
         if isinstance(value, dict) and value.get("page") in SECTIONS:
