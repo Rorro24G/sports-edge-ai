@@ -11,10 +11,10 @@ from .team_form import fetch_team_schedule
 def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
            prop_odds_fetch=None, prop_api_key: str = "",
            team_fetch=fetch_team_schedule) -> None:
-    st.subheader("Asistente · pregunta por partidos y jugadores")
+    st.markdown("### Conversa con el analista")
     st.caption(
-        "Consulta partidos, jugadores, noticias y combinadas. Puedes seguir preguntando "
-        "sobre el mismo jugador o partido. Análisis experimental: no garantiza resultados."
+        "Un espacio para contrastar selecciones, jugadores, noticias "
+        "y dudas sobre las fuentes. Si falta evidencia, el cerebro lo dice."
     )
     examples = (
         "«Picks NBA hoy» · «Lakers contra Warriors» · "
@@ -22,8 +22,19 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
         "«¿Y el under de 27.5?» · «¿Y las lesiones?» · «Dame 3 parlays de 2 selecciones» · "
         "«Noticias NBA» · «¿Qué tan confiable es tu modelo NBA?»"
     )
-    st.caption("Ejemplos: " + examples)
     history = st.session_state.setdefault("sports_assistant_history", [])
+    if not history:
+        hints = st.columns(3)
+        for column, heading, detail in (
+            (hints[0], "01 · ANALIZA", "Picks NBA hoy"),
+            (hints[1], "02 · CONTRASTA", "Lakers contra Warriors"),
+            (hints[2], "03 · EXPLICA", "¿Qué tan confiable es el modelo?"),
+        ):
+            with column:
+                with st.container(border=True):
+                    st.caption(heading)
+                    st.markdown("**" + detail + "**")
+        st.caption("Más ejemplos: " + examples)
     ctx = st.session_state.setdefault("sports_assistant_context", {})
     if st.button("Nueva conversación", key="sports_assistant_clear"):
         history.clear()
