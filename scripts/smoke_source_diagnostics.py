@@ -35,8 +35,8 @@ with (
     errors = "\n".join(str(x.value) for x in app.error)
     info = "\n".join(str(x.value) for x in app.info)
     assert "ESPN no respondió para: NBA" in warnings, warnings
-    assert "fallaron las fuentes ESPN" not in errors, errors
-    assert "No hay encuentros futuros" in info, info
+    assert "fallaron las fuentes ESPN" in errors, errors
+    assert "No hay encuentros futuros" not in info, info
     labels = {m.label: str(m.value) for m in app.metric}
     assert labels["NBA · calendario ESPN"] == "Sin conexión", labels
     assert labels["NFL · calendario ESPN"] == "0", labels
