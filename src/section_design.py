@@ -284,6 +284,49 @@ a[data-testid="stLinkButton"]:hover{border-color:#ff8099!important;background:#3
  .brain-page-entry{display:none!important}
  [data-testid="stMetric"],button{transition:none!important}
 }
+
+/* Performance pass: animation remains, but expensive large-layer blur and
+   background painting no longer run during every section navigation. */
+.stApp::before{animation:none!important}
+.se-hero::after{animation:none!important;opacity:.24}
+.se-hero{animation:se-fast-hero .43s ease-out both!important}
+.se-orbit-ring{animation-duration:22s!important}
+.se-hero-graphic::after{filter:blur(10px)!important;opacity:.4}
+.brain-page-entry{
+  filter:none!important;transform:none!important;
+  background:radial-gradient(circle at 50% 50%,#ff708573,#7e163a45 32%,transparent 68%)!important;
+}
+.brain-page-entry--a{animation:se-fast-portal-a .55s ease-out forwards!important}
+.brain-page-entry--b{animation:se-fast-portal-b .55s ease-out forwards!important}
+.brain-page-entry::before{
+  inset:35%!important;box-shadow:0 0 15px #ff47746b!important;
+  animation:se-fast-ring .55s ease-out forwards!important
+}
+.brain-page-entry::after{display:none!important}
+@keyframes se-fast-hero{
+  0%{opacity:.55;transform:translate3d(0,13px,0)}
+  100%{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes se-fast-portal-a{
+  0%{opacity:.75}55%{opacity:.32}100%{opacity:0}
+}
+@keyframes se-fast-portal-b{
+  0%{opacity:.75}55%{opacity:.32}100%{opacity:0}
+}
+@keyframes se-fast-ring{
+  0%{opacity:.8;transform:scale(.45)}
+  100%{opacity:0;transform:scale(2.5)}
+}
+@media(max-width:720px){
+  .se-hero-graphic,.se-orbit-ring{animation:none!important}
+  .brain-page-entry::before{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .brain-page-entry,.brain-page-entry::before,.se-hero{
+    animation:none!important;transition:none!important
+  }
+  .brain-page-entry{display:none!important}
+}
 </style>
 """
 

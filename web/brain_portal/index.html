@@ -104,6 +104,39 @@
 }
 .reduced #stage.portal-diving::before,
 .reduced #stage.portal-diving #flight-label{animation:none!important}
+
+/* Performance: avoid animated full-stage gradients, huge text glows,
+   and paint-heavy box-shadow interpolation. Move/opacity remain animated. */
+#stage{animation:none!important;background-size:100% 100%!important}
+#stage::after{animation:none!important;opacity:.12!important}
+#stage .brand{animation:fast-brand 4.6s ease-in-out infinite!important;
+  text-shadow:0 0 12px #ff405d,0 0 30px #ff405d76!important}
+#stage .brand span,#stage .logo,#stage .eyebrow,
+#stage .enter-label,#stage .neuron .label{animation:none!important}
+#stage #enter{animation:fast-heart 2.5s ease-in-out infinite!important;
+  box-shadow:0 0 21px #ff536590!important}
+#stage .neuron .dot{animation:fast-heart 2.6s ease-in-out infinite!important;
+  box-shadow:0 0 13px #ff536590!important}
+#stage .neuron .dot::before,#stage .neuron .dot::after{
+  animation:connected-wave 2.6s ease-out infinite!important
+}
+#stage.portal-diving::before{
+  filter:none!important;inset:15%!important;
+  background:radial-gradient(circle at center,#ff5f8ad7 0%,#b0215577 22%,transparent 67%)!important
+}
+@keyframes fast-brand{0%,100%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(0,-4px,0)}}
+@keyframes fast-heart{0%,100%{transform:scale(.92);opacity:.9}
+  50%{transform:scale(1.12);opacity:1}}
+@media(max-width:720px){
+  #stage{height:620px;min-height:500px}
+  #stage .neuron .dot::before{display:none}
+  #stage .brand{animation:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #stage .brand,#stage #enter,#stage .neuron .dot,
+  #stage .neuron .dot::before,#stage .neuron .dot::after{animation:none!important}
+}
 </style></head>
 <body><main id="stage">
 <canvas id="scene" aria-label="Cerebro tridimensional de líneas rojas. Usa los seis botones para abrir una sección."></canvas>
@@ -118,7 +151,7 @@
 </div><div class="controls"><button id="rotate" aria-pressed="false">Pausar giro</button><button id="reset">Centrar cerebro</button></div><div class="hint">ARRASTRA PARA EXPLORAR · ELIGE UN PUNTO PARA ENTRAR</div></section><button id="motion-toggle" aria-pressed="true" aria-label="Activar o pausar las animaciones">MOVIMIENTO ON</button><div id="flight-label" role="status" aria-live="polite"></div>
 </main>
 <script>
-const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d'),stage=document.getElementById('stage');
+const canvas=document.getElementById('scene'),ctx=canvas.getContext('2d',{alpha:true,desynchronized:true}),stage=document.getElementById('stage');
 const intro=document.getElementById('intro'),ui=document.getElementById('brain-ui'),flight=document.getElementById('flight-label');
 // Continuous motion is the product default; only an explicit pause stops it.
 let reduced=false;
@@ -134,11 +167,13 @@ document.getElementById('motion-toggle').onclick=()=>{
   paused=reduced;
   syncMotion();updatePause();
 };
+const lowPower=matchMedia('(max-width:720px)').matches;
+let rotCa=1,rotSa=0,rotCt=1,rotSt=0;
 let W=1000,H=760,state='intro',angle=-.18,tilt=.12,paused=reduced,drag=false,lastX=0,lastY=0,start=0,zoom=1,breathing=1,flightBlend=0,flightX=0,flightY=0,target=null,ready=false,renderTime=0;
 const nodes=[...document.querySelectorAll('.neuron')];
 const anchors=[[-.64,-.65,.60],[.64,-.64,.60],[-.88,.05,.18],[.88,.06,.18],[-.50,.74,.48],[.50,.74,.48]];
 function send(type,extra={}){window.parent.postMessage({isStreamlitMessage:true,type,...extra},'*')}
-function size(){W=stage.clientWidth;H=stage.clientHeight;const d=Math.min(devicePixelRatio||1,2);canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);send('streamlit:setFrameHeight',{height:H})}addEventListener('resize',size);
+function size(){W=stage.clientWidth;H=stage.clientHeight;const d=lowPower?1:Math.min(devicePixelRatio||1,1.35);canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);send('streamlit:setFrameHeight',{height:H})}addEventListener('resize',size);
 function showBrain(){state='brain';intro.classList.add('hidden');intro.inert=true;ui.style.opacity=1;ui.inert=false;nodes[0].focus({preventScroll:true})}
 document.getElementById('enter').onclick=()=>{intro.classList.add('leaving');intro.inert=true;if(reduced){showBrain();return}state='entry';start=performance.now();flight.textContent='';flight.style.opacity=0};
 function openSection(button){
@@ -157,7 +192,7 @@ function updatePause(){document.getElementById('rotate').textContent=paused?'Rea
 document.getElementById('rotate').onclick=()=>{paused=!paused;updatePause()};document.getElementById('reset').onclick=()=>{angle=-.18;tilt=.12};
 canvas.onpointerdown=e=>{if(state!=='brain')return;drag=true;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId)};canvas.onpointermove=e=>{if(!drag)return;angle+=(e.clientX-lastX)*.005;tilt=Math.max(-.5,Math.min(.5,tilt+(e.clientY-lastY)*.003));lastX=e.clientX;lastY=e.clientY};canvas.onpointerup=canvas.onpointercancel=()=>drag=false;
 addEventListener('keydown',e=>{if(state!=='brain')return;if(e.key==='ArrowLeft'){angle-=.09;e.preventDefault()}if(e.key==='ArrowRight'){angle+=.09;e.preventDefault()}});
-function project(p){let[x,y,z]=p;let a=x*Math.cos(angle)+z*Math.sin(angle),b=-x*Math.sin(angle)+z*Math.cos(angle);let c=y*Math.cos(tilt)-b*Math.sin(tilt),d=y*Math.sin(tilt)+b*Math.cos(tilt);let scale=Math.min(W*.255,H*.32)*zoom*breathing,depth=4.8/(4.8-d);return[W/2+a*scale*depth-flightX*flightBlend*zoom,H*.48+c*scale*depth-flightY*flightBlend*zoom,d]}
+function project(p){let[x,y,z]=p;let a=x*rotCa+z*rotSa,b=-x*rotSa+z*rotCa;let c=y*rotCt-b*rotSt,d=y*rotSt+b*rotCt;let scale=Math.min(W*.255,H*.32)*zoom*breathing,depth=4.8/(4.8-d);return[W/2+a*scale*depth-flightX*flightBlend*zoom,H*.48+c*scale*depth-flightY*flightBlend*zoom,d]}
 // Two folded hemispheres share one rotating 3D coordinate system with the nodes.
 function brainPoint(side,lat,lon){const ring=Math.sin(lat),fold=1+.035*Math.sin(lon*9+lat*5)*Math.sin(lat*7);return[side*(.12+.76*ring*(1+Math.cos(lon))*.5)*fold,-1.04*Math.cos(lat)*fold,.82*ring*Math.sin(lon)*fold]}
 const paths=[];for(const side of [-1,1]){for(let j=1;j<19;j++){let line=[];for(let k=0;k<=96;k++)line.push(brainPoint(side,j*Math.PI/19,k*Math.PI*2/96));paths.push(line)}for(let k=0;k<24;k++){let line=[];for(let j=0;j<=60;j++)line.push(brainPoint(side,j*Math.PI/60,k*Math.PI*2/24));paths.push(line)}}
@@ -179,8 +214,13 @@ function drawNodePulse(point,index,t){
 function drawBrain(t=0){
  renderTime=reduced?0:t;
   breathing=reduced?1:1+.033*Math.sin(t*.0018);
+  rotCa=Math.cos(angle);rotSa=Math.sin(angle);
+  rotCt=Math.cos(tilt);rotSt=Math.sin(tilt);
   for(let i=0;i<paths.length;i++){
-    const pp=paths[i].map((p,j)=>project(reduced?p:thinkingPoint(p,t,i,j)));
+    if(lowPower&&i%2===1)continue;
+    // Geometry rotates and breathes, without recalculating thousands of
+    // individual sinusoidal vertex deformations every single frame.
+    const pp=(lowPower?paths[i].filter((_,j)=>j%2===0):paths[i]).map(project);
     const z=pp.reduce((sum,p)=>sum+p[2],0)/pp.length;
     const shimmer=reduced?.5:.5+.5*Math.sin(t*.0024+i*.48);
     const alpha=Math.max(.17,Math.min(.85,.34+z*.19+.20*shimmer));
@@ -190,12 +230,12 @@ function drawBrain(t=0){
     pp.forEach((p,j)=>j?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
     ctx.stroke();
     // Moving electric pulses cross the folds, leaving a short bright neon trail.
-    if(!reduced&&i%5===0&&pp.length>12){
+    if(!reduced&&i%7===0&&pp.length>12){
       const center=Math.floor(((t*.00042+i*.119)%1)*(pp.length-1));
       const first=Math.max(0,center-5),last=Math.min(pp.length-1,center+5);
       ctx.strokeStyle='rgba(255,208,217,.96)';
       ctx.lineWidth=2.5;
-      ctx.shadowColor='#ff3154';ctx.shadowBlur=15;
+      ctx.shadowColor='#ff3154';ctx.shadowBlur=lowPower?0:7;
       ctx.beginPath();ctx.moveTo(pp[first][0],pp[first][1]);
       for(let k=first+1;k<=last;k++)ctx.lineTo(pp[k][0],pp[k][1]);
       ctx.stroke();
@@ -217,7 +257,9 @@ function drawBrain(t=0){
     ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(near[0],near[1]);ctx.stroke();
   });
 }
-let last=performance.now(),lastPaint=-Infinity;function frame(t){if(t-lastPaint<25){requestAnimationFrame(frame);return}lastPaint=t;const dt=Math.min(t-last,40);last=t;ctx.clearRect(0,0,W,H);if(state==='intro'){if(!reduced)angle+=dt*.00025;ctx.globalAlpha=1;drawBrain(t);ctx.globalAlpha=1}else if(state==='entry'){let p=Math.min((t-start)/1700,1);ctx.strokeStyle='#ff6678';ctx.lineWidth=1;ctx.shadowColor='#ff5365';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(W/2,H+30);ctx.bezierCurveTo(W*.37,H*.72,W*.62,H*.38,W/2,H*(.8-.48*p));ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<8;i++){let r=((p*2+i/8)%1)*Math.max(W,H);ctx.strokeStyle=`rgba(255,83,101,${.20*(1-r/Math.max(W,H))})`;ctx.beginPath();ctx.ellipse(W/2,H*.38,r*.72,r*.42,0,0,Math.PI*2);ctx.stroke()}if(p===1){flight.style.opacity=0;showBrain()}}else if(state==='brain'||state==='dive'||state==='done'){if(!paused&&!drag&&state==='brain')angle+=dt*.00035;if(state==='dive'){let p=Math.min((t-start)/1100,1);let ease=1-Math.pow(1-p,3);flightBlend=ease;zoom=1+Math.pow(ease,2)*20;ctx.globalAlpha=1-p*.68;drawBrain(t);ctx.globalAlpha=1;ctx.fillStyle='rgba(255,28,70,'+(p*p*.53)+')';ctx.fillRect(0,0,W,H);if(p===1)finish()}else drawBrain(t)}requestAnimationFrame(frame)}
+let last=performance.now(),lastPaint=-Infinity;
+const frameInterval=lowPower?33:18;
+function frame(t){if(t-lastPaint<frameInterval){requestAnimationFrame(frame);return}lastPaint=t;const dt=Math.min(t-last,40);last=t;ctx.clearRect(0,0,W,H);if(state==='intro'){if(!reduced)angle+=dt*.00025;ctx.globalAlpha=1;drawBrain(t);ctx.globalAlpha=1}else if(state==='entry'){let p=Math.min((t-start)/1700,1);ctx.strokeStyle='#ff6678';ctx.lineWidth=1;ctx.shadowColor='#ff5365';ctx.shadowBlur=12;ctx.beginPath();ctx.moveTo(W/2,H+30);ctx.bezierCurveTo(W*.37,H*.72,W*.62,H*.38,W/2,H*(.8-.48*p));ctx.stroke();ctx.shadowBlur=0;for(let i=0;i<8;i++){let r=((p*2+i/8)%1)*Math.max(W,H);ctx.strokeStyle=`rgba(255,83,101,${.20*(1-r/Math.max(W,H))})`;ctx.beginPath();ctx.ellipse(W/2,H*.38,r*.72,r*.42,0,0,Math.PI*2);ctx.stroke()}if(p===1){flight.style.opacity=0;showBrain()}}else if(state==='brain'||state==='dive'||state==='done'){if(!paused&&!drag&&state==='brain')angle+=dt*.00035;if(state==='dive'){let p=Math.min((t-start)/1100,1);let ease=1-Math.pow(1-p,3);flightBlend=ease;zoom=1+Math.pow(ease,2)*4.2;ctx.globalAlpha=1-p*.68;drawBrain(t);ctx.globalAlpha=1;ctx.fillStyle='rgba(255,28,70,'+(p*p*.53)+')';ctx.fillRect(0,0,W,H);if(p===1)finish()}else drawBrain(t)}requestAnimationFrame(frame)}
 addEventListener('message',e=>{if(e.source!==window.parent||e.data?.type!=='streamlit:render')return;if(!ready){ready=true;if(e.data.args?.skip_intro)showBrain()}size()});
 send('streamlit:componentReady',{apiVersion:1});size();requestAnimationFrame(frame);
 </script></body></html>

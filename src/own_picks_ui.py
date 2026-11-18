@@ -12,11 +12,13 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
         with st.container(border=True):
             st.caption("SPORTS EDGE AI · SELECCIÓN PROPIA · EXPERIMENTAL")
             st.markdown("### " + item["team"] + " · Moneyline")
-            p1, p2, p3 = st.columns(3)
-            p1.metric("Estimación experimental", f"{item['probability_experimental']:.1%}")
-            p2.metric("Momio publicado · Covers", item.get("market_price") or "—")
-            p3.metric("Juegos ESPN analizados",
-                      str(item["away_games"]) + " / " + str(item["home_games"]))
+            has_market = bool(item.get("market_price") and item.get("market_source"))
+            cols = st.columns(3 if has_market else 2)
+            cols[0].metric("Estimación experimental", f"{item['probability_experimental']:.1%}")
+            cols[1].metric("Juegos ESPN analizados",
+                           str(item["away_games"]) + " / " + str(item["home_games"]))
+            if has_market:
+                cols[2].metric("Momio externo verificable", item["market_price"])
             st.caption("Marcador estimado SEAI: "
                        + str(item["predicted_away"]) + " - "
                        + str(item["predicted_home"])
@@ -49,8 +51,7 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
 def render_own_slate(slate: dict) -> None:
     st.markdown("### Selecciones del cerebro")
     st.caption("Motor " + str(slate.get("model", VERSION)) +
-               " · análisis de resultados ESPN previos al partido. "
-               "Covers solo aporta precios.")
+               " · análisis independiente de resultados ESPN previos al partido.")
     candidates = slate.get("picks") or []
     if candidates:
         st.caption(str(len(candidates)) + " selecciones experimentales entre "
