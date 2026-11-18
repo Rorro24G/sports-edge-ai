@@ -516,5 +516,42 @@
       "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44316041182",
       "audit_job_id": 134842280980
     }
-  ]
+  ],
+  "calibration_experiment": {
+    "status": "EXPERIMENTO_CALIBRACION_SIN_ACTIVAR",
+    "sport": "NBA",
+    "base_model": "SEAI-JUICIO-0.2",
+    "train_period": {
+      "start": "2025-11-10",
+      "end": "2025-12-02"
+    },
+    "holdout_period": {
+      "start": "2026-10-28",
+      "end": "2026-11-17"
+    },
+    "train_count": 160,
+    "holdout_count": 101,
+    "platt_slope": 1.87000055,
+    "platt_intercept": -0.25933711,
+    "regularization": 1,
+    "raw_holdout": {
+      "brier": 0.21343,
+      "log_loss": 0.617027,
+      "mean_predicted_home": 0.52768,
+      "actual_home_rate": 0.50495
+    },
+    "calibrated_holdout": {
+      "brier": 0.211057,
+      "log_loss": 0.610991,
+      "mean_predicted_home": 0.4933,
+      "actual_home_rate": 0.50495
+    },
+    "brier_change_calibrated_minus_raw": -0.002373,
+    "fit_uses_holdout": false,
+    "production_enabled": false,
+    "model_validated": false,
+    "return_on_investment_known": false,
+    "notes": "Calibración logística entrenada solo con temporada anterior; la temporada posterior se usa para evaluación y no para escoger parámetros. El resultado no acredita ganancias ni se aplica todavía a Picks en vivo.",
+    "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44317149330"
+  }
 }
