@@ -31,7 +31,7 @@ def _status_label(status: str) -> str:
     }.get(value, "● ESTADO ESPN: " + value)
 
 
-def _game_card(game: dict) -> None:
+def _game_card(game: dict, *, plays_fetch=None) -> None:
     import streamlit as st
     with st.container(border=True):
         st.caption(game["sport"] + "   /   " + _status_label(game["status"]))
@@ -43,13 +43,45 @@ def _game_card(game: dict) -> None:
             aw, ho = game.get("away_score"), game.get("home_score")
             if aw is not None and ho is not None:
                 st.caption("Resultado ESPN: " + str(aw) + " - " + str(ho))
+        event_id = str(game.get("event_id") or "")
+        if (plays_fetch is not None and game.get("sport") == "NBA"
+                and str(game.get("status", "")).upper() in ("IN", "LIVE", "POST", "FINAL")
+                and event_id.isdecimal()):
+            if st.button("Ver últimas jugadas", key="calendar_plays_"+event_id):
+                with st.spinner("Leyendo jugadas reales ESPN..."):
+                    try:
+                        report = plays_fetch(event_id)
+                    except (OSError, ValueError, RuntimeError, KeyError, TypeError):
+                        report = None
+                st.session_state["calendar_plays"] = {
+                    "event_id": event_id, "value": report,
+                }
+            saved = st.session_state.get("calendar_plays") or {}
+            if saved.get("event_id") == event_id:
+                report = saved.get("value")
+                if report is None:
+                    st.caption("ESPN no entregó jugadas verificables.")
+                elif report.get("plays"):
+                    run = report.get("run")
+                    if run:
+                        st.caption(run["label"] + " · solo resultado observado")
+                    for play in report["plays"]:
+                        st.caption(
+                            "Q" + play["period"] + " · " + play["clock"] +
+                            " · " + play["text"] +
+                            " (" + str(play["away_score"]) + "–" +
+                            str(play["home_score"]) + ")"
+                        )
+                    st.link_button("Jugadas en ESPN", report["source_url"])
+                else:
+                    st.caption("Aún no hay jugadas verificables en este evento.")
         verified = _source_url(game.get("source_url"))
         if verified:
             st.link_button("Ver encuentro en ESPN", verified,
                            use_container_width=True)
 
 
-def render(*, board_fetch, clear_cache=None) -> None:
+def render(*, board_fetch, clear_cache=None, plays_fetch=None) -> None:
     import streamlit as st
     st.markdown("### Agenda deportiva")
     date_col, league_col, action_col = st.columns(
@@ -124,7 +156,7 @@ def render(*, board_fetch, clear_cache=None) -> None:
                 columns = st.columns(2, gap="medium")
                 for i, game in enumerate(games[offset:offset + 2]):
                     with columns[i]:
-                        _game_card(game)
+                        _game_card(game, plays_fetch=plays_fetch)
         cards(found[:6])
         if len(found) > 6:
             with st.expander("Ver " + str(len(found)-6) + " partidos más · " + league):
