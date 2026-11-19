@@ -20,20 +20,7 @@ LOCAL = ZoneInfo("America/Mexico_City")
 
 def render(*, board_fetch, team_fetch) -> None:
     st.markdown("### Configura un escenario real")
-    st.caption(
-        "10,000 escenarios a partir de los datos anteriores al partido. "
-        "Se consideran ataque, defensa, forma reciente, localía y descanso."
-    )
-    flow = st.columns(3)
-    for column, number, label in (
-        (flow[0], "01", "ELIGE LIGA Y FECHA"),
-        (flow[1], "02", "BUSCA EL PARTIDO"),
-        (flow[2], "03", "EXPLORA RESULTADOS"),
-    ):
-        with column:
-            with st.container(border=True):
-                st.caption("PASO " + number)
-                st.markdown("**" + label + "**")
+    st.caption("Elige un encuentro y simula 10.000 marcadores con resultados ESPN.")
     c1, c2 = st.columns([1, 2])
     with c1:
         league = st.selectbox("Liga del escenario", ["NFL", "NBA"],
@@ -73,8 +60,7 @@ def render(*, board_fetch, team_fetch) -> None:
     ]
     selected = st.selectbox("Encuentro", options, key="real_sim_match")
     game = games[options.index(selected)]
-    st.caption("Fuente: ESPN · partido " + str(game.get("event_id", "")) +
-               " · consulta " + str(saved.get("checked_at_utc", "")) + " UTC")
+    st.caption("Partido verificado en ESPN")
     if game.get("source_url"):
         st.link_button("Ver encuentro en ESPN", game["source_url"])
     line = st.number_input(
@@ -83,8 +69,7 @@ def render(*, board_fetch, team_fetch) -> None:
         value=45.5 if league == "NFL" else 222.5, step=0.5,
         key="real_sim_total_line",
     )
-    st.caption("Esta línea es introducida manualmente; NO se presenta como "
-               "un momio o una línea confirmada de una casa de apuestas.")
+    st.caption("Línea de referencia manual, no cuota publicada.")
     if st.button("Simular 10.000 resultados con historial ESPN",
                  key="real_sim_run", use_container_width=True):
         away_id = str(game["away_team_id"])

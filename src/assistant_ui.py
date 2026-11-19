@@ -12,10 +12,7 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
            prop_odds_fetch=None, prop_api_key: str = "",
            team_fetch=fetch_team_schedule) -> None:
     st.markdown("### Conversa con el analista")
-    st.caption(
-        "Un espacio para contrastar selecciones, jugadores, noticias "
-        "y dudas sobre las fuentes. Si falta evidencia, el cerebro lo dice."
-    )
+    st.caption("Pregunta por equipos, jugadores o la lógica detrás de los picks.")
     examples = (
         "«Picks NBA hoy» · «Lakers contra Warriors» · "
         "«Over de 24.5 puntos de Luka Doncic NBA» · "
@@ -24,17 +21,10 @@ def render(*, board_fetch, covers_fetch, roster_fetch, gamelog_fetch,
     )
     history = st.session_state.setdefault("sports_assistant_history", [])
     if not history:
-        hints = st.columns(3)
-        for column, heading, detail in (
-            (hints[0], "01 · ANALIZA", "Picks NBA hoy"),
-            (hints[1], "02 · CONTRASTA", "Lakers contra Warriors"),
-            (hints[2], "03 · EXPLICA", "¿Qué tan confiable es el modelo?"),
-        ):
-            with column:
-                with st.container(border=True):
-                    st.caption(heading)
-                    st.markdown("**" + detail + "**")
-        st.caption("Más ejemplos: " + examples)
+        st.caption("Ejemplos: «Picks NBA hoy» · «Lakers contra Warriors» · "
+                   "«¿Qué tan confiable es el modelo?»")
+        with st.expander("Más ideas para preguntar", expanded=False):
+            st.caption(examples)
     ctx = st.session_state.setdefault("sports_assistant_context", {})
     if st.button("Nueva conversación", key="sports_assistant_clear"):
         history.clear()

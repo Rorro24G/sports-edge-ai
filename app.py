@@ -126,35 +126,23 @@ def safe_odds_key():
 
 if section == "picks":
     st.markdown("### Centro de análisis")
-    st.caption("Selecciones independientes con evidencia ESPN y revisión de riesgos.")
-    st.caption("Primero elige Sports Edge AI; nunca se completa un pick con Covers.")
-    with st.form("sports_query"):
-        prompt = st.text_input(
-            "¿Qué partido, jugador o mercado quieres analizar?",
-            value="",
-            placeholder="NBA hoy · Knicks vs Raptors · Over de 24.5 puntos",
-        )
-        submitted = st.form_submit_button("Analizar partido", use_container_width=True)
+    with st.expander("Buscar partido o jugador", expanded=False):
+        with st.form("sports_query"):
+            prompt = st.text_input(
+                "¿Qué quieres analizar?",
+                value="",
+                placeholder="NBA hoy · Knicks vs Raptors · 24.5 puntos de un jugador",
+            )
+            submitted = st.form_submit_button("Analizar partido", use_container_width=True)
     if submitted:
         try:
             st.session_state["last_analysis_request"] = interpret_request(prompt)
             st.session_state["last_analysis_text"] = prompt
+            st.session_state["picks_show_individual"] = True
             st.session_state.pop("selected_match", None)
         except (ValueError, TypeError) as exc:
             st.session_state.pop("last_analysis_request", None)
             st.error("Fecha solicitada no válida: " + str(exc))
-    if st.button("Actualizar datos de Picks ahora", key="refresh_picks"):
-        cached_covers.clear()
-        cached_scoreboard.clear()
-        cached_pick_summary.clear()
-        cached_odds.clear()
-        cached_player_roster.clear()
-        cached_player_gamelog.clear()
-        cached_prop_offers.clear()
-        cached_own_slate.clear()
-        st.session_state.pop("seai_slate", None)
-        st.session_state.pop("seai_match_result", None)
-        st.toast("Datos actualizados")
     request = st.session_state.get("last_analysis_request")
     if request is None:
         # A live board appears without making the user submit the default query.
@@ -169,6 +157,8 @@ if section == "picks":
         )
         slate_state = st.session_state.get("seai_slate")
         if refresh_own:
+            cached_scoreboard.clear()
+            cached_team_schedule.clear()
             cached_own_slate.clear()
         if (refresh_own or not slate_state
                 or slate_state.get("signature") != signature):
@@ -189,8 +179,8 @@ if section == "picks":
         if slate_state and slate_state.get("signature") == signature:
             render_own_slate(slate_state["value"])
         render_model_audit()
-        st.caption("Fecha: " + request.target_date.strftime("%d/%m/%Y")
-                   + " · Ligas: " + ", ".join(request.sports) + " · CDMX")
+        st.caption("Jornada " + request.target_date.strftime("%d/%m/%Y")
+                   + " · " + " / ".join(request.sports))
         latest_question = st.session_state.get("last_analysis_text", "")
         player_question = parse_player_question(latest_question)
         if player_question:
@@ -213,203 +203,211 @@ if section == "picks":
                         prop_odds_fetch=cached_prop_offers if safe_odds_key() else None,
                         prop_api_key=safe_odds_key(),
                     )
-        show_covers = st.checkbox(
-            "Ver momios Covers (opcional; no elige equipos)",
-            value=False, key="picks_show_covers",
-        ) if not player_question else False
-        links = picks_links(request.sports) if show_covers else []
-        published = []
-        covers_errors = []
-        for league, _link in links:
-            try:
-                covers = cached_covers(league, request.target_date)
-            except (CoversSourceError, ValueError):
-                covers_errors.append(league)
-                continue
-            published.extend(covers["events"])
-
-        # ESPN supplies the complete calendar; Covers enriches a verified
-        # match with actual published moneyline and score projections.
-        boards = {}
-        if not player_question:
-            for league in request.sports:
-                if league not in ("NBA", "NFL", "NHL"):
+        if not st.session_state.get("picks_show_individual", False):
+            if st.button("Explorar un partido individual", key="picks_open_single",
+                         use_container_width=True):
+                st.session_state["picks_show_individual"] = True
+                st.rerun()
+        else:
+            if st.button("Ocultar análisis individual", key="picks_close_single"):
+                st.session_state["picks_show_individual"] = False
+                st.rerun()
+            show_covers = st.checkbox(
+                "Ver momios Covers (opcional; no elige equipos)",
+                value=False, key="picks_show_covers",
+            ) if not player_question else False
+            links = picks_links(request.sports) if show_covers else []
+            published = []
+            covers_errors = []
+            for league, _link in links:
+                try:
+                    covers = cached_covers(league, request.target_date)
+                except (CoversSourceError, ValueError):
+                    covers_errors.append(league)
                     continue
-                try:
-                    boards[league] = cached_scoreboard(
-                        league, request.target_date
-                    )["games"]
-                except (CalendarSourceError, KeyError, ValueError):
-                    boards[league] = []
-            from src.picks_feed import live_picks_catalog
-            published = [
-                g for g in live_picks_catalog(published, boards, request.target_date)
-                if g.get("origen") == "ESPN" or g.get("espn_event_id")
-            ]
-        from src.match_report import relevant_matches
-        ranked, specific_request = relevant_matches(
-            published, st.session_state.get("last_analysis_text", "")
-        )
-        if not player_question and ranked:
-            with st.expander("Ver calendario completo de encuentros ESPN", expanded=False):
-                st.dataframe([
-                    {"Liga": g["liga"], "Partido": g["partido"],
-                     "Hora CDMX": g["hora_cdmx"], "Estado": g.get("estado", "—")}
-                    for g in ranked
-                ], use_container_width=True, hide_index=True)
-        if covers_errors and not player_question:
-            st.caption("Covers temporalmente no disponible: " + ", ".join(covers_errors))
-        if player_question:
-            pass  # La consulta de jugador ya se respondió con evidencia ESPN.
-        elif ranked:
-            options = [
-                f"{game['liga']} · {game['partido']} · {game['hora_cdmx']} CDMX"
-                + (f" · ML {game['momio_visitante']} / {game['momio_local']}"
-                   if game.get('momio_visitante') and game.get('momio_local') else "")
-                for game in ranked
-            ]
-            chosen = st.selectbox("Seleccionar partido", options, key="selected_match")
-            game = ranked[options.index(chosen)]
-            st.markdown("### Análisis individual · " + game["partido"])
-            st.caption("Fecha " + game["fecha_cdmx"] + " · "
-                       + game["hora_cdmx"] + " CDMX")
-            # Both ESPN event IDs, NOT Covers' projected winner, drive our model.
-            verified_for_model = None
-            for row in boards.get(game["liga"], []):
-                if (game.get("espn_event_id")
-                        and str(row.get("event_id")) == str(game["espn_event_id"])):
-                    verified_for_model = row
-                    break
-            if verified_for_model is None:
-                verified_for_model = match_espn_event(
-                    game, boards.get(game["liga"], [])
-                )
-            if st.button("🧠 Analizar este partido con Sports Edge AI",
-                         key="own_single_game", use_container_width=True):
+                published.extend(covers["events"])
+
+            # ESPN supplies the complete calendar; Covers enriches a verified
+            # match with actual published moneyline and score projections.
+            boards = {}
+            if not player_question:
+                for league in request.sports:
+                    if league not in ("NBA", "NFL", "NHL"):
+                        continue
+                    try:
+                        boards[league] = cached_scoreboard(
+                            league, request.target_date
+                        )["games"]
+                    except (CalendarSourceError, KeyError, ValueError):
+                        boards[league] = []
+                from src.picks_feed import live_picks_catalog
+                published = [
+                    g for g in live_picks_catalog(published, boards, request.target_date)
+                    if g.get("origen") == "ESPN" or g.get("espn_event_id")
+                ]
+            from src.match_report import relevant_matches
+            ranked, specific_request = relevant_matches(
+                published, st.session_state.get("last_analysis_text", "")
+            )
+            if not player_question and ranked:
+                with st.expander("Ver todos los partidos de esta fecha", expanded=False):
+                    st.dataframe([
+                        {"Liga": g["liga"], "Partido": g["partido"],
+                         "Hora CDMX": g["hora_cdmx"], "Estado": g.get("estado", "—")}
+                        for g in ranked
+                    ], use_container_width=True, hide_index=True)
+            if covers_errors and not player_question:
+                st.caption("Covers temporalmente no disponible: " + ", ".join(covers_errors))
+            if player_question:
+                pass  # La consulta de jugador ya se respondió con evidencia ESPN.
+            elif ranked:
+                options = [
+                    f"{game['liga']} · {game['partido']} · {game['hora_cdmx']} CDMX"
+                    + (f" · ML {game['momio_visitante']} / {game['momio_local']}"
+                       if game.get('momio_visitante') and game.get('momio_local') else "")
+                    for game in ranked
+                ]
+                chosen = st.selectbox("Seleccionar partido", options, key="selected_match")
+                game = ranked[options.index(chosen)]
+                st.markdown("#### Partido: " + game["partido"])
+                st.caption("Fecha " + game["fecha_cdmx"] + " · "
+                           + game["hora_cdmx"] + " CDMX")
+                # Both ESPN event IDs, NOT Covers' projected winner, drive our model.
+                verified_for_model = None
+                for row in boards.get(game["liga"], []):
+                    if (game.get("espn_event_id")
+                            and str(row.get("event_id")) == str(game["espn_event_id"])):
+                        verified_for_model = row
+                        break
                 if verified_for_model is None:
-                    result = {"status": "SIN_DATOS",
-                              "reason": "No se pudo verificar este encuentro en ESPN"}
-                else:
-                    with st.spinner("Evaluando forma y marcadores ESPN..."):
-                        result = evaluate_game(
-                            verified_for_model, request.target_date,
-                            team_fetch=cached_team_schedule,
-                        )
-                        result = add_covers_price(
-                            result, verified_for_model,
-                            [g for g in published if g.get("origen") == "Covers"],
-                            request.target_date,
-                        )
-                st.session_state["seai_match_result"] = {
-                    "signature": (request.target_date.isoformat(), game["liga"], game["partido"]),
-                    "value": result,
-                }
-            match_result = st.session_state.get("seai_match_result")
-            if (match_result and match_result.get("signature") ==
-                    (request.target_date.isoformat(), game["liga"], game["partido"])):
-                render_own_result(match_result["value"])
-            if show_covers and game.get("origen") == "Covers":
-                from src.pick_evidence_ui import render_covers_evidence
-                with st.expander("Momios externos publicados para este partido", expanded=False):
-                    render_covers_evidence(game)
-                    if game.get("fuente", "").startswith("https://"):
-                        st.link_button("Ver fuente Covers", game["fuente"])
-                    from src.market_summary import game_market_probabilities
-                    market_p = game_market_probabilities(game)
-                    if any(value is not None for value in market_p.values()):
-                        c1, c2 = st.columns(2)
-                        if market_p["visitante"] is not None:
-                            c1.metric("Umbral visitante", f"{market_p['visitante']:.2f}%")
-                        if market_p["local"] is not None:
-                            c2.metric("Umbral local", f"{market_p['local']:.2f}%")
-                        st.caption("Estos son umbrales del momio, NO probabilidades del modelo.")
-            if st.button("Ver lesiones y noticias ESPN del partido",
-                         key="load_selected_espn_context"):
-                st.session_state["picks_espn_context"] = (
-                    request.target_date.isoformat(), game["liga"], game["partido"]
-                )
-            if st.session_state.get("picks_espn_context") == (
-                request.target_date.isoformat(), game["liga"], game["partido"]
-            ):
-                try:
-                    espn_board = cached_scoreboard(game["liga"], request.target_date)
-                except CalendarSourceError:
-                    st.warning("No fue posible contrastar el partido con el calendario de ESPN.")
-                else:
-                    verified_game = match_espn_event(game, espn_board["games"])
-                    if verified_game is None:
-                        st.info(
-                            "No se encontró una coincidencia inequívoca entre ambos equipos "
-                            "en ESPN para esta fecha. No atribuiremos lesiones o noticias "
-                            "de otro partido a esta ficha."
-                        )
+                    verified_for_model = match_espn_event(
+                        game, boards.get(game["liga"], [])
+                    )
+                if st.button("🧠 Analizar este partido con Sports Edge AI",
+                             key="own_single_game", use_container_width=True):
+                    if verified_for_model is None:
+                        result = {"status": "SIN_DATOS",
+                                  "reason": "No se pudo verificar este encuentro en ESPN"}
                     else:
-                        st.caption(
-                            "ESPN · estado " + verified_game["status"]
-                            + " · actualizado " + espn_board["checked_at_utc"] + " (UTC)"
-                        )
-                        st.link_button("Ver partido confirmado por ESPN",
-                                       verified_game["source_url"])
-                        try:
-                            espn = cached_pick_summary(game["liga"], verified_game["event_id"])
-                        except (ContextSourceError, ValueError):
-                            st.warning(
-                                "ESPN no entregó un resumen válido para este encuentro. "
-                                "No se mostrarán reportes antiguos ni suposiciones."
+                        with st.spinner("Evaluando forma y marcadores ESPN..."):
+                            result = evaluate_game(
+                                verified_for_model, request.target_date,
+                                team_fetch=cached_team_schedule,
+                            )
+                            result = add_covers_price(
+                                result, verified_for_model,
+                                [g for g in published if g.get("origen") == "Covers"],
+                                request.target_date,
+                            )
+                    st.session_state["seai_match_result"] = {
+                        "signature": (request.target_date.isoformat(), game["liga"], game["partido"]),
+                        "value": result,
+                    }
+                match_result = st.session_state.get("seai_match_result")
+                if (match_result and match_result.get("signature") ==
+                        (request.target_date.isoformat(), game["liga"], game["partido"])):
+                    render_own_result(match_result["value"])
+                if show_covers and game.get("origen") == "Covers":
+                    from src.pick_evidence_ui import render_covers_evidence
+                    with st.expander("Momios externos publicados para este partido", expanded=False):
+                        render_covers_evidence(game)
+                        if game.get("fuente", "").startswith("https://"):
+                            st.link_button("Ver fuente Covers", game["fuente"])
+                        from src.market_summary import game_market_probabilities
+                        market_p = game_market_probabilities(game)
+                        if any(value is not None for value in market_p.values()):
+                            c1, c2 = st.columns(2)
+                            if market_p["visitante"] is not None:
+                                c1.metric("Umbral visitante", f"{market_p['visitante']:.2f}%")
+                            if market_p["local"] is not None:
+                                c2.metric("Umbral local", f"{market_p['local']:.2f}%")
+                            st.caption("Estos son umbrales del momio, NO probabilidades del modelo.")
+                if st.button("Ver lesiones y noticias ESPN del partido",
+                             key="load_selected_espn_context"):
+                    st.session_state["picks_espn_context"] = (
+                        request.target_date.isoformat(), game["liga"], game["partido"]
+                    )
+                if st.session_state.get("picks_espn_context") == (
+                    request.target_date.isoformat(), game["liga"], game["partido"]
+                ):
+                    try:
+                        espn_board = cached_scoreboard(game["liga"], request.target_date)
+                    except CalendarSourceError:
+                        st.warning("No fue posible contrastar el partido con el calendario de ESPN.")
+                    else:
+                        verified_game = match_espn_event(game, espn_board["games"])
+                        if verified_game is None:
+                            st.info(
+                                "No se encontró una coincidencia inequívoca entre ambos equipos "
+                                "en ESPN para esta fecha. No atribuiremos lesiones o noticias "
+                                "de otro partido a esta ficha."
                             )
                         else:
-                            st.caption("Resumen ESPN consultado " + espn["checked_at_utc"] + " (UTC)")
-                            if espn["venue"]:
-                                st.write("Sede: " + espn["venue"])
-                            if espn["injuries"]:
-                                st.markdown("**Reporte de lesiones y disponibilidad publicado por ESPN**")
-                                st.dataframe(espn["injuries"], use_container_width=True,
-                                             hide_index=True)
-                                st.caption(
-                                    "Los estados corresponden al momento de consulta, "
-                                    "no garantizan la alineación final ni sustituyen al reporte oficial."
+                            st.caption(
+                                "ESPN · estado " + verified_game["status"]
+                                + " · actualizado " + espn_board["checked_at_utc"] + " (UTC)"
+                            )
+                            st.link_button("Ver partido confirmado por ESPN",
+                                           verified_game["source_url"])
+                            try:
+                                espn = cached_pick_summary(game["liga"], verified_game["event_id"])
+                            except (ContextSourceError, ValueError):
+                                st.warning(
+                                    "ESPN no entregó un resumen válido para este encuentro. "
+                                    "No se mostrarán reportes antiguos ni suposiciones."
                                 )
                             else:
-                                st.info(
-                                    "Sin reporte de lesiones disponible en este resumen de ESPN. "
-                                    "No significa que los jugadores estén todos sanos o disponibles."
-                                )
-                            if espn["leaders"]:
-                                st.markdown("**Líderes estadísticos publicados por ESPN**")
-                                st.dataframe(espn["leaders"], use_container_width=True,
-                                             hide_index=True)
-                            else:
-                                st.caption(
-                                    "ESPN no proporcionó líderes estadísticos "
-                                    "utilizables para este partido."
-                                )
-                            if espn["news"]:
-                                st.markdown("**Noticias sobre el encuentro publicadas por ESPN**")
-                                for article in espn["news"]:
-                                    st.markdown("- [" + article["Titular ESPN"].replace("[", "").replace("]", "") + "](" + article["Enlace"] + ")")
-                                st.caption("Titulares enlazados a ESPN; su contenido no se considera una lesión ni una alineación confirmada.")
-                            else:
-                                st.caption("ESPN no aportó artículos específicos en el resumen de este encuentro.")
-            st.caption("La selección Sports Edge AI se calcula solo con resultados ESPN. "
-                       "Motor estadístico inicial no calibrado; ningún pick supone "
-                       "una rentabilidad demostrada.")
-        else:
-            if published and specific_request:
-                st.warning(
-                    "Los equipos solicitados no coinciden con los partidos publicados "
-                    "para esta fecha. Revisa el nombre o cambia la fecha."
-                )
-                st.dataframe(
-                    [{"Liga": row["liga"], "Partido publicado": row["partido"],
-                      "Hora CDMX": row["hora_cdmx"]} for row in published],
-                    use_container_width=True, hide_index=True
-                )
+                                st.caption("Resumen ESPN consultado " + espn["checked_at_utc"] + " (UTC)")
+                                if espn["venue"]:
+                                    st.write("Sede: " + espn["venue"])
+                                if espn["injuries"]:
+                                    st.markdown("**Reporte de lesiones y disponibilidad publicado por ESPN**")
+                                    st.dataframe(espn["injuries"], use_container_width=True,
+                                                 hide_index=True)
+                                    st.caption(
+                                        "Los estados corresponden al momento de consulta, "
+                                        "no garantizan la alineación final ni sustituyen al reporte oficial."
+                                    )
+                                else:
+                                    st.info(
+                                        "Sin reporte de lesiones disponible en este resumen de ESPN. "
+                                        "No significa que los jugadores estén todos sanos o disponibles."
+                                    )
+                                if espn["leaders"]:
+                                    st.markdown("**Líderes estadísticos publicados por ESPN**")
+                                    st.dataframe(espn["leaders"], use_container_width=True,
+                                                 hide_index=True)
+                                else:
+                                    st.caption(
+                                        "ESPN no proporcionó líderes estadísticos "
+                                        "utilizables para este partido."
+                                    )
+                                if espn["news"]:
+                                    st.markdown("**Noticias sobre el encuentro publicadas por ESPN**")
+                                    for article in espn["news"]:
+                                        st.markdown("- [" + article["Titular ESPN"].replace("[", "").replace("]", "") + "](" + article["Enlace"] + ")")
+                                    st.caption("Titulares enlazados a ESPN; su contenido no se considera una lesión ni una alineación confirmada.")
+                                else:
+                                    st.caption("ESPN no aportó artículos específicos en el resumen de este encuentro.")
+                st.caption("La selección Sports Edge AI se calcula solo con resultados ESPN. "
+                           "Motor estadístico inicial no calibrado; ningún pick supone "
+                           "una rentabilidad demostrada.")
             else:
-                st.caption("No hay partidos verificables para esa fecha y ligas.")
-        if not player_question and ("ATP" in request.sports or "WTA" in request.sports):
-            st.info("Los conectores de tenis ATP/WTA siguen pendientes de validación.")
-        st.caption("La selección propia y el mercado se consultan por separado. "
-                   "Sin estimaciones calibradas ni apuestas recomendadas.")
+                if published and specific_request:
+                    st.warning(
+                        "Los equipos solicitados no coinciden con los partidos publicados "
+                        "para esta fecha. Revisa el nombre o cambia la fecha."
+                    )
+                    st.dataframe(
+                        [{"Liga": row["liga"], "Partido publicado": row["partido"],
+                          "Hora CDMX": row["hora_cdmx"]} for row in published],
+                        use_container_width=True, hide_index=True
+                    )
+                else:
+                    st.caption("No hay partidos verificables para esa fecha y ligas.")
+            if not player_question and ("ATP" in request.sports or "WTA" in request.sports):
+                st.info("Los conectores de tenis ATP/WTA siguen pendientes de validación.")
+            st.caption("Modelo experimental · selección independiente ESPN.")
 
 
 if section == "asistente":

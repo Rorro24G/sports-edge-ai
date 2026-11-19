@@ -21,14 +21,7 @@ def _secret(name: str) -> str:
 
 def render() -> None:
     st.markdown("### Panel de actividad privada")
-    st.caption("Un espacio exclusivamente tuyo: solo se guardan selecciones "
-               "que confirmes expresamente. No hay apuestas automáticas.")
-    with st.container(border=True):
-        st.markdown("**◈ PRIVACIDAD Y CONTROL**")
-        st.caption("Acceso protegido · registro persistente si se configura · "
-                   "cada resultado requiere confirmación.")
-        st.caption("La referencia de 5% del bank es orientativa, "
-                   "no una recomendación de importe.")
+    st.caption("Tus registros privados. Nada se guarda sin confirmación.")
     password = _secret("LEDGER_ACCESS_PASSWORD")
     if not password:
         st.warning("El historial privado está desactivado hasta configurar LEDGER_ACCESS_PASSWORD "

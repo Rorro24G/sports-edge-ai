@@ -66,6 +66,18 @@ SECTION_INFO = {
     ),
 }
 
+# One short, useful sentence per page. No jargon, no duplicated badge strips.
+PAGE_SUMMARY = {
+    "picks": "Picks del cerebro con resultados ESPN. Sin favoritos copiados.",
+    "parlays": "Combinaciones propias. Revisa cada selección antes de decidir.",
+    "noticias": "Titulares recientes y fuentes originales de ESPN.",
+    "simulaciones": "Explora marcadores posibles con datos de partidos reales.",
+    "historial": "Consulta y administra tus registros privados.",
+    "calendario": "Encuentra horarios, partidos y resultados de hoy.",
+    "asistente": "Pregunta por un partido, jugador o decisión del cerebro.",
+    "estado": "Revisa las conexiones y el funcionamiento de la app.",
+}
+
 THEME_CSS = r"""
 <style id="seai-design-system-v7">
 :root {
@@ -327,6 +339,48 @@ a[data-testid="stLinkButton"]:hover{border-color:#ff8099!important;background:#3
   }
   .brain-page-entry{display:none!important}
 }
+
+/* v8: editorial focus — one headline, one supporting line, no empty billboard. */
+.block-container{max-width:1240px!important;padding-top:.65rem!important}
+.se-hero{
+  grid-template-columns:minmax(0,1fr) 84px!important;
+  min-height:126px!important;border-radius:19px!important;
+  padding:19px 26px!important;margin:7px 0 7px!important;
+  background:linear-gradient(117deg,#231824,#171822 58%,#10171d 100%)!important;
+  box-shadow:0 8px 28px #0006,inset 0 1px #ffffff12!important;
+  border-color:#55404e!important
+}
+.se-hero::after{animation:none!important;opacity:0!important}
+.se-hero-eyebrow{font-size:10px!important;letter-spacing:.11em!important;margin:0 0 7px!important}
+.se-hero h1{font-size:clamp(25px,3vw,37px)!important;line-height:1.12!important;letter-spacing:-.045em!important;margin:0 0 5px!important}
+.se-hero p{font-size:12.5px!important;line-height:1.45!important;color:#c7bdc9!important;max-width:580px!important}
+.se-hero-chips{display:none!important}
+.se-hero-graphic{width:72px!important;height:72px!important;animation:none!important;opacity:.94!important}
+.se-hero-graphic::after{display:none!important}
+.se-orbit-ring{inset:1%!important;animation:none!important;opacity:.4!important}
+.se-orbit-ring:nth-child(2){display:none!important}
+.se-orbit-core{width:53px!important;height:53px!important;border-radius:16px!important;font-size:29px!important}
+.section-brand{text-align:left!important;letter-spacing:.04em!important}
+.se-page-bottom{font-size:9px!important;margin-top:20px!important;padding-top:10px!important}
+[data-testid="stMetric"]{padding:.72rem .85rem!important;border-radius:14px!important;box-shadow:none!important}
+[data-testid="stMetricValue"]{font-size:clamp(17px,2.1vw,26px)!important}
+[data-testid="stVerticalBlockBorderWrapper"]>div{
+  border-radius:17px!important;box-shadow:0 5px 19px #0004!important
+}
+[data-testid="stExpander"]{box-shadow:none!important;border-radius:14px!important}
+[data-testid="stDataFrame"]{box-shadow:none!important}
+[data-testid="stMarkdownContainer"] h3{margin:.38rem 0 .45rem!important}
+[data-testid="stMarkdownContainer"] h4{margin:.35rem 0!important}
+@media(max-width:740px){
+ .block-container{padding:.6rem .72rem 2.6rem!important}
+ .se-hero{grid-template-columns:minmax(0,1fr) 48px!important;min-height:105px!important;padding:16px 17px!important}
+ .se-hero h1{font-size:clamp(22px,5.5vw,31px)!important}
+ .se-hero p{font-size:11.5px!important}
+ .se-hero-graphic{position:relative!important;right:auto!important;top:auto!important;
+   width:48px!important;height:48px!important;opacity:.85!important}
+ .se-orbit-core{width:40px!important;height:40px!important;font-size:22px!important}
+ .se-orbit-ring{display:none!important}
+}
 </style>
 """
 
@@ -337,20 +391,20 @@ def inject_theme() -> None:
 
 
 def render_hero(section: str) -> None:
+    """A compact identity/goal header. Details belong inside the page."""
     import streamlit as st
     if section not in SECTION_INFO:
         return
-    eyebrow, headline, description, labels, symbol = SECTION_INFO[section]
-    chips = "".join("<span>" + html.escape(label) + "</span>" for label in labels)
+    eyebrow, headline, _, _, symbol = SECTION_INFO[section]
+    summary = PAGE_SUMMARY[section]
     st.html(
         '<section class="se-hero" aria-label="Presentación de '
         + html.escape(section) + '"><div class="se-hero-copy">'
         + '<div class="se-hero-eyebrow">' + html.escape(eyebrow) + '</div>'
         + '<h1>' + html.escape(headline) + '</h1>'
-        + '<p>' + html.escape(description) + '</p>'
-        + '<div class="se-hero-chips">' + chips + '</div>'
-        + '</div><div class="se-hero-graphic" aria-hidden="true">'
-        + '<div class="se-orbit-ring"></div><div class="se-orbit-ring"></div>'
+        + '<p>' + html.escape(summary) + '</p></div>'
+        + '<div class="se-hero-graphic" aria-hidden="true">'
+        + '<div class="se-orbit-ring"></div>'
         + '<div class="se-orbit-core">' + html.escape(symbol) + '</div>'
         + '</div></section>'
     )
