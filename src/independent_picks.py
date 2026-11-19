@@ -17,6 +17,7 @@ from .market_summary import implied_percent
 from .pick_context import match_espn_event
 from .team_form import TeamFormError
 from .pick_judgement import judge
+from .game_momentum import matchup_momentum
 
 MX = ZoneInfo("America/Mexico_City")
 VERSION = "SEAI-JUICIO-0.2"
@@ -90,6 +91,9 @@ def predict_from_results(sport: str, away: str, home: str,
         }
     verdict = judge(away_games, home_games, sport=sport,
                     config=cfg, target=target)
+    # Separate, point-in-time context: do not adjust probabilities or
+    # silently promote a previously rejected pick from this descriptor.
+    verdict["momentum"] = matchup_momentum(away_games, home_games, target)
     verdict.update({
         "team": home if verdict["side"] == "local" else away,
         "away_games": len(away_games),
