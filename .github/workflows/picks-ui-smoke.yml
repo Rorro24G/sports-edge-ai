@@ -1,0 +1,45 @@
+name: Picks - Streamlit UI smoke
+on:
+  push:
+    branches: [feature/picks-ui-smoke-verified-matching-nov13]
+  pull_request:
+    branches: [webdemo]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  picks-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar Streamlit
+        run: pip install -r requirements-web.txt
+      - name: Tests del motor sin red
+        run: python -m unittest discover -s tests -v
+      - name: Comprobar interfaz de Picks
+        run: PYTHONPATH=. python scripts/smoke_picks_ui.py
+      - name: Comprobar props NBA y momentum con datos ESPN
+        run: PYTHONPATH=. python scripts/smoke_props_ui.py
+      - name: Comprobar diagnóstico de ESPN en Picks y Parlays
+        run: PYTHONPATH=. python scripts/smoke_source_diagnostics.py
+      - name: Comprobar borradores Parlays de Covers y discusión
+        run: PYTHONPATH=. python scripts/smoke_parlay_ui.py
+      - name: Probar asistente natural sin API
+        run: PYTHONPATH=. python scripts/smoke_assistant_ui.py
+      - name: Comprobar simulaciones con resultados históricos ESPN y estadio NFL
+        run: PYTHONPATH=. python scripts/smoke_simulator_ui.py
+      - name: Comprobar entrada de apuesta y bank en Streamlit
+        run: PYTHONPATH=. python scripts/smoke_ledger_ui.py
+
+      - name: Comprobar noticias y carga de parlays sin informe diario
+        run: PYTHONPATH=. python scripts/smoke_content_ui.py
+      - name: Comprobar navegación del cerebro
+        run: PYTHONPATH=. python scripts/smoke_portal_ui.py
+      - name: Comprobar rediseño y saltos entre apartados
+        run: PYTHONPATH=. python scripts/smoke_visual_ui.py
+      - name: Comprobar transiciones y seis conexiones
+        run: node scripts/check_portal_protocol.cjs

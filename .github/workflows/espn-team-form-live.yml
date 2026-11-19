@@ -1,0 +1,55 @@
+name: ESPN live team schedule contract
+on:
+  push:
+    branches: [feature/espn-form-simulator-visual-20261117]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify 2026 NFL and NBA actual past results
+        run: |
+          python - <<'PY'
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          from src.team_form import fetch_team_schedule, recent_team_form
+          import json
+          from urllib.request import urlopen, Request
+
+          from src.live_board import fetch_scoreboard
+          day = datetime.now(ZoneInfo("America/Mexico_City")).date()
+          for league, fallback in [("NBA", "13"), ("NFL", "2")]:
+              result = fetch_team_schedule(league, fallback, day)
+              print("TEAM_FORM", league, "team_id", fallback,
+                    "source", result["source_url"],
+                    "played", len(result["games"]), flush=True)
+              print("SAMPLE", result["games"][:2], flush=True)
+              if not result["games"]:
+                  raw = json.load(urlopen(Request(result["source_url"],
+                                headers={"User-Agent":"SportsEdgeAI-personal/1.0"}),
+                                timeout=15))
+                  print("RAW_KEYS", list(raw), flush=True)
+                  for item in (raw.get("events") or [])[:3]:
+                      competition = (item.get("competitions") or [{}])[0]
+                      print("STATUS_DIAG", item.get("id"),
+                            "event_status", item.get("status"),
+                            "competition_status", competition.get("status"),
+                            "scores", [(t.get("team", {}).get("id"), t.get("score"))
+                                       for t in competition.get("competitors", [])],
+                            flush=True)
+                  print("RAW_FIRST_EVENT", json.dumps((raw.get("events") or [None])[0],
+                        ensure_ascii=False)[:9000], flush=True)
+              form = recent_team_form(result["games"])
+              if form is None:
+                  raise SystemExit("Insufficient confirmed recent ESPN results for " + league)
+              print("LAST10", league, form["puntos_anotados_media"],
+                    form["desviacion_anotados"], flush=True)
+          print("ESPN_TEAM_FORM_LIVE_OK", flush=True)
+          PY
