@@ -66,29 +66,16 @@ def _show_proposal(proposal: dict, index: int) -> None:
             "SEAI · ESPN · " + str(proposal["num_selecciones"]) +
             " partidos distintos · selección experimental"
         )
-        metrics = st.columns(2)
-        metrics[0].metric("Piernas propias", proposal["num_selecciones"])
-        metrics[1].metric(
-            "Producto hipotético de momios",
-            proposal["cuota_decimal_teorica"]
-            if proposal["cuota_decimal_teorica"] else "Sin cuotas completas",
-        )
+        if proposal["cuota_decimal_teorica"]:
+            st.caption(str(proposal["num_selecciones"]) + " selecciones · Cuota de referencia "
+                       + proposal["cuota_decimal_teorica"] + " (no ofrecida)")
+        else:
+            st.caption(str(proposal["num_selecciones"]) + " selecciones · Sin cuota verificada")
+        for index, leg in enumerate(proposal["selecciones"], 1):
+            st.markdown("**" + str(index) + ". " + leg["seleccion"] + " · ML**")
+            st.caption(leg["liga"] + " · " + leg["evento"] + " · " + leg["hora_cdmx"] + " CDMX")
         if proposal["incompleto"]:
-            st.caption(
-                "Solo había " + str(proposal["num_selecciones"]) +
-                " selecciones verificables; pediste " +
-                str(proposal["solicitadas"]) + ". No se agregaron picks de relleno."
-            )
-        st.dataframe([
-            {
-                "Liga": leg["liga"],
-                "Partido ESPN": leg["evento"],
-                "Hora CDMX": leg["hora_cdmx"],
-                "SEAI eligió": leg["seleccion"] + " ML",
-                "Momio Covers": leg["momio_covers"] or "—",
-            }
-            for leg in proposal["selecciones"]
-        ], hide_index=True, use_container_width=True)
+            st.caption("Se encontraron menos selecciones que las solicitadas. No se inventaron piernas.")
         with st.expander("¿Por qué eligió cada pierna?", expanded=False):
             for leg in proposal["selecciones"]:
                 st.markdown(
@@ -110,20 +97,6 @@ def _show_proposal(proposal: dict, index: int) -> None:
                         "Covers · " + proposal["nombre"] + " · " + leg["seleccion"],
                         leg["fuente_covers"],
                     )
-        if not proposal["cuota_decimal_teorica"]:
-            st.caption(
-                "Sin precio combinado: faltan momios verificables. "
-                "El cerebro mantiene sus selecciones igualmente."
-            )
-        else:
-            st.caption(
-                "Cuota decimal mostrada = producto de precios individuales. "
-                "NO es una oferta real de una casa."
-            )
-        st.caption(
-            "No se modeló correlación entre piernas ni probabilidad conjunta. "
-            "No existe rentabilidad ni importe recomendados."
-        )
         if st.button(
             "Preparar esta combinación para discutir",
             key="discutir_parlay_" + str(index), use_container_width=True,
@@ -133,13 +106,11 @@ def _show_proposal(proposal: dict, index: int) -> None:
 
 
 def _render_discussion(count: int, legs: int) -> None:
-    st.markdown("### Mesa de revisión")
-    st.caption(
-        "Pregunta qué podría salir mal, revisa lesiones y fuentes. "
-        "No se ejecutan apuestas ni se guardan en tu historial."
-    )
     key = _secret("OPENAI_API_KEY")
     model = _secret("PARLAY_CHAT_MODEL")
+    if not st.session_state.get("parlay_chat_question") and not (key and model):
+        return
+    st.markdown("### Revisar combinación")
     if not (key and model):
         draft = st.session_state.get("parlay_chat_question", "")
         if draft:
@@ -148,10 +119,7 @@ def _render_discussion(count: int, legs: int) -> None:
                     "Resumen del análisis para compartir",
                     value=draft, height=230, key="parlay_share_draft"
                 )
-        else:
-            st.info("Elige una combinación y pulsa «Preparar esta combinación "
-                    "para discutir» para revisar sus riesgos.")
-        st.link_button("Abrir ChatGPT para discutir", "https://chatgpt.com/")
+        st.link_button("Abrir ChatGPT", "https://chatgpt.com/")
         return
 
     history = st.session_state.setdefault("parlay_chat_history", [])
@@ -188,10 +156,7 @@ def _render_discussion(count: int, legs: int) -> None:
 
 def render(*, slate_fetch=None, covers_fetch=None) -> None:
     st.markdown("### Parlays propios del cerebro")
-    st.caption(
-        "Elige primero Sports Edge AI usando resultados ESPN. "
-        "Covers solo se consulta DESPUÉS para mostrar momios, si lo solicitas."
-    )
+    st.caption("Combinaciones ESPN seleccionadas por el cerebro. Tú eliges cuántas comparar.")
     now = datetime.now(MX)
     first, second, third = st.columns(3)
     with first:
@@ -209,15 +174,15 @@ def render(*, slate_fetch=None, covers_fetch=None) -> None:
             "Ligas para combinar", ["NBA", "NFL", "NHL"],
             default=["NBA", "NFL", "NHL"], key="seai_parlay_sports",
         )
-    with st.container(border=True):
+    with st.expander("Opcional: consultar momios externos", expanded=False):
         add_prices = st.checkbox(
-            "Consultar momios Covers (opcional; no cambian los picks)",
+            "Consultar momios Covers (no cambia los picks)",
             value=False, key="seai_parlay_show_prices",
         )
-        refreshed = st.button(
-            "🧠 Generar / actualizar parlays propios",
-            key="refresh_parlays", type="primary", use_container_width=True
-        )
+    refreshed = st.button(
+        "↻ Actualizar combinaciones",
+        key="refresh_parlays", type="primary", use_container_width=True
+    )
     if slate_fetch is None:
         st.warning("El analizador ESPN no está configurado en esta vista.")
         _render_discussion(count, legs)
@@ -272,16 +237,11 @@ def render(*, slate_fetch=None, covers_fetch=None) -> None:
             "Sin respuesta del calendario ESPN: " + ", ".join(failures) +
             ". Son ligas sin evaluar, NO ligas sin partidos."
         )
-    stats = st.columns(3)
-    stats[0].metric("Partidos elegibles", result["eligible_games"])
-    stats[1].metric("Picks propios del cerebro", result["available"])
-    stats[2].metric("Combinaciones distintas", len(result["proposals"]))
+    stats = st.columns(2)
+    stats[0].metric("Picks propios del cerebro", result["available"])
+    stats[1].metric("Combinaciones distintas", len(result["proposals"]))
     if result["proposals"]:
         st.markdown("### Combinaciones generadas")
-        st.caption(
-            "Solo aparecen partidos que el modelo seleccionó de manera independiente. "
-            "No mezclamos proyecciones de Covers ni obligamos al cerebro a elegir."
-        )
         for i, proposal in enumerate(result["proposals"]):
             _show_proposal(proposal, i)
         if result["reason"]:
@@ -325,9 +285,5 @@ def render(*, slate_fetch=None, covers_fetch=None) -> None:
                 "No se fabrican picks a partir de los favoritos del mercado. "
                 "Prueba otra jornada o vuelve cuando ESPN publique más partidos."
             )
-    st.caption(
-        "Motor " + str(result["model"]) +
-        ". Probabilidades individuales experimentales, sin calibración validada. "
-        "Ninguna combinación representa una apuesta ofrecida o recomendada."
-    )
+    st.caption("Borradores experimentales · Sin probabilidades conjuntas ni apuesta ejecutada.")
     _render_discussion(count, legs)
