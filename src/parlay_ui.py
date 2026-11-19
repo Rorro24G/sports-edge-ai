@@ -71,8 +71,8 @@ def _show_proposal(proposal: dict, index: int) -> None:
                        + proposal["cuota_decimal_teorica"] + " (no ofrecida)")
         else:
             st.caption(str(proposal["num_selecciones"]) + " selecciones · Sin cuota verificada")
-        for index, leg in enumerate(proposal["selecciones"], 1):
-            st.markdown("**" + str(index) + ". " + leg["seleccion"] + " · ML**")
+        for leg_index, leg in enumerate(proposal["selecciones"], 1):
+            st.markdown("**" + str(leg_index) + ". " + leg["seleccion"] + " · ML**")
             st.caption(leg["liga"] + " · " + leg["evento"] + " · " + leg["hora_cdmx"] + " CDMX")
         if proposal["incompleto"]:
             st.caption("Se encontraron menos selecciones que las solicitadas. No se inventaron piernas.")
