@@ -109,7 +109,10 @@ with (
     assert "Recalcular Picks con ESPN" in "\n".join(b.label for b in app.button)
     assert "Momios publicados por Covers" not in initial_text
     # No Covers HTTP lookup or empty odds tables until user explicitly opts in.
-    assert len([c for c in app.checkbox if c.key == "picks_show_covers"]) == 1
+    assert not [c for c in app.checkbox if c.key == "picks_show_covers"], (
+        "Picks must show choices first, not optional Covers controls"
+    )
+    assert any(b.key == "picks_open_single" for b in app.button)
     inputs = list(app.text_input)
     assert inputs, "No aparece la consulta de partido"
     inputs[0].set_value("Analiza Toronto contra Philadelphia 13 de noviembre de 2026")
@@ -117,6 +120,7 @@ with (
     assert not app.exception, [str(e.message) for e in app.exception]
     visible = "\n".join(str(x.value) for x in app.markdown)
     assert "Toronto Raptors @ Philadelphia 76ers" in visible
+    assert len([c for c in app.checkbox if c.key == "picks_show_covers"]) == 1
     assert "Partidos y momios" not in visible, "Covers no debe llenar la portada"
     assert "Umbral implícito de los momios" not in visible
     assert "Covers no publicó moneylines verificables" not in visible
