@@ -46,6 +46,12 @@ section = render_navigation()
 def cached_scoreboard(sport, target):
     return fetch_scoreboard(sport, target)
 
+
+@st.cache_data(ttl=120, show_spinner=False)
+def cached_game_plays(event_id):
+    from src.game_momentum import fetch_game_plays
+    return fetch_game_plays(event_id)
+
 @st.cache_data(ttl=600, show_spinner=False)
 def cached_covers(league, target):
     return fetch_public_picks(league, target)
@@ -125,6 +131,19 @@ def safe_odds_key():
         return ""
 
 if section == "picks":
+    mode = st.radio(
+        "Qué analizar", ["Equipos", "Props NBA"],
+        horizontal=True, key="picks_market_type",
+    )
+    if mode == "Props NBA":
+        from src.props_explorer_ui import render as render_props_explorer
+        render_props_explorer(
+            board_fetch=cached_scoreboard,
+            roster_fetch=cached_player_roster,
+            gamelog_fetch=cached_player_gamelog,
+        )
+        render_footer()
+        st.stop()
     st.markdown("### Centro de análisis")
     with st.expander("Buscar partido o jugador", expanded=False):
         with st.form("sports_query"):
@@ -490,6 +509,7 @@ if section == "calendario":
     render_calendar(
         board_fetch=cached_scoreboard,
         clear_cache=cached_scoreboard.clear,
+        plays_fetch=cached_game_plays,
     )
 
 
