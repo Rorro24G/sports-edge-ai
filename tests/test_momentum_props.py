@@ -53,7 +53,7 @@ class MomentumAndPropsTests(TestCase):
         self.assertEqual(over["momentum_direction"],"SUBIENDO")
         under=evaluate_prop(stats([5,4,4,3,5,6,6,10,11,12]),DAY,"REB",line=7.5)
         self.assertEqual(under["status"],"TENDENCIA_UNDER")
-        self.assertEqual(evaluate_prop(stats(values),DAY,"PTS",line=29.5)["status"],"PASAR")
+        self.assertEqual(evaluate_prop(stats(values),DAY,"PTS",line=25.5)["status"],"PASAR")
         self.assertEqual(evaluate_prop(stats(values[:5]),DAY,"PTS",line=24.5)["status"],"SIN_DATOS")
 
     def test_reject_invalid_prop_lines_and_duplicates(self):
