@@ -10,8 +10,8 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
     status = item.get("status")
     if status == "CANDIDATO_EXPERIMENTAL":
         with st.container(border=True):
-            st.caption("SPORTS EDGE AI · SELECCIÓN PROPIA · EXPERIMENTAL")
-            st.markdown("### " + item["team"] + " · Moneyline")
+            st.caption(item.get("sport", "SEAI") + "  ·  PICK DEL CEREBRO")
+            st.markdown("#### " + item["team"] + " · ML")
             has_market = bool(item.get("market_price") and item.get("market_source"))
             cols = st.columns(3 if has_market else 2)
             cols[0].metric("Estimación experimental", f"{item['probability_experimental']:.1%}")
@@ -19,10 +19,11 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
                            str(item["away_games"]) + " / " + str(item["home_games"]))
             if has_market:
                 cols[2].metric("Momio externo verificable", item["market_price"])
-            st.caption("Marcador estimado SEAI: "
-                       + str(item["predicted_away"]) + " - "
-                       + str(item["predicted_home"])
-                       + " · forma reciente y defensa rival")
+            st.caption(
+                str(item.get("away", "")) + " vs " + str(item.get("home", ""))
+                + " · Proyección " + str(item["predicted_away"]) + "–"
+                + str(item["predicted_home"])
+            )
             if item.get("evidence"):
                 with st.expander("Cómo razonó el cerebro", expanded=False):
                     st.markdown("**Pruebas independientes de la elección**")
@@ -49,9 +50,12 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
 
 
 def render_own_slate(slate: dict) -> None:
-    st.markdown("### Selecciones del cerebro")
-    st.caption("Motor " + str(slate.get("model", VERSION)) +
-               " · análisis independiente de resultados ESPN previos al partido.")
+    st.markdown("### Picks para hoy")
+    candidates = slate.get("picks") or []
+    evaluated = slate.get("evaluated") or []
+    overview = st.columns(2)
+    overview[0].metric("Picks del cerebro", len(candidates))
+    overview[1].metric("Partidos analizados", len(evaluated))
     source_status = slate.get("source_status") or {}
     unavailable = [
         sport for sport, status in source_status.items()
@@ -63,19 +67,18 @@ def render_own_slate(slate: dict) -> None:
             ". Esas ligas no fueron evaluadas; no significa que no haya partidos."
         )
     if source_status:
-        cols = st.columns(3)
-        for index, sport in enumerate(("NBA", "NFL", "NHL")):
-            if sport not in source_status:
-                continue
-            status = source_status[sport]
-            cols[index].metric(
-                sport + " · calendario ESPN",
-                str(status.get("games", 0)) if status.get("available") else "Sin conexión",
-            )
-    candidates = slate.get("picks") or []
+        with st.expander("Estado de fuentes ESPN", expanded=False):
+            cols = st.columns(3)
+            for index, sport in enumerate(("NBA", "NFL", "NHL")):
+                if sport not in source_status:
+                    continue
+                status = source_status[sport]
+                cols[index].metric(
+                    sport + " · calendario ESPN",
+                    str(status.get("games", 0)) if status.get("available") else "Sin conexión",
+                )
     if candidates:
-        st.caption(str(len(candidates)) + " selecciones experimentales entre "
-                   + str(len(slate.get("evaluated") or [])) + " partidos evaluados.")
+        st.caption("Selecciones experimentales · forma ESPN · sin momios para elegir equipos")
         # Group the choices: raw confidence scores cannot rank different
         # sports against each other without cross-sport calibration.
         from .model_audit_ui import load_model_audits
@@ -84,7 +87,7 @@ def render_own_slate(slate: dict) -> None:
             group = [item for item in candidates if item.get("sport") == league]
             if not group:
                 continue
-            st.markdown("#### " + league + " · señales propias")
+            st.markdown("#### " + league)
             league_audits = [r for r in audits if r.get("sport") == league]
             if league_audits and any(
                 r["validation_status"] == "MUESTRA_INSUFICIENTE"
@@ -93,8 +96,15 @@ def render_own_slate(slate: dict) -> None:
                 st.caption("La evidencia histórica de esta liga es limitada "
                            "o inconsistente entre temporadas. "
                            "Solo se muestran señales de investigación.")
-            for item in group:
+            for item in group[:3]:
                 render_own_result(item, compact=True)
+            if len(group) > 3:
+                with st.expander(
+                    "Ver " + str(len(group) - 3) + " picks más de " + league,
+                    expanded=False,
+                ):
+                    for item in group[3:]:
+                        render_own_result(item, compact=True)
     else:
         analyzed = slate.get("evaluated") or []
         if unavailable and not analyzed:
@@ -109,15 +119,14 @@ def render_own_slate(slate: dict) -> None:
                 " partidos pero ninguno pasó sus filtros. No fabricaremos "
                 "selecciones usando favoritos ni cuotas Covers."
             )
-    evaluated = slate.get("evaluated") or []
-    if evaluated:
-        from collections import Counter
-        counts = Counter(str(x.get("status") or "SIN_DATOS") for x in evaluated)
-        st.caption(
-            "Diagnóstico ESPN/modelo · " +
-            " · ".join(key + ": " + str(count) for key, count in sorted(counts.items()))
-        )
-    with st.expander("Partidos analizados por el cerebro", expanded=False):
+    with st.expander("Ver todos los partidos y motivos del cerebro", expanded=False):
+        if evaluated:
+            from collections import Counter
+            counts = Counter(str(x.get("status") or "SIN_DATOS") for x in evaluated)
+            st.caption(
+                "Decisiones · " +
+                " · ".join(key + ": " + str(count) for key, count in sorted(counts.items()))
+            )
         if evaluated:
             st.dataframe([{
                 "Liga": x.get("sport", ""),
@@ -129,6 +138,4 @@ def render_own_slate(slate: dict) -> None:
             } for x in evaluated], hide_index=True, use_container_width=True)
         else:
             st.caption("Sin encuentros prepartido verificables.")
-    st.caption("Selecciones ordenadas por liga, no como ranking global entre "
-               "NBA, NFL y NHL. Probabilidades aún sin calibración final; "
-               "sin importes de apuesta recomendados.")
+    st.caption("Modelo experimental: probabilidades no calibradas. No hay importe recomendado.")
