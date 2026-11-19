@@ -6,6 +6,7 @@ import streamlit as st
 
 from .prop_review import matching_player_game, player_prop_review
 from .odds_api import OddsAPIError
+from .prop_signals import evaluate_prop
 from .player_props import (
     PlayerSourceError, fetch_gamelog, fetch_roster, parse_gamelog,
     parse_player_question, resolve_player_in_games, summarize_prop,
@@ -24,8 +25,7 @@ def render_player_research(question: str, day: date, *,
     st.markdown("### Análisis de jugador · NBA")
     label = {"PTS": "puntos", "REB": "rebotes", "AST": "asistencias",
              "3PM": "triples anotados"}[request.stat]
-    st.caption("ESPN · historial individual de temporada regular. "
-               "No hay cuota ni recomendación propia sin fuente y validación.")
+    st.caption("Historial ESPN · NBA")
     with st.spinner("Buscando el jugador en los equipos del calendario ESPN..."):
         player = resolve_player_in_games(question, games, roster_fetch=roster_fetch)
     if not player:
@@ -34,8 +34,7 @@ def render_player_research(question: str, day: date, *,
                    "y la liga, o selecciona otra fecha.")
         return True
     st.markdown("**" + player["name"] + " · " + label.capitalize() + "**")
-    st.caption("ID del deportista ESPN: " + player["id"] +
-               " · Plantilla de equipo ESPN " + player["team_id"])
+    st.caption("Estadísticas verificadas de la temporada regular.")
     if player.get("injuries"):
         st.warning("ESPN publica reportes de lesiones para este jugador. "
                    "Verifica su disponibilidad antes del partido.")
@@ -71,6 +70,15 @@ def render_player_research(question: str, day: date, *,
     review = player_prop_review(player, history, request,
                                 game=matching_game, offers=offers)
     stat = summarize_prop(history, request)
+    own_signal = evaluate_prop(history, day, request.stat, line=request.line)
+    if own_signal.get("status") in ("TENDENCIA_OVER", "TENDENCIA_UNDER"):
+        direction_name = own_signal["status"].replace("TENDENCIA_", "").title()
+        st.markdown("**Señal del cerebro: " + direction_name + " " +
+                    str(request.line) + " · " + label + "**")
+        if request.direction and request.direction != direction_name.lower():
+            st.caption("Contradice la dirección que preguntaste.")
+    elif request.line is not None and own_signal.get("status") == "PASAR":
+        st.markdown("**Señal del cerebro: PASAR**")
     a, b, c = st.columns(3)
     a.metric("Promedio últimos 5", f"{stat['last5']:.1f} {label}")
     b.metric("Promedio últimos 10", f"{stat['last10']:.1f} {label}")
@@ -92,9 +100,7 @@ def render_player_research(question: str, day: date, *,
     else:
         st.info("Para comparar un Over/Under escribe una línea exacta, "
                 "por ejemplo «over de 24.5 puntos de " + player["name"] + "».")
-    st.caption("El porcentaje anterior es únicamente la frecuencia observada en "
-               "hasta 10 juegos previos: NO representa probabilidad de acierto "
-               "del próximo partido, ni EV, ni rentabilidad esperada.")
+    st.caption("Frecuencia observada en hasta 10 juegos anteriores; no es probabilidad futura.")
     st.dataframe(
         [{"Fecha CDMX": r["date"], "Rival": r["opponent"],
           label.capitalize(): r["value"]} for r in history[:10]],
@@ -102,8 +108,8 @@ def render_player_research(question: str, day: date, *,
     )
     st.link_button("Abrir historial original ESPN",
                    "https://www.espn.com/nba/player/gamelog/_/id/" + player["id"])
-    st.caption("Consulta ESPN: " + info["checked_at_utc"] +
-               " UTC. Datos previos al día solicitado; pueden modificarse en origen.")
+    with st.expander("Datos de la consulta ESPN", expanded=False):
+        st.caption("Consultado " + info["checked_at_utc"] + " UTC")
     if offers:
         st.markdown("**Momios para exactamente este jugador, línea y mercado**")
         st.dataframe([
@@ -115,11 +121,8 @@ def render_player_research(question: str, day: date, *,
         ], hide_index=True, use_container_width=True)
         st.caption("Precios publicados por el proveedor y sujetos a cambios. "
                    "Comprobarlos en la casa antes de apostar.")
-    st.link_button("Ver líneas y proyecciones públicas de Covers",
-                   "https://www.covers.com/sport/basketball/nba/player-props")
-    st.markdown("**Factores que faltan para una recomendación fiable**")
-    for item in review["risk_flags"]:
-        st.caption("• " + item)
-    st.warning("No existe todavía probabilidad predictiva calibrada ni EV propio "
-               "para este mercado. No se asigna porcentaje del bank automáticamente.")
+    with st.expander("Limitaciones de este análisis", expanded=False):
+        for item in review["risk_flags"]:
+            st.caption("• " + item)
+    st.caption("Modelo experimental sin calibración para props ni importe recomendado.")
     return True
