@@ -10,7 +10,7 @@ for(const keyframe of ['brand-breathe','node-drift','neuron-heartbeat','neuron-a
 }
 assert(html.includes('.reduced #stage .brand'),'motion-reduction CSS missing');
 assert(code.includes('const motion=(reduced||paused)?0:t'),'motion and pause behavior missing');
-assert(code.includes('if(!reduced&&i%7===0'),'travelling wire highlights missing');
+assert(code.includes('if(!reduced&&i%4===0'),'travelling wire highlights missing');
 assert(code.includes('.map(project)'),'wire geometry projection missing');
 assert(code.includes('rotCa=Math.cos(angle)'),'angle trigonometry must be reused per frame');
 assert(code.includes('const frameInterval=lowPower?33:18'),'adaptive frame pacing missing');
@@ -24,11 +24,11 @@ assert(!code.includes('zoom=1+Math.pow(ease,2)*20'),
 assert(html.includes('animation:fast-heart'),'neon motion should survive reduced paint');
 assert(html.includes('MOVIMIENTO ON'),'motion control must be visible');
 assert(html.includes('rgba(5,5,6,.24)'),'intro must reveal moving brain');
-assert(code.includes('ctx.globalAlpha=1;drawBrain(t)'),'intro canvas must be visible');
+assert(code.includes('ctx.globalAlpha=.38;drawBrain(t)'),'intro canvas must be visible');
 assert(code.includes("state==='intro'"),'ambient brain on entry screen missing');
 assert(!code.includes("angle+=dt*.00035"),'el cerebro no debe girar en 360 grados');
 assert(!code.includes("angle+=dt*.00025"),'el cerebro no debe girar solo en portada');
-assert(code.includes('floatY=motion?7*Math.sin(motion*.00055):0'),
+assert(code.includes('floatY=0;'),
   'falta flotación lenta de cerebro y nodos');
 assert(code.includes('Math.max(-.30,Math.min(.30,angle+'),
   'no permitir giro manual completo de 360');
@@ -59,9 +59,12 @@ function run(reduced,page){
  callback(1850);
  const before=nodes.map(n=>[n.style.left,n.style.top]);
  const firstHalo=arcs[arcs.length-1][2];
+ const firstSignal=arcs[0].slice(0,2);
+ arcs.length=0;
  callback(2250);
  const after=nodes.map(n=>[n.style.left,n.style.top]);
- assert.notDeepEqual(before,after,'brain and nodes must move between frames');
+ assert.deepEqual(before,after,'brain and labels must remain fixed while signals move');
+ assert.notDeepEqual(firstSignal,arcs[0].slice(0,2),'signal must travel along the fixed mesh');
  assert.notEqual(firstHalo,arcs[arcs.length-1][2],'canvas aura must pulse');
  nodes[0].onpointerenter?.();
  const oldAngle=vm.runInNewContext('angle',context);
@@ -70,8 +73,8 @@ function run(reduced,page){
    'front-facing brain must not turn even after a minute');
  const minute=nodes.map(n=>[n.style.left,n.style.top]);
  callback(120000);
- assert.notDeepEqual(minute,nodes.map(n=>[n.style.left,n.style.top]),
-   'brain must keep floating gently without changing orientation');
+ assert.deepEqual(minute,nodes.map(n=>[n.style.left,n.style.top]),
+   'brain must stay fixed while signals continue');
  elements['motion-toggle'].onclick();
  assert(elements['motion-toggle'].textContent.includes('ACTIVAR'));
  callback(120100);
