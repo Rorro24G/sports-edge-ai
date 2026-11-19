@@ -1,7 +1,7 @@
 """Visual contract: six distinct pages, real transitions and reduced motion."""
 from unittest import TestCase
 
-from src.section_design import SECTION_INFO, THEME_CSS
+from src.section_design import SECTION_INFO, PAGE_SUMMARY, THEME_CSS
 from src.calendar_ui import _source_url, _status_label
 
 
@@ -16,6 +16,16 @@ class SectionDesignTests(TestCase):
             self.assertTrue(eyebrow and headline and len(description) > 60)
             self.assertEqual(len(labels), 3)
             self.assertTrue(symbol)
+
+    def test_one_clear_message_per_section_and_compact_hero(self):
+        self.assertEqual(set(PAGE_SUMMARY), set(SECTION_INFO))
+        for section, summary in PAGE_SUMMARY.items():
+            self.assertTrue(15 <= len(summary) <= 100, section)
+            self.assertLessEqual(summary.count("."), 2, section)
+        self.assertIn("min-height:126px!important", THEME_CSS)
+        self.assertIn(".se-hero-chips{display:none!important}", THEME_CSS)
+        self.assertIn("max-width:740px", THEME_CSS)
+        self.assertIn("font-size:clamp(25px,3vw,37px)", THEME_CSS)
 
     def test_page_enter_has_two_restartable_animations(self):
         self.assertIn("brain-page-entry--a", THEME_CSS)
