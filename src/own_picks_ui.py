@@ -24,6 +24,16 @@ def render_own_result(item: dict, *, compact: bool = False) -> None:
                 + " · Proyección " + str(item["predicted_away"]) + "–"
                 + str(item["predicted_home"])
             )
+            momentum = item.get("momentum") or {}
+            away_m, home_m = momentum.get("away"), momentum.get("home")
+            if away_m and home_m:
+                st.caption(
+                    "Momentum (últimos 3 vs 4 anteriores) · " +
+                    str(item.get("away", "Visitante")) + " " +
+                    f"{away_m['delta']:+.1f}" + " · " +
+                    str(item.get("home", "Local")) + " " +
+                    f"{home_m['delta']:+.1f}" + " puntos de margen"
+                )
             if item.get("evidence"):
                 with st.expander("Cómo razonó el cerebro", expanded=False):
                     st.markdown("**Pruebas independientes de la elección**")
