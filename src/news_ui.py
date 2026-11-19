@@ -24,11 +24,7 @@ def _article_card(item: dict, *, featured: bool = False, index: int = 1) -> None
         # from the verified ESPN news endpoint and do not become custom HTML.
         headline = str(item["headline"])
         st.markdown(("### " if featured else "#### ") + headline)
-        if featured:
-            st.caption(
-                "Cobertura reciente. Abre el artículo para consultar "
-                "el contexto original y verificar los detalles."
-            )
+
         if str(item["url"]).startswith("https://www.espn.com/"):
             st.link_button(
                 "Leer noticia completa", item["url"],
@@ -40,10 +36,6 @@ def _article_card(item: dict, *, featured: bool = False, index: int = 1) -> None
 
 def render():
     st.markdown("### Sala de noticias")
-    st.caption(
-        "Una selección editorial de titulares publicados durante las últimas "
-        "72 horas. Todas las notas se abren desde su fuente original."
-    )
     league_col, filter_col, refresh_col = st.columns([1.2, 2.5, 1.1],
                                                     vertical_alignment="bottom")
     with league_col:
@@ -71,13 +63,7 @@ def render():
         a for a in feed["articles"]
         if search.casefold() in a["headline"].casefold()
     ]
-    a, b, c = st.columns(3)
-    a.metric("Titulares encontrados", str(len(articles)))
-    b.metric("Cobertura", league)
-    c.metric("Ventana informativa", "72 h")
-    st.caption(
-        "Fuente ESPN · Última consulta: " + feed["checked_at_utc"] + " UTC"
-    )
+    st.caption(str(len(articles)) + " noticias recientes · " + league + " · ESPN")
 
     if not articles:
         st.info(
@@ -85,16 +71,18 @@ def render():
         )
         return
 
-    st.markdown("#### En portada")
     _article_card(articles[0], featured=True)
-    if len(articles) > 1:
-        st.markdown("#### Más historias")
-        for offset in range(1, len(articles), 2):
-            columns = st.columns(2, gap="medium")
-            for j, article in enumerate(articles[offset:offset + 2]):
-                with columns[j]:
-                    _article_card(article, index=offset+j+1)
-    st.caption(
-        "Los titulares no confirman lesiones ni alineaciones. "
-        "Consulta el reporte oficial antes de atribuir bajas a un equipo."
-    )
+    for offset in range(1, min(len(articles), 5), 2):
+        columns = st.columns(2, gap="medium")
+        for j, article in enumerate(articles[offset:offset + 2]):
+            if offset+j >= 5:
+                break
+            with columns[j]:
+                _article_card(article, index=offset+j+1)
+    if len(articles) > 5:
+        with st.expander("Ver " + str(len(articles) - 5) + " noticias más"):
+            for offset in range(5, len(articles), 2):
+                columns = st.columns(2, gap="medium")
+                for j, article in enumerate(articles[offset:offset + 2]):
+                    with columns[j]:
+                        _article_card(article, index=offset+j+1)
