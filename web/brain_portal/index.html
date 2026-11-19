@@ -176,7 +176,7 @@ const lowPower=matchMedia('(max-width:720px)').matches;
 let rotCa=1,rotSa=0,rotCt=1,rotSt=0,floatY=0,floatX=0;
 let W=1000,H=760,state='intro',angle=-.18,tilt=.12,paused=reduced,drag=false,lastX=0,lastY=0,start=0,zoom=1,breathing=1,flightBlend=0,flightX=0,flightY=0,target=null,ready=false,renderTime=0;
 const nodes=[...document.querySelectorAll('.neuron')];
-const anchors=[[-.64,-.65,.60],[.64,-.64,.60],[-.88,.05,.18],[.88,.06,.18],[-.50,.74,.48],[.50,.74,.48]];
+const anchors=[[-.64,-.65,.60],[.64,-.64,.60],[-.88,.05,.18],[.88,.06,.18],[-.50,.55,.48],[.50,.55,.48]];
 function send(type,extra={}){window.parent.postMessage({isStreamlitMessage:true,type,...extra},'*')}
 function size(){W=stage.clientWidth;H=stage.clientHeight;const d=lowPower?1:Math.min(devicePixelRatio||1,1.35);canvas.width=W*d;canvas.height=H*d;ctx.setTransform(d,0,0,d,0,0);send('streamlit:setFrameHeight',{height:H})}addEventListener('resize',size);
 function showBrain(){state='brain';intro.classList.add('hidden');intro.inert=true;ui.style.opacity=1;ui.inert=false;nodes[0].focus({preventScroll:true})}
@@ -199,11 +199,32 @@ canvas.onpointerdown=e=>{if(state!=='brain')return;drag=true;lastX=e.clientX;las
 addEventListener('keydown',e=>{if(state!=='brain')return;if(e.key==='ArrowLeft'){angle=Math.max(-.30,angle-.035);e.preventDefault()}if(e.key==='ArrowRight'){angle=Math.min(.30,angle+.035);e.preventDefault()}});
 function project(p){let[x,y,z]=p;let a=x*rotCa+z*rotSa,b=-x*rotSa+z*rotCa;let c=y*rotCt-b*rotSt,d=y*rotSt+b*rotCt;let scale=Math.min(W*.255,H*.32)*zoom*breathing,depth=4.8/(4.8-d);return[W/2+a*scale*depth+floatX-flightX*flightBlend*zoom,H*.48+c*scale*depth+floatY-flightY*flightBlend*zoom,d]}
 // Two folded hemispheres share one rotating 3D coordinate system with the nodes.
-function brainPoint(side,lat,lon){const ring=Math.sin(lat),fold=1+.075*Math.sin(lon*7+lat*4)*Math.sin(lat*6);return[side*(.10+.94*ring*(1+Math.cos(lon))*.5)*fold,-.86*Math.cos(lat)*fold,.82*ring*Math.sin(lon)*fold]}
-const paths=[];for(const side of [-1,1]){for(let j=1;j<19;j++){let line=[];for(let k=0;k<=96;k++)line.push(brainPoint(side,j*Math.PI/19,k*Math.PI*2/96));paths.push(line)}for(let k=0;k<24;k++){let line=[];for(let j=0;j<=60;j++)line.push(brainPoint(side,j*Math.PI/60,k*Math.PI*2/24));paths.push(line)}}
+function brainPoint(side,lat,lon){
+  // Two rounded lobes, a visible central fissure and folded cortical tracks.
+  const ring=Math.sin(lat),fold=1+.045*Math.sin(lon*7+lat*5)*Math.sin(lat*6);
+  const wave=lat+.055*Math.sin(lon*5+lat*3)*ring;
+  return [side*(.44+.42*Math.pow(ring,.55)*Math.cos(lon))*fold,
+          -.68*Math.cos(wave)-.10,.62*ring*Math.sin(lon)*fold];
+}
+const paths=[];
+for(const side of [-1,1]){
+  for(let j=1;j<17;j++){
+    const line=[];
+    for(let k=0;k<=96;k++)line.push(brainPoint(side,j*Math.PI/17,k*Math.PI*2/96));
+    paths.push(line);
+  }
+  for(let k=0;k<18;k++){
+    const line=[];
+    for(let j=0;j<=60;j++){
+      const lat=j*Math.PI/60;
+      line.push(brainPoint(side,lat,k*Math.PI*2/18+.11*Math.sin(lat*8+k)));
+    }
+    paths.push(line);
+  }
+}
 // Cerebellum and stem keep the wire silhouette recognizably brain-shaped.
-for(let j=0;j<7;j++){let line=[];for(let k=0;k<=60;k++){const t=k*Math.PI*2/60;line.push([Math.cos(t)*(.36-j*.024),.87+j*.035,Math.sin(t)*.39-.28])}paths.push(line)}
-for(let k=0;k<6;k++)paths.push([[.10*Math.cos(k),.98,-.15],[.09*Math.cos(k),1.17,-.20],[.065*Math.cos(k),1.31,-.16]]);
+for(let j=0;j<7;j++){let line=[];for(let k=0;k<=60;k++){const t=k*Math.PI*2/60;line.push([Math.cos(t)*(.36-j*.024),.62+j*.025,Math.sin(t)*.39-.28])}paths.push(line)}
+for(let k=0;k<6;k++)paths.push([[.10*Math.cos(k),.78,-.15],[.09*Math.cos(k),.94,-.20],[.065*Math.cos(k),1.06,-.16]]);
 function thinkingPoint(p,t){return p}
 function nodePoint(i){return project(thinkingPoint(anchors[i],renderTime))}
 function drawNodePulse(point,index,t){
@@ -218,10 +239,10 @@ function drawNodePulse(point,index,t){
 function drawBrainMass(){
   const radius=Math.min(W*.255,H*.32)*zoom*breathing;
   const blobs=[
-    {p:[-.37,-.10,0],rx:.66,ry:.70,tilt:-.12,bright:'#a43e63'},
-    {p:[.37,-.10,0],rx:.66,ry:.70,tilt:.12,bright:'#b34a6c'},
-    {p:[0,.82,-.28],rx:.40,ry:.29,tilt:0,bright:'#98365c'},
-    {p:[0,1.03,-.20],rx:.16,ry:.40,tilt:0,bright:'#85304c'}
+    {p:[-.44,-.10,0],rx:.43,ry:.68,tilt:0,bright:'#68213b'},
+    {p:[.44,-.10,0],rx:.43,ry:.68,tilt:0,bright:'#782840'},
+    {p:[0,.67,-.28],rx:.33,ry:.18,tilt:0,bright:'#572039'},
+    {p:[0,.86,-.20],rx:.09,ry:.19,tilt:0,bright:'#47172c'}
   ];
   // Back-to-front shading changes subtly as the brain rotates.
   for(const blob of blobs){
@@ -230,8 +251,8 @@ function drawBrainMass(){
     const gradient=ctx.createRadialGradient(p[0]-rx*.33,p[1]-ry*.42,rx*.05,
                                           p[0],p[1],rx*1.25);
     gradient.addColorStop(0,blob.bright);
-    gradient.addColorStop(.38,'#54243d');
-    gradient.addColorStop(.80,'#201623');
+    gradient.addColorStop(.38,'#29101e');
+    gradient.addColorStop(.80,'#130c16');
     gradient.addColorStop(1,'#090b13');
     ctx.save();
     ctx.translate(p[0],p[1]);ctx.rotate(blob.tilt);
@@ -259,9 +280,9 @@ function drawBrain(t=0){
     const pp=(lowPower?paths[i].filter((_,j)=>j%2===0):paths[i]).map(project);
     const z=pp.reduce((sum,p)=>sum+p[2],0)/pp.length;
     const shimmer=reduced?.5:.5+.5*Math.sin(t*.0024+i*.48);
-    const alpha=Math.max(.17,Math.min(.85,.34+z*.19+.20*shimmer));
+    const alpha=Math.max(.10,Math.min(.82,.27+z*.42+.16*shimmer));
     ctx.strokeStyle='rgba(255,64,92,'+alpha.toFixed(3)+')';
-    ctx.lineWidth=.78+.38*shimmer;
+    ctx.lineWidth=z>0?1.05:.6;
     ctx.beginPath();
     pp.forEach((p,j)=>j?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
     ctx.stroke();
