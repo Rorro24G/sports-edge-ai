@@ -38,11 +38,7 @@ def _game_card(game: dict) -> None:
         st.markdown(
             "#### " + str(game["away"]) + "  **vs.**  " + str(game["home"])
         )
-        time_col, venue_col = st.columns([1, 2])
-        time_col.metric("Hora CDMX", str(game["local_time"]))
-        venue_col.caption("DATOS DEL ENCUENTRO")
-        venue_col.write("Visitante: " + str(game["away"]))
-        venue_col.write("Local: " + str(game["home"]))
+        st.markdown("**" + str(game["local_time"]) + " · CDMX**")
         if game.get("status", "").upper() in ("POST", "FINAL"):
             aw, ho = game.get("away_score"), game.get("home_score")
             if aw is not None and ho is not None:
@@ -56,10 +52,6 @@ def _game_card(game: dict) -> None:
 def render(*, board_fetch, clear_cache=None) -> None:
     import streamlit as st
     st.markdown("### Agenda deportiva")
-    st.caption(
-        "Selecciona una fecha y revisa cada encuentro como una ficha. "
-        "Horarios locales de Ciudad de México; el estado viene de ESPN."
-    )
     date_col, league_col, action_col = st.columns(
         [1.4, 1.7, 1], vertical_alignment="bottom"
     )
@@ -98,10 +90,6 @@ def render(*, board_fetch, clear_cache=None) -> None:
             if row.get("sport") == league
         ]
         groups[league] = found
-        st.caption(
-            league + " · consulta " + str(board.get("checked_at_utc", "sin hora"))
-            + " (UTC)"
-        )
         for game in found:
             rows.append({
                 "Liga": league, "Visitante": game.get("away", ""),
@@ -131,11 +119,16 @@ def render(*, board_fetch, clear_cache=None) -> None:
         if not found:
             st.info("ESPN no registró partidos de " + league + " para esa fecha.")
             continue
-        for offset in range(0, len(found), 2):
-            columns = st.columns(2, gap="medium")
-            for i, game in enumerate(found[offset:offset + 2]):
-                with columns[i]:
-                    _game_card(game)
+        def cards(games):
+            for offset in range(0, len(games), 2):
+                columns = st.columns(2, gap="medium")
+                for i, game in enumerate(games[offset:offset + 2]):
+                    with columns[i]:
+                        _game_card(game)
+        cards(found[:6])
+        if len(found) > 6:
+            with st.expander("Ver " + str(len(found)-6) + " partidos más · " + league):
+                cards(found[6:])
 
     if rows:
         with st.expander("Consultar tabla completa", expanded=False):
@@ -143,7 +136,4 @@ def render(*, board_fetch, clear_cache=None) -> None:
                 sorted(rows, key=lambda row: (row["Hora CDMX"], row["Liga"])),
                 use_container_width=True, hide_index=True,
             )
-    st.caption(
-        "ATP/WTA aún no conectado. Si faltan datos de ESPN, "
-        "no significa que el encuentro esté cancelado."
-    )
+
