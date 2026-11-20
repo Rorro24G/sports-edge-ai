@@ -1,0 +1,639 @@
+{
+  "model": "SEAI-JUICIO-0.2",
+  "data_version": 1,
+  "report_count": 6,
+  "source": "ESPN scoreboard + ESPN team schedules",
+  "generated_at_utc": "2026-11-18T13:40:32.629050+00:00",
+  "note": "Pruebas retrospectivas ESPN antes de cada encuentro, no calibración ni validación de apuestas. Las cuotas de Covers nunca entran en la decisión.",
+  "reports": [
+    {
+      "version": "SEAI-JUICIO-0.2",
+      "evaluation": "WALK_FORWARD_SIN_REENTRENAMIENTO",
+      "validation_status": "AUDITORIA_DESCRIPTIVA",
+      "fixture_count": 160,
+      "evaluated_count": 160,
+      "candidate_count": 93,
+      "passed_count": 67,
+      "correct_candidates": 75,
+      "candidate_accuracy_observed": 0.80645,
+      "candidate_accuracy_wilson_95": [
+        0.71467,
+        0.87392
+      ],
+      "home_only_accuracy_evaluated": 0.5375,
+      "home_only_accuracy_on_candidates": 0.62366,
+      "avg_estimated_probability_on_candidates": 0.69874,
+      "candidate_coverage": 0.58125,
+      "brier_all_evaluated": 0.19013,
+      "brier_50_50_reference": 0.25,
+      "calibration_bins": [
+        {
+          "range": "0-20%",
+          "n": 1,
+          "avg_predicted_home": 0.1762,
+          "actual_home_frequency": 0
+        },
+        {
+          "range": "20-40%",
+          "n": 26,
+          "avg_predicted_home": 0.3162,
+          "actual_home_frequency": 0.1923
+        },
+        {
+          "range": "40-60%",
+          "n": 71,
+          "avg_predicted_home": 0.5115,
+          "actual_home_frequency": 0.3944
+        },
+        {
+          "range": "60-80%",
+          "n": 52,
+          "avg_predicted_home": 0.6877,
+          "actual_home_frequency": 0.8462
+        },
+        {
+          "range": "80-100%",
+          "n": 10,
+          "avg_predicted_home": 0.8392,
+          "actual_home_frequency": 0.9
+        }
+      ],
+      "calibration_gap_ece_exploratory": 0.12851,
+      "leagues": {
+        "NBA": {
+          "evaluated": 160,
+          "candidates": 93,
+          "correct": 75,
+          "observed_accuracy": 0.80645,
+          "home_baseline_accuracy": 0.5375,
+          "brier": 0.19013
+        }
+      },
+      "minimum_evaluated": 100,
+      "minimum_candidates": 30,
+      "model_calibrated": false,
+      "model_validated": false,
+      "stake_recommended": false,
+      "notes": "Sin lookahead: cada corte ocurre antes de la fecha del encuentro. El intervalo de Wilson y los promedios NO validan rentabilidad. No hay odds históricas sincronizadas ni ROI calculado.",
+      "sport": "NBA",
+      "period": {
+        "start": "2025-11-10",
+        "end": "2025-12-02"
+      },
+      "source": "ESPN scoreboard + ESPN team schedules",
+      "audited_at_utc": "2026-11-18T13:40:19.127506+00:00",
+      "scoreboard_errors": [],
+      "team_history_failures": [],
+      "retrieved_fixture_count": 160,
+      "retrieved_team_count": 30,
+      "data_complete": true,
+      "source_note": "Solo ESPN. Cada predicción se produce con resultados anteriores al encuentro. No se atribuyen cuotas históricas ni ganancias.",
+      "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44316041182",
+      "audit_job_id": 134842281129
+    },
+    {
+      "version": "SEAI-JUICIO-0.2",
+      "evaluation": "WALK_FORWARD_SIN_REENTRENAMIENTO",
+      "validation_status": "AUDITORIA_DESCRIPTIVA",
+      "fixture_count": 154,
+      "evaluated_count": 101,
+      "candidate_count": 58,
+      "passed_count": 43,
+      "correct_candidates": 46,
+      "candidate_accuracy_observed": 0.7931,
+      "candidate_accuracy_wilson_95": [
+        0.67231,
+        0.87749
+      ],
+      "home_only_accuracy_evaluated": 0.50495,
+      "home_only_accuracy_on_candidates": 0.46552,
+      "avg_estimated_probability_on_candidates": 0.67073,
+      "candidate_coverage": 0.57426,
+      "brier_all_evaluated": 0.21343,
+      "brier_50_50_reference": 0.25,
+      "calibration_bins": [
+        {
+          "range": "0-20%",
+          "n": 1,
+          "avg_predicted_home": 0.1901,
+          "actual_home_frequency": 0
+        },
+        {
+          "range": "20-40%",
+          "n": 22,
+          "avg_predicted_home": 0.3441,
+          "actual_home_frequency": 0.1818
+        },
+        {
+          "range": "40-60%",
+          "n": 45,
+          "avg_predicted_home": 0.5064,
+          "actual_home_frequency": 0.5111
+        },
+        {
+          "range": "60-80%",
+          "n": 32,
+          "avg_predicted_home": 0.6857,
+          "actual_home_frequency": 0.7188
+        },
+        {
+          "range": "80-100%",
+          "n": 1,
+          "avg_predicted_home": 0.8045,
+          "actual_home_frequency": 1
+        }
+      ],
+      "calibration_gap_ece_exploratory": 0.05175,
+      "leagues": {
+        "NBA": {
+          "evaluated": 101,
+          "candidates": 58,
+          "correct": 46,
+          "observed_accuracy": 0.7931,
+          "home_baseline_accuracy": 0.50495,
+          "brier": 0.21343
+        }
+      },
+      "minimum_evaluated": 100,
+      "minimum_candidates": 30,
+      "model_calibrated": false,
+      "model_validated": false,
+      "stake_recommended": false,
+      "notes": "Sin lookahead: cada corte ocurre antes de la fecha del encuentro. El intervalo de Wilson y los promedios NO validan rentabilidad. No hay odds históricas sincronizadas ni ROI calculado.",
+      "sport": "NBA",
+      "period": {
+        "start": "2026-10-28",
+        "end": "2026-11-17"
+      },
+      "source": "ESPN scoreboard + ESPN team schedules",
+      "audited_at_utc": "2026-11-18T13:40:30.967382+00:00",
+      "scoreboard_errors": [],
+      "team_history_failures": [],
+      "retrieved_fixture_count": 154,
+      "retrieved_team_count": 30,
+      "data_complete": true,
+      "source_note": "Solo ESPN. Cada predicción se produce con resultados anteriores al encuentro. No se atribuyen cuotas históricas ni ganancias.",
+      "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44316041182",
+      "audit_job_id": 134842281088
+    },
+    {
+      "version": "SEAI-JUICIO-0.2",
+      "evaluation": "WALK_FORWARD_SIN_REENTRENAMIENTO",
+      "validation_status": "MUESTRA_INSUFICIENTE",
+      "fixture_count": 73,
+      "evaluated_count": 71,
+      "candidate_count": 32,
+      "passed_count": 39,
+      "correct_candidates": 23,
+      "candidate_accuracy_observed": 0.71875,
+      "candidate_accuracy_wilson_95": [
+        0.54625,
+        0.84436
+      ],
+      "home_only_accuracy_evaluated": 0.52113,
+      "home_only_accuracy_on_candidates": 0.65625,
+      "avg_estimated_probability_on_candidates": 0.6578,
+      "candidate_coverage": 0.4507,
+      "brier_all_evaluated": 0.218429,
+      "brier_50_50_reference": 0.25,
+      "calibration_bins": [
+        {
+          "range": "0-20%",
+          "n": 0,
+          "avg_predicted_home": null,
+          "actual_home_frequency": null
+        },
+        {
+          "range": "20-40%",
+          "n": 10,
+          "avg_predicted_home": 0.346,
+          "actual_home_frequency": 0.3
+        },
+        {
+          "range": "40-60%",
+          "n": 42,
+          "avg_predicted_home": 0.5028,
+          "actual_home_frequency": 0.4524
+        },
+        {
+          "range": "60-80%",
+          "n": 18,
+          "avg_predicted_home": 0.6633,
+          "actual_home_frequency": 0.7778
+        },
+        {
+          "range": "80-100%",
+          "n": 1,
+          "avg_predicted_home": 0.8094,
+          "actual_home_frequency": 1
+        }
+      ],
+      "calibration_gap_ece_exploratory": 0.06801,
+      "leagues": {
+        "NFL": {
+          "evaluated": 71,
+          "candidates": 32,
+          "correct": 23,
+          "observed_accuracy": 0.71875,
+          "home_baseline_accuracy": 0.52113,
+          "brier": 0.218429
+        }
+      },
+      "minimum_evaluated": 100,
+      "minimum_candidates": 30,
+      "model_calibrated": false,
+      "model_validated": false,
+      "stake_recommended": false,
+      "notes": "Sin lookahead: cada corte ocurre antes de la fecha del encuentro. El intervalo de Wilson y los promedios NO validan rentabilidad. No hay odds históricas sincronizadas ni ROI calculado.",
+      "sport": "NFL",
+      "period": {
+        "start": "2025-10-13",
+        "end": "2025-11-19"
+      },
+      "source": "ESPN scoreboard + ESPN team schedules",
+      "audited_at_utc": "2026-11-18T13:40:32.629050+00:00",
+      "scoreboard_errors": [],
+      "team_history_failures": [],
+      "retrieved_fixture_count": 73,
+      "retrieved_team_count": 32,
+      "data_complete": true,
+      "source_note": "Solo ESPN. Cada predicción se produce con resultados anteriores al encuentro. No se atribuyen cuotas históricas ni ganancias.",
+      "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44316041182",
+      "audit_job_id": 134842281647
+    },
+    {
+      "version": "SEAI-JUICIO-0.2",
+      "evaluation": "WALK_FORWARD_SIN_REENTRENAMIENTO",
+      "validation_status": "MUESTRA_INSUFICIENTE",
+      "fixture_count": 102,
+      "evaluated_count": 69,
+      "candidate_count": 32,
+      "passed_count": 37,
+      "correct_candidates": 23,
+      "candidate_accuracy_observed": 0.71875,
+      "candidate_accuracy_wilson_95": [
+        0.54625,
+        0.84436
+      ],
+      "home_only_accuracy_evaluated": 0.42029,
+      "home_only_accuracy_on_candidates": 0.375,
+      "avg_estimated_probability_on_candidates": 0.64627,
+      "candidate_coverage": 0.46377,
+      "brier_all_evaluated": 0.227769,
+      "brier_50_50_reference": 0.25,
+      "calibration_bins": [
+        {
+          "range": "0-20%",
+          "n": 0,
+          "avg_predicted_home": null,
+          "actual_home_frequency": null
+        },
+        {
+          "range": "20-40%",
+          "n": 7,
+          "avg_predicted_home": 0.3286,
+          "actual_home_frequency": 0
+        },
+        {
+          "range": "40-60%",
+          "n": 43,
+          "avg_predicted_home": 0.499,
+          "actual_home_frequency": 0.4419
+        },
+        {
+          "range": "60-80%",
+          "n": 19,
+          "avg_predicted_home": 0.654,
+          "actual_home_frequency": 0.5263
+        },
+        {
+          "range": "80-100%",
+          "n": 0,
+          "avg_predicted_home": null,
+          "actual_home_frequency": null
+        }
+      ],
+      "calibration_gap_ece_exploratory": 0.10408,
+      "leagues": {
+        "NFL": {
+          "evaluated": 69,
+          "candidates": 32,
+          "correct": 23,
+          "observed_accuracy": 0.71875,
+          "home_baseline_accuracy": 0.42029,
+          "brier": 0.227769
+        }
+      },
+      "minimum_evaluated": 100,
+      "minimum_candidates": 30,
+      "model_calibrated": false,
+      "model_validated": false,
+      "stake_recommended": false,
+      "notes": "Sin lookahead: cada corte ocurre antes de la fecha del encuentro. El intervalo de Wilson y los promedios NO validan rentabilidad. No hay odds históricas sincronizadas ni ROI calculado.",
+      "sport": "NFL",
+      "period": {
+        "start": "2026-09-28",
+        "end": "2026-11-17"
+      },
+      "source": "ESPN scoreboard + ESPN team schedules",
+      "audited_at_utc": "2026-11-18T13:40:29.692355+00:00",
+      "scoreboard_errors": [],
+      "team_history_failures": [],
+      "retrieved_fixture_count": 103,
+      "retrieved_team_count": 32,
+      "data_complete": true,
+      "source_note": "Solo ESPN. Cada predicción se produce con resultados anteriores al encuentro. No se atribuyen cuotas históricas ni ganancias.",
+      "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44316041182",
+      "audit_job_id": 134842280920
+    },
+    {
+      "version": "SEAI-JUICIO-0.2",
+      "evaluation": "WALK_FORWARD_SIN_REENTRENAMIENTO",
+      "validation_status": "AUDITORIA_DESCRIPTIVA",
+      "fixture_count": 160,
+      "evaluated_count": 160,
+      "candidate_count": 50,
+      "passed_count": 110,
+      "correct_candidates": 29,
+      "candidate_accuracy_observed": 0.58,
+      "candidate_accuracy_wilson_95": [
+        0.44233,
+        0.70625
+      ],
+      "home_only_accuracy_evaluated": 0.5125,
+      "home_only_accuracy_on_candidates": 0.54,
+      "avg_estimated_probability_on_candidates": 0.62198,
+      "candidate_coverage": 0.3125,
+      "brier_all_evaluated": 0.25193,
+      "brier_50_50_reference": 0.25,
+      "calibration_bins": [
+        {
+          "range": "0-20%",
+          "n": 0,
+          "avg_predicted_home": null,
+          "actual_home_frequency": null
+        },
+        {
+          "range": "20-40%",
+          "n": 9,
+          "avg_predicted_home": 0.3622,
+          "actual_home_frequency": 0.4444
+        },
+        {
+          "range": "40-60%",
+          "n": 119,
+          "avg_predicted_home": 0.5098,
+          "actual_home_frequency": 0.5126
+        },
+        {
+          "range": "60-80%",
+          "n": 32,
+          "avg_predicted_home": 0.6283,
+          "actual_home_frequency": 0.5312
+        },
+        {
+          "range": "80-100%",
+          "n": 0,
+          "avg_predicted_home": null,
+          "actual_home_frequency": null
+        }
+      ],
+      "calibration_gap_ece_exploratory": 0.02613,
+      "leagues": {
+        "NHL": {
+          "evaluated": 160,
+          "candidates": 50,
+          "correct": 29,
+          "observed_accuracy": 0.58,
+          "home_baseline_accuracy": 0.5125,
+          "brier": 0.25193
+        }
+      },
+      "minimum_evaluated": 100,
+      "minimum_candidates": 30,
+      "model_calibrated": false,
+      "model_validated": false,
+      "stake_recommended": false,
+      "notes": "Sin lookahead: cada corte ocurre antes de la fecha del encuentro. El intervalo de Wilson y los promedios NO validan rentabilidad. No hay odds históricas sincronizadas ni ROI calculado.",
+      "sport": "NHL",
+      "period": {
+        "start": "2025-11-02",
+        "end": "2025-11-25"
+      },
+      "source": "ESPN scoreboard + ESPN team schedules",
+      "audited_at_utc": "2026-11-18T13:40:24.464704+00:00",
+      "scoreboard_errors": [],
+      "team_history_failures": [],
+      "retrieved_fixture_count": 160,
+      "retrieved_team_count": 32,
+      "data_complete": true,
+      "source_note": "Solo ESPN. Cada predicción se produce con resultados anteriores al encuentro. No se atribuyen cuotas históricas ni ganancias.",
+      "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44316041182",
+      "audit_job_id": 134842280462
+    },
+    {
+      "version": "SEAI-JUICIO-0.2",
+      "evaluation": "WALK_FORWARD_SIN_REENTRENAMIENTO",
+      "validation_status": "AUDITORIA_DESCRIPTIVA",
+      "fixture_count": 160,
+      "evaluated_count": 160,
+      "candidate_count": 49,
+      "passed_count": 111,
+      "correct_candidates": 34,
+      "candidate_accuracy_observed": 0.69388,
+      "candidate_accuracy_wilson_95": [
+        0.55472,
+        0.80485
+      ],
+      "home_only_accuracy_evaluated": 0.4625,
+      "home_only_accuracy_on_candidates": 0.61224,
+      "avg_estimated_probability_on_candidates": 0.63964,
+      "candidate_coverage": 0.30625,
+      "brier_all_evaluated": 0.243669,
+      "brier_50_50_reference": 0.25,
+      "calibration_bins": [
+        {
+          "range": "0-20%",
+          "n": 0,
+          "avg_predicted_home": null,
+          "actual_home_frequency": null
+        },
+        {
+          "range": "20-40%",
+          "n": 19,
+          "avg_predicted_home": 0.3721,
+          "actual_home_frequency": 0.4737
+        },
+        {
+          "range": "40-60%",
+          "n": 111,
+          "avg_predicted_home": 0.5103,
+          "actual_home_frequency": 0.3874
+        },
+        {
+          "range": "60-80%",
+          "n": 30,
+          "avg_predicted_home": 0.656,
+          "actual_home_frequency": 0.7333
+        },
+        {
+          "range": "80-100%",
+          "n": 0,
+          "avg_predicted_home": null,
+          "actual_home_frequency": null
+        }
+      ],
+      "calibration_gap_ece_exploratory": 0.11182,
+      "leagues": {
+        "NHL": {
+          "evaluated": 160,
+          "candidates": 49,
+          "correct": 34,
+          "observed_accuracy": 0.69388,
+          "home_baseline_accuracy": 0.4625,
+          "brier": 0.243669
+        }
+      },
+      "minimum_evaluated": 100,
+      "minimum_candidates": 30,
+      "model_calibrated": false,
+      "model_validated": false,
+      "stake_recommended": false,
+      "notes": "Sin lookahead: cada corte ocurre antes de la fecha del encuentro. El intervalo de Wilson y los promedios NO validan rentabilidad. No hay odds históricas sincronizadas ni ROI calculado.",
+      "sport": "NHL",
+      "period": {
+        "start": "2026-10-25",
+        "end": "2026-11-17"
+      },
+      "source": "ESPN scoreboard + ESPN team schedules",
+      "audited_at_utc": "2026-11-18T13:40:22.414295+00:00",
+      "scoreboard_errors": [],
+      "team_history_failures": [],
+      "retrieved_fixture_count": 160,
+      "retrieved_team_count": 32,
+      "data_complete": true,
+      "source_note": "Solo ESPN. Cada predicción se produce con resultados anteriores al encuentro. No se atribuyen cuotas históricas ni ganancias.",
+      "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44316041182",
+      "audit_job_id": 134842280980
+    }
+  ],
+  "calibration_experiment": {
+    "status": "EXPERIMENTO_CALIBRACION_SIN_ACTIVAR",
+    "sport": "NBA",
+    "base_model": "SEAI-JUICIO-0.2",
+    "train_period": {
+      "start": "2025-11-10",
+      "end": "2025-12-02"
+    },
+    "holdout_period": {
+      "start": "2026-10-28",
+      "end": "2026-11-17"
+    },
+    "train_count": 160,
+    "holdout_count": 101,
+    "platt_slope": 1.87000055,
+    "platt_intercept": -0.25933711,
+    "regularization": 1,
+    "raw_holdout": {
+      "brier": 0.21343,
+      "log_loss": 0.617027,
+      "mean_predicted_home": 0.52768,
+      "actual_home_rate": 0.50495
+    },
+    "calibrated_holdout": {
+      "brier": 0.211057,
+      "log_loss": 0.610991,
+      "mean_predicted_home": 0.4933,
+      "actual_home_rate": 0.50495
+    },
+    "brier_change_calibrated_minus_raw": -0.002373,
+    "fit_uses_holdout": false,
+    "production_enabled": false,
+    "model_validated": false,
+    "return_on_investment_known": false,
+    "notes": "Calibración logística entrenada solo con temporada anterior; la temporada posterior se usa para evaluación y no para escoger parámetros. El resultado no acredita ganancias ni se aplica todavía a Picks en vivo.",
+    "audit_run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44317149330"
+  },
+  "learned_challengers": {
+    "trained_model": "SEAI-APRENDIZAJE-0.1",
+    "source": "Real GitHub Actions ESPN historical audits",
+    "run_url": "https://github.com/Rorro24G/sports-edge-ai/actions/runs/44323603764",
+    "production_enabled": false,
+    "results": [
+      {
+        "status": "CHALLENGER_ENTRENADO_EN_SOMBRA",
+        "trained_model": "SEAI-APRENDIZAJE-0.1",
+        "base_model": "SEAI-JUICIO-0.2",
+        "sport": "NBA",
+        "train_period": {
+          "start": "2025-11-10",
+          "end": "2025-12-02"
+        },
+        "holdout_period": {
+          "start": "2026-10-28",
+          "end": "2026-11-17"
+        },
+        "train_count": 160,
+        "holdout_count": 101,
+        "old_model_holdout": {
+          "brier": 0.21343,
+          "log_loss": 0.617027,
+          "winner_accuracy": 0.67327,
+          "mean_home_probability": 0.52768,
+          "home_win_frequency": 0.50495
+        },
+        "learned_model_holdout": {
+          "brier": 0.21074,
+          "log_loss": 0.611191,
+          "winner_accuracy": 0.68317,
+          "mean_home_probability": 0.49645,
+          "home_win_frequency": 0.50495
+        },
+        "brier_delta_learned_minus_old": -0.00269,
+        "logloss_delta_learned_minus_old": -0.005836,
+        "train_uses_holdout": false,
+        "used_covers_to_train": false,
+        "production_enabled": false,
+        "model_validated": false,
+        "notes": "Challenger entrenado con ESPN 2025 y contrastado en ESPN 2026; hiperparámetros fijos antes de comprobar la muestra posterior. No es validación prospectiva ni ROI de apuestas."
+      },
+      {
+        "status": "CHALLENGER_ENTRENADO_EN_SOMBRA",
+        "trained_model": "SEAI-APRENDIZAJE-0.1",
+        "base_model": "SEAI-JUICIO-0.2",
+        "sport": "NHL",
+        "train_period": {
+          "start": "2025-11-02",
+          "end": "2025-11-25"
+        },
+        "holdout_period": {
+          "start": "2026-10-25",
+          "end": "2026-11-17"
+        },
+        "train_count": 160,
+        "holdout_count": 160,
+        "old_model_holdout": {
+          "brier": 0.243669,
+          "log_loss": 0.680192,
+          "winner_accuracy": 0.5625,
+          "mean_home_probability": 0.52121,
+          "home_win_frequency": 0.4625
+        },
+        "learned_model_holdout": {
+          "brier": 0.245518,
+          "log_loss": 0.684221,
+          "winner_accuracy": 0.575,
+          "mean_home_probability": 0.51034,
+          "home_win_frequency": 0.4625
+        },
+        "brier_delta_learned_minus_old": 0.001849,
+        "logloss_delta_learned_minus_old": 0.004029,
+        "train_uses_holdout": false,
+        "used_covers_to_train": false,
+        "production_enabled": false,
+        "model_validated": false,
+        "notes": "Challenger entrenado con ESPN 2025 y contrastado en ESPN 2026; hiperparámetros fijos antes de comprobar la muestra posterior. No es validación prospectiva ni ROI de apuestas."
+      }
+    ]
+  }
+}
