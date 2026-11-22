@@ -1,6 +1,6 @@
 {
-  "fecha_cdmx": "2026-11-21",
-  "generado_utc": "2026-11-21T18:19:33.633489+00:00",
+  "fecha_cdmx": "2026-11-22",
+  "generado_utc": "2026-11-22T18:44:01.722847+00:00",
   "unidades_simuladas": 26,
   "ganadas": 17,
   "perdidas": 9,
@@ -480,5 +480,5 @@
   },
   "fuentes_con_error": [],
   "pendientes_de_verificar": 0,
-  "consultas_espn": 1
+  "consultas_espn": 0
 }
