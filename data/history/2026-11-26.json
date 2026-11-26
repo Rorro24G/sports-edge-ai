@@ -1,0 +1,453 @@
+{
+  "date_cdmx": "2026-11-26",
+  "generated_at_utc": "2026-11-26T20:35:59.662269+00:00",
+  "leagues": {
+    "NBA": {
+      "coverage": {
+        "covers": "consultado",
+        "espn": "consultado",
+        "odds": "sin_proveedor"
+      },
+      "events": [],
+      "errors": []
+    },
+    "NFL": {
+      "coverage": {
+        "covers": "consultado",
+        "espn": "consultado",
+        "odds": "sin_proveedor"
+      },
+      "events": [
+        {
+          "liga": "NFL",
+          "partido": "Philadelphia @ Dallas",
+          "fecha_cdmx": "2026-11-26",
+          "hora_cdmx": "15:30",
+          "fuente_covers": "https://www.covers.com/picks/nfl",
+          "proyeccion_covers": [
+            22.22,
+            30.12
+          ],
+          "momios_covers": [
+            "+375",
+            "-450"
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": 21.05,
+            "local": 81.82
+          },
+          "spreads_publicados": "+8.5 -105, -8.5 -105",
+          "totales_publicados": "o48.5 -115, u49.5 -103",
+          "porcentajes_covers": null,
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NFL",
+            "partido": "Philadelphia @ Dallas",
+            "fecha_cdmx": "2026-11-26",
+            "hora_cdmx": "15:30",
+            "equipo_proyectado": "Dallas",
+            "seleccion_de_referencia": "Dallas ML",
+            "momio_covers": "-450",
+            "umbral_equilibrio_precio": 81.82,
+            "lado_proyectado": "local",
+            "marcador_proyectado": "22.22 - 30.12",
+            "margen_proyectado": 7.9,
+            "total_proyectado": 52.34,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nfl",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401873080",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nfl/game/_/gameId/401873080/eagles-cowboys",
+            "lesiones": [
+              {
+                "Equipo": "Dallas Cowboys",
+                "Jugador": "Jake Ferguson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Dallas Cowboys",
+                "Jugador": "Tyler Booker",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Dallas Cowboys",
+                "Jugador": "Jonathan Bullard",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Dallas Cowboys",
+                "Jugador": "Devin Moore",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Dallas Cowboys",
+                "Jugador": "Jaishawn Barham",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Jugador": "Cole Payton",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Jugador": "Grant Calcaterra",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Jugador": "Ajani Cornelius",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Jugador": "AJ Epenesa",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Jugador": "Arnold Ebiketie",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Dallas Cowboys",
+                "Categoría": "Passing Yards",
+                "Jugador": "Dak Prescott",
+                "Dato publicado": "276/420, 3,049 YDS, 25 TD, 6 INT"
+              },
+              {
+                "Equipo": "Dallas Cowboys",
+                "Categoría": "Rushing Yards",
+                "Jugador": "Javonte Williams",
+                "Dato publicado": "188 CAR, 759 YDS, 10 TD"
+              },
+              {
+                "Equipo": "Dallas Cowboys",
+                "Categoría": "Receiving Yards",
+                "Jugador": "CeeDee Lamb",
+                "Dato publicado": "88 REC, 1,108 YDS, 9 TD"
+              },
+              {
+                "Equipo": "Dallas Cowboys",
+                "Categoría": "Sacks",
+                "Jugador": "Quinnen Williams",
+                "Dato publicado": "8"
+              },
+              {
+                "Equipo": "Dallas Cowboys",
+                "Categoría": "Tackles",
+                "Jugador": "Caleb Downs",
+                "Dato publicado": "73"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Categoría": "Passing Yards",
+                "Jugador": "Jalen Hurts",
+                "Dato publicado": "89/154, 933 YDS, 8 TD, 3 INT"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Categoría": "Rushing Yards",
+                "Jugador": "Saquon Barkley",
+                "Dato publicado": "86 CAR, 371 YDS, 4 TD"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Categoría": "Receiving Yards",
+                "Jugador": "DeVonta Smith",
+                "Dato publicado": "31 REC, 351 YDS, 2 TD"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Categoría": "Sacks",
+                "Jugador": "Nolan Smith Jr.",
+                "Dato publicado": "6"
+              },
+              {
+                "Equipo": "Philadelphia Eagles",
+                "Categoría": "Tackles",
+                "Jugador": "Zack Baun",
+                "Dato publicado": "65"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "NFL Week 12 arrivals: CeeDee Lamb leads arrivals ahead of Eagles-Cowboys",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50588078/nfl-week-12-fashionable-arrivals"
+              },
+              {
+                "Titular ESPN": "NFL Week 12: Highlights of Thanksgiving games",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50599365/nfl-week-12-highlights-touchdowns-plays"
+              },
+              {
+                "Titular ESPN": "Betting Broncos-Steelers: How will Pittsburgh respond to stunning events?",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/50453064/nfl-week-12-odds-broncos-steelers-betting-preview-props"
+              },
+              {
+                "Titular ESPN": "Bears TE Colston Loveland ruled out vs. Lions with knee injury",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50605365/bears-colston-loveland-ruled-vs-lions-knee-injury"
+              },
+              {
+                "Titular ESPN": "2026 NFL Thanksgiving preview: Picks, predictions, schedule, odds, fantasy tips",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50582822/thanksgiving-games-picks-schedule-fantasy-odds-2026"
+              },
+              {
+                "Titular ESPN": "NFL Week 12 uniforms: Rams debut alternates, Cowboys rock Thanksgiving throwbacks",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50577887/nfl-week-12-uniforms"
+              }
+            ],
+            "consulta_utc": "2026-11-26T20:36:01.514412+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NFL",
+          "partido": "Kansas City @ Buffalo",
+          "fecha_cdmx": "2026-11-26",
+          "hora_cdmx": "19:20",
+          "fuente_covers": "https://www.covers.com/picks/nfl",
+          "proyeccion_covers": [
+            21.02,
+            23.24
+          ],
+          "momios_covers": [
+            "+140",
+            "-154"
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": 41.67,
+            "local": 60.63
+          },
+          "spreads_publicados": "+2.5 +110, -2.5 -120",
+          "totales_publicados": "o45.5 -110, u46.0 -108",
+          "porcentajes_covers": null,
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NFL",
+            "partido": "Kansas City @ Buffalo",
+            "fecha_cdmx": "2026-11-26",
+            "hora_cdmx": "19:20",
+            "equipo_proyectado": "Buffalo",
+            "seleccion_de_referencia": "Buffalo ML",
+            "momio_covers": "-154",
+            "umbral_equilibrio_precio": 60.63,
+            "lado_proyectado": "local",
+            "marcador_proyectado": "21.02 - 23.24",
+            "margen_proyectado": 2.22,
+            "total_proyectado": 44.26,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nfl",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401873082",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nfl/game/_/gameId/401873082/chiefs-bills",
+            "lesiones": [
+              {
+                "Equipo": "Buffalo Bills",
+                "Jugador": "T.J. Sanders",
+                "Estado ESPN": "Questionable",
+                "Motivo": "INJURY_STATUS_QUESTIONABLE"
+              },
+              {
+                "Equipo": "Buffalo Bills",
+                "Jugador": "Dorian Williams",
+                "Estado ESPN": "Questionable",
+                "Motivo": "INJURY_STATUS_QUESTIONABLE"
+              },
+              {
+                "Equipo": "Buffalo Bills",
+                "Jugador": "Christian Benford",
+                "Estado ESPN": "Questionable",
+                "Motivo": "INJURY_STATUS_QUESTIONABLE"
+              },
+              {
+                "Equipo": "Buffalo Bills",
+                "Jugador": "Dalton Kincaid",
+                "Estado ESPN": "Questionable",
+                "Motivo": "INJURY_STATUS_QUESTIONABLE"
+              },
+              {
+                "Equipo": "Buffalo Bills",
+                "Jugador": "O'Cyrus Torrence",
+                "Estado ESPN": "Questionable",
+                "Motivo": "INJURY_STATUS_QUESTIONABLE"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Jugador": "Peter Woods",
+                "Estado ESPN": "Questionable",
+                "Motivo": "INJURY_STATUS_QUESTIONABLE"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Jugador": "Omarr Norman-Lott",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Jugador": "Jaylon Moore",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Jugador": "Noah Gray",
+                "Estado ESPN": "Questionable",
+                "Motivo": "INJURY_STATUS_QUESTIONABLE"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Jugador": "Kenneth Walker III",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Buffalo Bills",
+                "Categoría": "Passing Yards",
+                "Jugador": "Josh Allen",
+                "Dato publicado": "194/302, 2,527 YDS, 14 TD, 9 INT"
+              },
+              {
+                "Equipo": "Buffalo Bills",
+                "Categoría": "Rushing Yards",
+                "Jugador": "James Cook III",
+                "Dato publicado": "209 CAR, 1,060 YDS, 10 TD"
+              },
+              {
+                "Equipo": "Buffalo Bills",
+                "Categoría": "Receiving Yards",
+                "Jugador": "Khalil Shakir",
+                "Dato publicado": "38 REC, 539 YDS, 1 TD"
+              },
+              {
+                "Equipo": "Buffalo Bills",
+                "Categoría": "Sacks",
+                "Jugador": "Greg Rousseau",
+                "Dato publicado": "10"
+              },
+              {
+                "Equipo": "Buffalo Bills",
+                "Categoría": "Tackles",
+                "Jugador": "Terrel Bernard",
+                "Dato publicado": "67"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Categoría": "Passing Yards",
+                "Jugador": "Patrick Mahomes",
+                "Dato publicado": "226/337, 2,709 YDS, 22 TD, 4 INT"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Categoría": "Rushing Yards",
+                "Jugador": "Kenneth Walker III",
+                "Dato publicado": "159 CAR, 872 YDS, 7 TD"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Categoría": "Receiving Yards",
+                "Jugador": "Travis Kelce",
+                "Dato publicado": "41 REC, 586 YDS, 4 TD"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Categoría": "Sacks",
+                "Jugador": "George Karlaftis",
+                "Dato publicado": "8"
+              },
+              {
+                "Equipo": "Kansas City Chiefs",
+                "Categoría": "Tackles",
+                "Jugador": "Nick Bolton",
+                "Dato publicado": "94"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "NFL Week 12 arrivals: CeeDee Lamb leads arrivals ahead of Eagles-Cowboys",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50588078/nfl-week-12-fashionable-arrivals"
+              },
+              {
+                "Titular ESPN": "NFL Week 12: Highlights of Thanksgiving games",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50599365/nfl-week-12-highlights-touchdowns-plays"
+              },
+              {
+                "Titular ESPN": "Betting Broncos-Steelers: How will Pittsburgh respond to stunning events?",
+                "Enlace": "https://www.espn.com/espn/betting/story/_/id/50453064/nfl-week-12-odds-broncos-steelers-betting-preview-props"
+              },
+              {
+                "Titular ESPN": "Bears TE Colston Loveland ruled out vs. Lions with knee injury",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50605365/bears-colston-loveland-ruled-vs-lions-knee-injury"
+              },
+              {
+                "Titular ESPN": "2026 NFL Thanksgiving preview: Picks, predictions, schedule, odds, fantasy tips",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50582822/thanksgiving-games-picks-schedule-fantasy-odds-2026"
+              },
+              {
+                "Titular ESPN": "NFL Week 12 uniforms: Rams debut alternates, Cowboys rock Thanksgiving throwbacks",
+                "Enlace": "https://www.espn.com/nfl/story/_/id/50577887/nfl-week-12-uniforms"
+              }
+            ],
+            "consulta_utc": "2026-11-26T20:36:01.585495+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NFL",
+          "partido": "Chicago Bears @ Detroit Lions",
+          "fecha_cdmx": "2026-11-26",
+          "hora_cdmx": "12:00",
+          "fuente_espn": "https://www.espn.com/nfl/game?gameId=401873081",
+          "estado": "IN",
+          "datos_covers": "no_verificados_para_este_partido",
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        }
+      ],
+      "errors": []
+    },
+    "NHL": {
+      "coverage": {
+        "covers": "consultado",
+        "espn": "consultado",
+        "odds": "sin_proveedor"
+      },
+      "events": [],
+      "errors": []
+    }
+  },
+  "pick_status": "SIN_MODELO_VALIDADO",
+  "reason": "No existe una probabilidad predictiva propia calibrada y validada"
+}
