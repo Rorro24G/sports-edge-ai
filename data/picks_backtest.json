@@ -1,12 +1,12 @@
 {
-  "fecha_cdmx": "2026-11-26",
-  "generado_utc": "2026-11-26T20:36:04.582758+00:00",
-  "unidades_simuladas": 71,
-  "ganadas": 44,
-  "perdidas": 27,
-  "acierto_observado_pct": 61.97,
-  "beneficio_unidades": "-3.24",
-  "roi_observado_pct": -4.56,
+  "fecha_cdmx": "2026-11-27",
+  "generado_utc": "2026-11-27T20:22:58.956301+00:00",
+  "unidades_simuladas": 73,
+  "ganadas": 45,
+  "perdidas": 28,
+  "acierto_observado_pct": 61.64,
+  "beneficio_unidades": "-3.59",
+  "roi_observado_pct": -4.92,
   "metodo": "Una unidad hipotetica por referencia Covers prepartido, resuelta con resultado final ESPN. NO representa apuestas realizadas ni probabilidades de modelo validado.",
   "grades": {
     "2026-11-19|NBA|401910021": {
@@ -1286,9 +1286,45 @@
       "beneficio_unidad": "0.77",
       "fuente_espn_resultado": "https://www.espn.com/nhl/game/_/gameId/401892793/sharks-ducks",
       "calificado_utc": "2026-11-26T20:36:04.582725+00:00"
+    },
+    "2026-11-26|NFL|401873080": {
+      "id": "2026-11-26|NFL|401873080",
+      "fecha": "2026-11-26",
+      "liga": "NFL",
+      "partido": "Philadelphia @ Dallas",
+      "evento_espn": "401873080",
+      "seleccion_covers": "Dallas ML",
+      "lado_proyectado": "local",
+      "momio_covers": "-450",
+      "capturado_utc": "2026-11-26T20:35:59.662269+00:00",
+      "fuente_covers": "https://www.covers.com/picks/nfl",
+      "fuente_espn": "https://www.espn.com/nfl/game/_/gameId/401873080/eagles-cowboys",
+      "resultado": "perdido",
+      "resultado_espn": "Philadelphia Eagles 39 — 38 Dallas Cowboys",
+      "beneficio_unidad": "-1.00",
+      "fuente_espn_resultado": "https://www.espn.com/nfl/game/_/gameId/401873080/eagles-cowboys",
+      "calificado_utc": "2026-11-27T20:22:58.956248+00:00"
+    },
+    "2026-11-26|NFL|401873082": {
+      "id": "2026-11-26|NFL|401873082",
+      "fecha": "2026-11-26",
+      "liga": "NFL",
+      "partido": "Kansas City @ Buffalo",
+      "evento_espn": "401873082",
+      "seleccion_covers": "Buffalo ML",
+      "lado_proyectado": "local",
+      "momio_covers": "-154",
+      "capturado_utc": "2026-11-26T20:35:59.662269+00:00",
+      "fuente_covers": "https://www.covers.com/picks/nfl",
+      "fuente_espn": "https://www.espn.com/nfl/game/_/gameId/401873082/chiefs-bills",
+      "resultado": "ganado",
+      "resultado_espn": "Kansas City Chiefs 10 — 13 Buffalo Bills",
+      "beneficio_unidad": "0.65",
+      "fuente_espn_resultado": "https://www.espn.com/nfl/game/_/gameId/401873082/chiefs-bills",
+      "calificado_utc": "2026-11-27T20:22:58.956258+00:00"
     }
   },
   "fuentes_con_error": [],
   "pendientes_de_verificar": 0,
-  "consultas_espn": 3
+  "consultas_espn": 1
 }
