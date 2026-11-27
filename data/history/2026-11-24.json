@@ -1,0 +1,647 @@
+{
+  "date_cdmx": "2026-11-24",
+  "generated_at_utc": "2026-11-24T21:36:22.539098+00:00",
+  "leagues": {
+    "NBA": {
+      "coverage": {
+        "covers": "consultado",
+        "espn": "consultado",
+        "odds": "sin_proveedor"
+      },
+      "events": [
+        {
+          "liga": "NBA",
+          "partido": "Detroit @ Orlando",
+          "fecha_cdmx": "2026-11-24",
+          "hora_cdmx": "18:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            108.64,
+            104.68
+          ],
+          "momios_covers": [
+            "-125",
+            "+118"
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": 55.56,
+            "local": 45.87
+          },
+          "spreads_publicados": "-1.5 -116, +1.5 -104",
+          "totales_publicados": "o211.5 -115, u212.5 -107",
+          "porcentajes_covers": null,
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Detroit @ Orlando",
+            "fecha_cdmx": "2026-11-24",
+            "hora_cdmx": "18:00",
+            "equipo_proyectado": "Detroit",
+            "seleccion_de_referencia": "Detroit ML",
+            "momio_covers": "-125",
+            "umbral_equilibrio_precio": 55.56,
+            "lado_proyectado": "visitante",
+            "marcador_proyectado": "108.64 - 104.68",
+            "margen_proyectado": 3.96,
+            "total_proyectado": 213.32,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401909314",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401909314/pistons-magic",
+            "lesiones": [
+              {
+                "Equipo": "Orlando Magic",
+                "Jugador": "Jonathan Isaac",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Jugador": "Izaiyah Nelson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Jugador": "Noah Penda",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Jugador": "Paolo Banchero",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Jugador": "Ebuka Okorie",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Jugador": "Taurean Prince",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Jugador": "Duncan Robinson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Jugador": "Jalen Duren",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Jugador": "Cade Cunningham",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Orlando Magic",
+                "Categoría": "Points",
+                "Jugador": "Franz Wagner",
+                "Dato publicado": "24.5"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Categoría": "Assists",
+                "Jugador": "Franz Wagner",
+                "Dato publicado": "8.2"
+              },
+              {
+                "Equipo": "Orlando Magic",
+                "Categoría": "Rebounds",
+                "Jugador": "Wendell Carter Jr.",
+                "Dato publicado": "8.6"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Categoría": "Points",
+                "Jugador": "Cade Cunningham",
+                "Dato publicado": "24.2"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Categoría": "Assists",
+                "Jugador": "Cade Cunningham",
+                "Dato publicado": "8.3"
+              },
+              {
+                "Equipo": "Detroit Pistons",
+                "Categoría": "Rebounds",
+                "Jugador": "Ausar Thompson",
+                "Dato publicado": "8.6"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Fantasy notebook: Karabell on Paul George, Tyler Herro, De'Aaron Fox, more",
+                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50584319/fantasy-basketball-trends-nba-2026-2027"
+              },
+              {
+                "Titular ESPN": "Fantasy basketball adds and NBA bets: Hot streaks for Paul Reed, Jamal Murray",
+                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50584006/fantasy-basketball-tips-nba-betting-picks-today"
+              },
+              {
+                "Titular ESPN": "Sources: Wolves' Donte DiVincenzo eyes New Year's for season debut",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50584000/wolves-dante-divincenzo-cleared-basketball-activities"
+              },
+              {
+                "Titular ESPN": "NBA buzz: Latest on trades, news, roster moves and intel for the 2026-27 season",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50028196/2026-27-nba-buzz-latest-live-updates-news-intel-trades-deals"
+              },
+              {
+                "Titular ESPN": "NBA Rookie Rankings: 10 standouts in a star-studded class",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50544296/nba-rookie-rankings-early-stats"
+              }
+            ],
+            "consulta_utc": "2026-11-24T21:36:23.865134+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Boston @ Washington",
+          "fecha_cdmx": "2026-11-24",
+          "hora_cdmx": "19:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            112.77,
+            102.35
+          ],
+          "momios_covers": [
+            "-424",
+            "+360"
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": 80.92,
+            "local": 21.74
+          },
+          "spreads_publicados": "-10.5 -110, +10.5 -105",
+          "totales_publicados": "o218.5 -110, u219.0 -110",
+          "porcentajes_covers": null,
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Boston @ Washington",
+            "fecha_cdmx": "2026-11-24",
+            "hora_cdmx": "19:00",
+            "equipo_proyectado": "Boston",
+            "seleccion_de_referencia": "Boston ML",
+            "momio_covers": "-424",
+            "umbral_equilibrio_precio": 80.92,
+            "lado_proyectado": "visitante",
+            "marcador_proyectado": "112.77 - 102.35",
+            "margen_proyectado": 10.42,
+            "total_proyectado": 215.12,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401909315",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401909315/celtics-wizards",
+            "lesiones": [
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Tre Mann",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Tristan Vukcevic",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Reece Beekman",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Justin Champagnie",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Jugador": "Jamir Watkins",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Boston Celtics",
+                "Jugador": "Mitchell Robinson",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Washington Wizards",
+                "Categoría": "Points",
+                "Jugador": "Anthony Davis",
+                "Dato publicado": "25.1"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Categoría": "Assists",
+                "Jugador": "Trae Young",
+                "Dato publicado": "8.8"
+              },
+              {
+                "Equipo": "Washington Wizards",
+                "Categoría": "Rebounds",
+                "Jugador": "Anthony Davis",
+                "Dato publicado": "9.9"
+              },
+              {
+                "Equipo": "Boston Celtics",
+                "Categoría": "Points",
+                "Jugador": "Jayson Tatum",
+                "Dato publicado": "26.4"
+              },
+              {
+                "Equipo": "Boston Celtics",
+                "Categoría": "Assists",
+                "Jugador": "Jayson Tatum",
+                "Dato publicado": "6.7"
+              },
+              {
+                "Equipo": "Boston Celtics",
+                "Categoría": "Rebounds",
+                "Jugador": "Neemias Queta",
+                "Dato publicado": "7.1"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Fantasy notebook: Karabell on Paul George, Tyler Herro, De'Aaron Fox, more",
+                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50584319/fantasy-basketball-trends-nba-2026-2027"
+              },
+              {
+                "Titular ESPN": "Fantasy basketball adds and NBA bets: Hot streaks for Paul Reed, Jamal Murray",
+                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50584006/fantasy-basketball-tips-nba-betting-picks-today"
+              },
+              {
+                "Titular ESPN": "Sources: Wolves' Donte DiVincenzo eyes New Year's for season debut",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50584000/wolves-dante-divincenzo-cleared-basketball-activities"
+              },
+              {
+                "Titular ESPN": "NBA buzz: Latest on trades, news, roster moves and intel for the 2026-27 season",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50028196/2026-27-nba-buzz-latest-live-updates-news-intel-trades-deals"
+              },
+              {
+                "Titular ESPN": "NBA Rookie Rankings: 10 standouts in a star-studded class",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50544296/nba-rookie-rankings-early-stats"
+              }
+            ],
+            "consulta_utc": "2026-11-24T21:36:23.980767+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        },
+        {
+          "liga": "NBA",
+          "partido": "Dallas @ Denver",
+          "fecha_cdmx": "2026-11-24",
+          "hora_cdmx": "21:00",
+          "fuente_covers": "https://www.covers.com/picks/nba",
+          "proyeccion_covers": [
+            113.07,
+            119.91
+          ],
+          "momios_covers": [
+            "+255",
+            "-280"
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": 28.17,
+            "local": 73.68
+          },
+          "spreads_publicados": "+8.5 -115, -8.5 +100",
+          "totales_publicados": "o233.5 -110, u234.5 -110, u3.5 -135",
+          "porcentajes_covers": null,
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NBA",
+            "partido": "Dallas @ Denver",
+            "fecha_cdmx": "2026-11-24",
+            "hora_cdmx": "21:00",
+            "equipo_proyectado": "Denver",
+            "seleccion_de_referencia": "Denver ML",
+            "momio_covers": "-280",
+            "umbral_equilibrio_precio": 73.68,
+            "lado_proyectado": "local",
+            "marcador_proyectado": "113.07 - 119.91",
+            "margen_proyectado": 6.84,
+            "total_proyectado": 232.98,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nba",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401909316",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nba/game/_/gameId/401909316/mavericks-nuggets",
+            "lesiones": [
+              {
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Tobi Lawal",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "P.J. Washington",
+                "Estado ESPN": "Day-To-Day",
+                "Motivo": "INJURY_STATUS_DAYTODAY"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Dereck Lively II",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Sergio de Larrea",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Jugador": "Tarik Biberovic",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Denver Nuggets",
+                "Categoría": "Points",
+                "Jugador": "Jamal Murray",
+                "Dato publicado": "26.2"
+              },
+              {
+                "Equipo": "Denver Nuggets",
+                "Categoría": "Assists",
+                "Jugador": "Nikola Jokic",
+                "Dato publicado": "9.2"
+              },
+              {
+                "Equipo": "Denver Nuggets",
+                "Categoría": "Rebounds",
+                "Jugador": "Nikola Jokic",
+                "Dato publicado": "10.9"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Categoría": "Points",
+                "Jugador": "Cooper Flagg",
+                "Dato publicado": "24.3"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Categoría": "Assists",
+                "Jugador": "Cooper Flagg",
+                "Dato publicado": "6.4"
+              },
+              {
+                "Equipo": "Dallas Mavericks",
+                "Categoría": "Rebounds",
+                "Jugador": "P.J. Washington",
+                "Dato publicado": "6.7"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Fantasy notebook: Karabell on Paul George, Tyler Herro, De'Aaron Fox, more",
+                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50584319/fantasy-basketball-trends-nba-2026-2027"
+              },
+              {
+                "Titular ESPN": "Fantasy basketball adds and NBA bets: Hot streaks for Paul Reed, Jamal Murray",
+                "Enlace": "https://www.espn.com/fantasy/basketball/story/_/id/50584006/fantasy-basketball-tips-nba-betting-picks-today"
+              },
+              {
+                "Titular ESPN": "Sources: Wolves' Donte DiVincenzo eyes New Year's for season debut",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50584000/wolves-dante-divincenzo-cleared-basketball-activities"
+              },
+              {
+                "Titular ESPN": "NBA buzz: Latest on trades, news, roster moves and intel for the 2026-27 season",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50028196/2026-27-nba-buzz-latest-live-updates-news-intel-trades-deals"
+              },
+              {
+                "Titular ESPN": "NBA Rookie Rankings: 10 standouts in a star-studded class",
+                "Enlace": "https://www.espn.com/nba/story/_/id/50544296/nba-rookie-rankings-early-stats"
+              }
+            ],
+            "consulta_utc": "2026-11-24T21:36:24.158038+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        }
+      ],
+      "errors": []
+    },
+    "NFL": {
+      "coverage": {
+        "covers": "consultado",
+        "espn": "consultado",
+        "odds": "sin_proveedor"
+      },
+      "events": [],
+      "errors": []
+    },
+    "NHL": {
+      "coverage": {
+        "covers": "consultado",
+        "espn": "consultado",
+        "odds": "sin_proveedor"
+      },
+      "events": [
+        {
+          "liga": "NHL",
+          "partido": "Vegas @ Edmonton",
+          "fecha_cdmx": "2026-11-24",
+          "hora_cdmx": "19:00",
+          "fuente_covers": "https://www.covers.com/picks/nhl",
+          "proyeccion_covers": [
+            3.21,
+            3.12
+          ],
+          "momios_covers": [
+            "-114",
+            "+105"
+          ],
+          "probabilidad_implicita_mercado": {
+            "visitante": 53.27,
+            "local": 48.78
+          },
+          "spreads_publicados": "+1.5 -270, -1.5 +195",
+          "totales_publicados": "o6.0 -120, u6.5 -119",
+          "porcentajes_covers": null,
+          "momios_casas": [],
+          "referencia_covers": {
+            "liga": "NHL",
+            "partido": "Vegas @ Edmonton",
+            "fecha_cdmx": "2026-11-24",
+            "hora_cdmx": "19:00",
+            "equipo_proyectado": "Vegas",
+            "seleccion_de_referencia": "Vegas ML",
+            "momio_covers": "-114",
+            "umbral_equilibrio_precio": 53.27,
+            "lado_proyectado": "visitante",
+            "marcador_proyectado": "3.21 - 3.12",
+            "margen_proyectado": 0.09,
+            "total_proyectado": 6.33,
+            "tipo": "PROYECCION_COVERS_NO_VALIDADA",
+            "fuente": "https://www.covers.com/picks/nhl",
+            "vigente_para_analisis_prepartido": true,
+            "probabilidad_propia": null,
+            "ev_propio": null,
+            "pick_validado": false,
+            "stake_recomendado": null,
+            "motivo_bloqueo": "Sin modelo propio calibrado, momio confirmado en casa y ventaja validada"
+          },
+          "espn": {
+            "evento": "401892780",
+            "estado": "PRE",
+            "fuente": "https://www.espn.com/nhl/game/_/gameId/401892780/golden-knights-oilers",
+            "lesiones": [
+              {
+                "Equipo": "Edmonton Oilers",
+                "Jugador": "Zach Hyman",
+                "Estado ESPN": "Out",
+                "Motivo": "INJURY_STATUS_OUT"
+              },
+              {
+                "Equipo": "Edmonton Oilers",
+                "Jugador": "Alec Regula",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Edmonton Oilers",
+                "Jugador": "Matt Savoie",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Edmonton Oilers",
+                "Jugador": "Frederik Andersen",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              },
+              {
+                "Equipo": "Edmonton Oilers",
+                "Jugador": "Mattias Janmark",
+                "Estado ESPN": "Injured Reserve",
+                "Motivo": "INJURY_STATUS_IR"
+              }
+            ],
+            "lideres": [
+              {
+                "Equipo": "Edmonton Oilers",
+                "Categoría": "Goals",
+                "Jugador": "Leon Draisaitl",
+                "Dato publicado": "23"
+              },
+              {
+                "Equipo": "Edmonton Oilers",
+                "Categoría": "Assists",
+                "Jugador": "Connor McDavid",
+                "Dato publicado": "45"
+              },
+              {
+                "Equipo": "Edmonton Oilers",
+                "Categoría": "Points",
+                "Jugador": "Connor McDavid",
+                "Dato publicado": "58"
+              },
+              {
+                "Equipo": "Vegas Golden Knights",
+                "Categoría": "Goals",
+                "Jugador": "Mark Stone",
+                "Dato publicado": "11"
+              },
+              {
+                "Equipo": "Vegas Golden Knights",
+                "Categoría": "Assists",
+                "Jugador": "Mitch Marner",
+                "Dato publicado": "23"
+              },
+              {
+                "Equipo": "Vegas Golden Knights",
+                "Categoría": "Points",
+                "Jugador": "Jack Eichel",
+                "Dato publicado": "31"
+              }
+            ],
+            "noticias": [
+              {
+                "Titular ESPN": "Lightning forward Conor Geekie out 4-5 months after undergoing shoulder surgery",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50583955/lightning-conor-geekie-4-5-months-shoulder-surgery"
+              },
+              {
+                "Titular ESPN": "NHL Tonight: Golden Knights-Oilers takes center stage on Tuesday",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50575154/nhl-2026-27-tonight-games-schedule-matchups-stats-top-players-betting"
+              },
+              {
+                "Titular ESPN": "A mystery no more? How movement tracking could shed new light on NHL goaltenders",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/50576360/nhl-2026-27-goalies-mystery-movement-butterfly-tracking-technology"
+              },
+              {
+                "Titular ESPN": "Which NHL coaches have the most wins in history?",
+                "Enlace": "https://www.espn.com/nhl/story/_/id/48431082/which-nhl-coaches-most-wins-history"
+              },
+              {
+                "Titular ESPN": "Minnesota Wild vs. San Jose Sharks: Game Highlights",
+                "Enlace": "https://www.espn.com/video/clip/_/id/50580262/game-highlights"
+              }
+            ],
+            "consulta_utc": "2026-11-24T21:36:25.819800+00:00"
+          },
+          "pick_propio": null,
+          "estado_pick": "SIN_MODELO_VALIDADO"
+        }
+      ],
+      "errors": []
+    }
+  },
+  "pick_status": "SIN_MODELO_VALIDADO",
+  "reason": "No existe una probabilidad predictiva propia calibrada y validada"
+}
